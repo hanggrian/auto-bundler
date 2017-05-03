@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.1'
+        classpath 'com.novoda:bintray-release:0.3.4'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+
+ext.config = [
+        sdk        : [
+                'min'   : 12,
+                'target': 25
+        ],
+        buildTools : '25.0.2',
+        testRunner : 'android.support.test.runner.AndroidJUnitRunner',
+        javaVersion: JavaVersion.VERSION_1_7
+]
+
+def versionJunit = '4.12'
+def versionTestRunner = '0.5'
+def versionTestEspresso = '2.2.2'
+def versionSupport = '25.3.1'
+def versionAutoService = '1.0-rc3'
+def versionAutoCommon = '0.8'
+def versionRParser = '0.2'
+def versionParceler = '1.1.6'
+
+ext.deps = [
+        // test
+        junit             : "junit:junit:$versionJunit",
+        // android test
+        testRunner        : "com.android.support.test:runner:$versionTestRunner",
+        testEspresso      : "com.android.support.test.espresso:espresso-core:$versionTestEspresso",
+        // main
+        supportAnnotations: "com.android.support:support-annotations:$versionSupport",
+        supportFragment   : "com.android.support:support-fragment:$versionSupport",
+        autoService       : "com.google.auto.service:auto-service:$versionAutoService",
+        autoCommon        : "com.google.auto:auto-common:$versionAutoCommon",
+        rparser           : "com.hendraanggrian:r-parser:$versionRParser",
+        parceler          : "org.parceler:parceler-api:$versionParceler",
+        parcelerCompiler  : "org.parceler:parceler:$versionParceler"
+]
+
+ext.bintray = [
+        user    : 'hendraanggrian',
+        group   : 'com.hendraanggrian',
+        artifact: [
+                annotations: 'bundler-annotations',
+                compiler   : 'bundler-compiler',
+                main       : 'bundler'
+        ],
+        version : '0.1.0',
+        desc    : 'Android extra field binder with annotation processor.',
+        website : 'https://github.com/HendraAnggrian/bundler'
+]
+
+//$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey= -PdryRun=false

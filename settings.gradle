@@ -1,0 +1,2 @@
+include ':bundler-annotations', ':bundler-compiler', ':bundler'
+include ':example'
