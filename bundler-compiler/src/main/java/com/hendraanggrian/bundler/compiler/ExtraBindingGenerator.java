@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.hendraanggrian.RParser;
 import com.hendraanggrian.bundler.annotations.BindExtra;
 import com.hendraanggrian.bundler.annotations.BindExtraRes;
@@ -17,6 +19,7 @@ import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.lang.model.element.Element;
@@ -24,6 +27,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
@@ -31,6 +35,7 @@ import javax.lang.model.type.TypeMirror;
 class ExtraBindingGenerator implements Generator {
 
     private static final TypeName TYPE_BINDING = ClassName.get("com.hendraanggrian.bundler", "ExtraBinding");
+    private static final ClassName TYPE_BUNDLES = ClassName.get("com.hendraanggrian.bundler", "Bundles");
     private static final ParameterSpec PARAM_SOURCE = ParameterSpec.builder(ClassName.get("android.os", "Bundle"), "source").build();
     private static final ParameterSpec PARAM_RES = ParameterSpec.builder(ClassName.get("android.content.res", "Resources"), "res").build();
 
@@ -39,6 +44,7 @@ class ExtraBindingGenerator implements Generator {
     @NonNull private final TypeMirror superclass;
     @NonNull private final TypeSpec.Builder type;
     @NonNull private final MethodSpec.Builder methodConstructor;
+    @NonNull private final Set<String> staticImports;
 
     ExtraBindingGenerator(@NonNull TypeElement typeElement) {
         packageName = MoreElements.getPackage(typeElement).getQualifiedName().toString();
@@ -51,6 +57,7 @@ class ExtraBindingGenerator implements Generator {
                 .addParameter(className, "target")
                 .addParameter(PARAM_SOURCE)
                 .addParameter(PARAM_RES);
+        staticImports = Sets.newHashSet();
     }
 
     @NonNull
@@ -73,16 +80,20 @@ class ExtraBindingGenerator implements Generator {
     }
 
     @NonNull
-    ExtraBindingGenerator statement(@NonNull RParser parser, @NonNull Iterable<Element> fieldElements) {
+    ExtraBindingGenerator statement(@NonNull Types typeUtils, @NonNull RParser parser, @NonNull Iterable<Element> fieldElements) {
         for (Element fieldElement : fieldElements) {
+            ExtraType type = ExtraType.valueOf(typeUtils, fieldElement);
             String field = fieldElement.getSimpleName().toString();
-            BindExtra bindPref = fieldElement.getAnnotation(BindExtra.class);
-            String key = bindPref != null
-                    ? "\"" + (!bindPref.value().isEmpty() ? bindPref.value() : field) + "\""
+            BindExtra bindExtra = fieldElement.getAnnotation(BindExtra.class);
+            String key = bindExtra != null
+                    ? "\"" + (!bindExtra.value().isEmpty() ? bindExtra.value() : field) + "\""
                     : parser.parse(packageName, fieldElement.getAnnotation(BindExtraRes.class).value());
-            boolean required = fieldElement.getAnnotation(Nullable.class) == null;
-            String targetName = className.simpleName() + "#" + field;
-            methodConstructor.addStatement("target.$L = getValue($L, target.$L, $L, $S)", field, key, field, required, targetName);
+            if (fieldElement.getAnnotation(Nullable.class) == null) {
+                staticImports.add("checkRequired");
+                methodConstructor.addStatement("checkRequired(source, $L, $S)", key, className.simpleName() + "#" + field);
+            }
+            staticImports.add(type.methodName);
+            methodConstructor.addStatement("target.$L = $L(source, $L, target.$L)", field, type.methodName, key, field);
         }
         return this;
     }
@@ -92,6 +103,7 @@ class ExtraBindingGenerator implements Generator {
         JavaFile.builder(packageName, type
                 .addMethod(methodConstructor.build())
                 .build())
+                .addStaticImport(TYPE_BUNDLES, Iterables.toArray(staticImports, String.class))
                 .addFileComment("TODO: go drink some water, Bundler got this covered.")
                 .build()
                 .writeTo(filer);

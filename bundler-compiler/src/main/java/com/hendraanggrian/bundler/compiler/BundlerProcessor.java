@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.hendraanggrian.RParser;
 import com.hendraanggrian.bundler.annotations.BindExtra;
 import com.hendraanggrian.bundler.annotations.BindExtraRes;
+import com.sun.source.util.Trees;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -22,6 +23,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
@@ -31,8 +34,11 @@ public final class BundlerProcessor extends AbstractProcessor {
 
     private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.of(BindExtra.class, BindExtraRes.class);
 
-    private Filer filer;
+    private Trees trees;
+    private Types typeUtils;
+    private Elements elementUtils;
     private RParser parser;
+    private Filer filer;
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
@@ -50,11 +56,18 @@ public final class BundlerProcessor extends AbstractProcessor {
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        filer = processingEnv.getFiler();
-        parser = RParser.builder(processingEnv)
+        try {
+            trees = Trees.instance(processingEnv);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
+        parser = RParser.builder(trees, typeUtils, elementUtils)
                 .setSupportedAnnotations(SUPPORTED_ANNOTATIONS)
                 .setSupportedTypes("string")
                 .build();
+        filer = processingEnv.getFiler();
     }
 
     @Override
@@ -75,7 +88,7 @@ public final class BundlerProcessor extends AbstractProcessor {
         for (TypeElement key : map.keySet()) {
             Generator generator = new ExtraBindingGenerator(key)
                     .superclass(validClassNames)
-                    .statement(parser, map.get(key));
+                    .statement(typeUtils, parser, map.get(key));
             try {
                 generator.generate(filer);
             } catch (IOException e) {
