@@ -7,11 +7,13 @@ import android.util.SparseArray;
 
 import com.hendraanggrian.bundler.Bundler;
 import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.annotations.WrapExtras;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+@WrapExtras
 public class Example1Activity extends BaseActivity {
 
     @Nullable @BindExtra("BOOLEAN") boolean BOOLEAN;

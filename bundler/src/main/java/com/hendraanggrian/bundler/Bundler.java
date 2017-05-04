@@ -10,6 +10,9 @@ import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -20,8 +23,7 @@ public final class Bundler {
 
     private static final String TAG = Bundler.class.getSimpleName();
     private static boolean debug;
-
-    @Nullable private static Map<Class<?>, Constructor<? extends ExtraBinding>> bindings;
+    @Nullable private static Map<String, Constructor<? extends Binding>> bindings;
 
     private Bundler() {
     }
@@ -67,7 +69,7 @@ public final class Bundler {
         final Class<?> targetClass = target.getClass();
         if (debug)
             Log.d(TAG, "Looking up binding for " + targetClass.getName());
-        Constructor<? extends ExtraBinding> constructor = findBinding(targetClass);
+        Constructor<? extends ExtraBinding> constructor = findExtraBinding(targetClass);
         if (constructor == null) {
             if (debug)
                 Log.d(TAG, "Ignored because no binding was found in " + targetClass.getSimpleName());
@@ -89,36 +91,81 @@ public final class Bundler {
         }
     }
 
+    @NonNull
+    public static Bundle wrap(Class<?> targetClass, Object... args) {
+        return wrap(targetClass, new ArrayList<>(Arrays.asList(args)));
+    }
+
+    @NonNull
+    @SuppressWarnings("TryWithIdenticalCatches")
+    public static Bundle wrap(Class<?> targetClass, List args) {
+        if (debug)
+            Log.d(TAG, "Looking up binding for " + targetClass.getName());
+        Constructor<? extends ExtrasBinding> constructor = findExtrasBinding(targetClass);
+        if (constructor == null) {
+            if (debug)
+                Log.d(TAG, "Ignored because no binding was found in " + targetClass.getSimpleName());
+            return new Bundle();
+        }
+        try {
+            return constructor.newInstance(args).source;
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Unable to invoke " + constructor, e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException("Unable to invoke " + constructor, e);
+        } catch (InvocationTargetException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof RuntimeException)
+                throw (RuntimeException) cause;
+            if (cause instanceof Error)
+                throw (Error) cause;
+            throw new RuntimeException("Unable to create binding instance.", cause);
+        }
+    }
+
+    @Nullable
+    private static Constructor<? extends ExtraBinding> findExtraBinding(@NonNull Class<?> targetClass) {
+        return findBinding(targetClass, "_ExtraBinding", targetClass, Bundle.class);
+    }
+
+    @Nullable
+    private static Constructor<? extends ExtrasBinding> findExtrasBinding(@NonNull Class<?> targetClass) {
+        return findBinding(targetClass, "_ExtrasBinding", List.class);
+    }
+
     @Nullable
     @SuppressWarnings("unchecked")
-    private static Constructor<? extends ExtraBinding> findBinding(@NonNull Class<?> targetClass) {
+    private static <T extends Binding> Constructor<T> findBinding(@NonNull Class<?> targetClass, @NonNull String clsNameSuffix, @NonNull Class<?>... constructorArgs) {
         if (bindings == null)
             bindings = new WeakHashMap<>();
-        Constructor<? extends ExtraBinding> binding = bindings.get(targetClass);
+        final String targetClassName = targetClass.getName();
+        final String generatedClassName = targetClassName + clsNameSuffix;
+        Constructor<T> binding = (Constructor<T>) bindings.get(generatedClassName);
         if (binding != null) {
             if (debug)
                 Log.d(TAG, "HIT: Cache found in binding weak map.");
             return binding;
         }
-        String targetClassName = targetClass.getName();
         if (targetClassName.startsWith("android.") || targetClassName.startsWith("java.")) {
             if (debug)
                 Log.d(TAG, "MISS: Reached framework class. Abandoning search.");
             return null;
         }
         try {
-            Class<?> bindingClass = targetClass.getClassLoader().loadClass(targetClassName + "_ExtraBinding");
-            binding = (Constructor<? extends ExtraBinding>) bindingClass.getConstructor(targetClass, Bundle.class);
+            binding = (Constructor<T>) targetClass
+                    .getClassLoader()
+                    .loadClass(generatedClassName)
+                    .getConstructor(constructorArgs);
             if (debug)
                 Log.d(TAG, "HIT: Loaded binding class, caching in weak map.");
         } catch (ClassNotFoundException e) {
             if (debug)
                 Log.d(TAG, "Not found. Trying superclass " + targetClass.getSuperclass().getName());
-            binding = findBinding(targetClass.getSuperclass());
+            binding = findBinding(targetClass.getSuperclass(), clsNameSuffix, constructorArgs);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find binding constructor for " + targetClassName, e);
         }
-        bindings.put(targetClass, binding);
+        bindings.put(generatedClassName, binding);
         return binding;
     }
 }

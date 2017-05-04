@@ -7,7 +7,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hendraanggrian.bundler.annotations.BindExtra;
-import com.hendraanggrian.bundler.annotations.MakeBundle;
+import com.hendraanggrian.bundler.annotations.WrapExtras;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -31,7 +31,7 @@ public final class BundlerProcessor extends AbstractProcessor {
 
     private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.of(
             BindExtra.class,
-            MakeBundle.class
+            WrapExtras.class
     );
 
     private Types typeUtils;
@@ -61,16 +61,18 @@ public final class BundlerProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
         // preparing elements
         Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
-        Set<String> validClassNames = Sets.newHashSet();
+        Set<String> extraClassNames = Sets.newHashSet();
+        Set<String> extrasClassNames = Sets.newHashSet();
         for (Element fieldElement : roundEnv.getElementsAnnotatedWith(BindExtra.class)) {
             TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
             map.put(typeElement, fieldElement);
-            validClassNames.add(ExtraBindingGenerator.newClassName(typeElement));
+            extraClassNames.add(Generator.guessExtraClassName(typeElement));
+            extrasClassNames.add(Generator.guessExtrasClassName(typeElement));
         }
-        // generate classes
+        // generate classes and keep results
         for (TypeElement key : map.keySet()) {
-            Generator generator = new ExtraBindingGenerator(key)
-                    .superclass(validClassNames)
+            Generator generator = new Generator(key)
+                    .superclass(extraClassNames, extrasClassNames)
                     .statement(typeUtils, map.get(key));
             try {
                 generator.generate(filer);

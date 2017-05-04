@@ -25,42 +25,42 @@ import javax.lang.model.util.Types;
  */
 enum ExtraType {
     //region Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
-    BOOLEAN("getBoolean", boolean.class),
-    BOOLEAN_ARRAY("getBooleanArray", boolean[].class),
-    BYTE("getByte", byte.class),
-    BYTE_ARRAY("getByteArray", byte[].class),
-    CHAR("getChar", char.class),
-    CHAR_ARRAY("getCharArray", char[].class),
-    DOUBLE("getDouble", double.class),
-    DOUBLE_ARRAY("getDoubleArray", double[].class),
-    FLOAT("getFloat", float.class),
-    FLOAT_ARRAY("getFloatArray", float[].class),
-    INT("getInt", int.class),
-    INT_ARRAY("getIntArray", int[].class),
-    INT_ARRAYLIST("getIntegerArrayList", ArrayList.class, Integer.class),
-    LONG("getLong", long.class),
-    LONG_ARRAY("getLongArray", long[].class),
-    SHORT("getShort", short.class),
-    SHORT_ARRAY("getShortArray", short[].class),
+    BOOLEAN("Boolean", boolean.class),
+    BOOLEAN_ARRAY("BooleanArray", boolean[].class),
+    BYTE("Byte", byte.class),
+    BYTE_ARRAY("ByteArray", byte[].class),
+    CHAR("Char", char.class),
+    CHAR_ARRAY("CharArray", char[].class),
+    DOUBLE("Double", double.class),
+    DOUBLE_ARRAY("DoubleArray", double[].class),
+    FLOAT("Float", float.class),
+    FLOAT_ARRAY("FloatArray", float[].class),
+    INT("Int", int.class),
+    INT_ARRAY("IntArray", int[].class),
+    INT_ARRAYLIST("IntegerArrayList", ArrayList.class, Integer.class),
+    LONG("Long", long.class),
+    LONG_ARRAY("LongArray", long[].class),
+    SHORT("Short", short.class),
+    SHORT_ARRAY("ShortArray", short[].class),
     //endregion
     //region Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
-    CHARSEQUENCE("getCharSequence", CharSequence.class),
-    CHARSEQUENCE_ARRAY("getCharSequenceArray", CharSequence[].class),
-    CHARSEQUENCE_ARRAYLIST("getCharSequenceArrayList", ArrayList.class, CharSequence.class),
-    PARCELABLE("getParcelable", ClassName.get("android.os", "Parcelable")),
-    PARCELABLE_ARRAY("getParcelableArray", ArrayTypeName.of(ClassName.get("android.os", "Parcelable"))),
-    PARCELABLE_ARRAYLIST("getParcelableArrayList", ClassName.get(ArrayList.class), ClassName.get("android.os", "Parcelable")),
-    PARCELABLE_SPARSEARRAY("getSparseParcelableArray", ClassName.get("android.util", "SparseArray"), ClassName.get("android.os", "Parcelable")),
-    STRING("getString", String.class),
-    STRING_ARRAY("getStringArray", String[].class),
-    STRING_ARRAYLIST("getStringArrayList", ArrayList.class, String.class),
+    CHARSEQUENCE("CharSequence", CharSequence.class),
+    CHARSEQUENCE_ARRAY("CharSequenceArray", CharSequence[].class),
+    CHARSEQUENCE_ARRAYLIST("CharSequenceArrayList", ArrayList.class, CharSequence.class),
+    PARCELABLE("Parcelable", ClassName.get("android.os", "Parcelable")),
+    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(ClassName.get("android.os", "Parcelable"))),
+    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList.class), ClassName.get("android.os", "Parcelable")),
+    PARCELABLE_SPARSEARRAY("SparseParcelableArray", ClassName.get("android.util", "SparseArray"), ClassName.get("android.os", "Parcelable")),
+    STRING("String", String.class),
+    STRING_ARRAY("StringArray", String[].class),
+    STRING_ARRAYLIST("StringArrayList", ArrayList.class, String.class),
     //endregion
     //region Others: Parceler and Serializable.
-    PARCELER("getParceler", TypeName.VOID),
-    SERIALIZABLE("getSerializable", Serializable.class);
+    PARCELER("Parcelable", TypeName.VOID),
+    SERIALIZABLE("Serializable", Serializable.class);
     //endregion
 
-    @NonNull final String methodName;
+    @NonNull private final String methodName;
     @NonNull private final TypeName typeName;
 
     ExtraType(@NonNull String methodName, @NonNull ClassName cls, @NonNull TypeName... typeNames) {
@@ -78,6 +78,16 @@ enum ExtraType {
     ExtraType(@NonNull String methodName, @NonNull TypeName typeName) {
         this.methodName = methodName;
         this.typeName = typeName;
+    }
+
+    @NonNull
+    String getMethodName() {
+        return "get" + methodName;
+    }
+
+    @NonNull
+    String putMethodName() {
+        return "put" + methodName;
     }
 
     @NonNull
