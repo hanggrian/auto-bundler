@@ -35,7 +35,6 @@ class ExtraBindingGenerator implements Generator {
     private static final TypeName TYPE_BINDING = ClassName.get("com.hendraanggrian.bundler", "ExtraBinding");
     private static final ClassName TYPE_BUNDLES = ClassName.get("com.hendraanggrian.bundler", "Bundles");
     private static final ParameterSpec PARAM_SOURCE = ParameterSpec.builder(ClassName.get("android.os", "Bundle"), "source").build();
-    private static final ParameterSpec PARAM_RES = ParameterSpec.builder(ClassName.get("android.content.res", "Resources"), "res").build();
 
     @NonNull private final String packageName;
     @NonNull private final ClassName className;
@@ -53,8 +52,7 @@ class ExtraBindingGenerator implements Generator {
         methodConstructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(className, "target")
-                .addParameter(PARAM_SOURCE)
-                .addParameter(PARAM_RES);
+                .addParameter(PARAM_SOURCE);
         staticImports = Sets.newHashSet();
     }
 
@@ -70,9 +68,9 @@ class ExtraBindingGenerator implements Generator {
         }
         if (!hasSuperclass) {
             type.superclass(TYPE_BINDING);
-            methodConstructor.addStatement("super($L, $L)", PARAM_SOURCE.name, PARAM_RES.name);
+            methodConstructor.addStatement("super($L)", PARAM_SOURCE.name);
         } else {
-            methodConstructor.addStatement("super(target, $L, $L)", PARAM_SOURCE.name, PARAM_RES.name);
+            methodConstructor.addStatement("super(target, $L)", PARAM_SOURCE.name);
         }
         return this;
     }

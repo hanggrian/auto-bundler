@@ -25,6 +25,7 @@ dependencies {
     }
 
     compile deps.supportFragment
+    compile deps.parceler
     compile project(':bundler-annotations')
 }
 

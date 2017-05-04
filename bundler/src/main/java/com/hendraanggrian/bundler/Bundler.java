@@ -1,9 +1,8 @@
 package com.hendraanggrian.bundler;
 
 import android.app.Activity;
-import android.content.Context;
+import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,16 +18,32 @@ import java.util.WeakHashMap;
  */
 public final class Bundler {
 
-    static final String TAG = Bundler.class.getSimpleName();
-    static boolean debug;
+    private static final String TAG = Bundler.class.getSimpleName();
+    private static boolean debug;
 
-    private static Map<Class<?>, Constructor<? extends ExtraBinding>> bindings;
+    @Nullable private static Map<Class<?>, Constructor<? extends ExtraBinding>> bindings;
 
     private Bundler() {
     }
 
     public static void setDebug(boolean debug) {
         Bundler.debug = debug;
+    }
+
+    public static void bind(@NonNull android.support.v4.app.Fragment target) {
+        Bundle bundle = target.getArguments();
+        if (bundle != null)
+            bind(target, bundle);
+        else if (debug)
+            Log.d(TAG, "bind() ignored because Bundle is not found from this Fragment.");
+    }
+
+    public static void bind(@NonNull Fragment target) {
+        Bundle bundle = target.getArguments();
+        if (bundle != null)
+            bind(target, bundle);
+        else if (debug)
+            Log.d(TAG, "bind() ignored because Bundle is not found from this Fragment.");
     }
 
     public static void bind(@NonNull Activity target) {
@@ -39,7 +54,7 @@ public final class Bundler {
             Log.d(TAG, "bind() ignored because Bundle is not found from this Activity.");
     }
 
-    public static <T extends Context> void bind(@NonNull T target, @NonNull Intent source) {
+    public static <T> void bind(@NonNull T target, @NonNull Intent source) {
         Bundle bundle = source.getExtras();
         if (bundle != null)
             bind(target, bundle);
@@ -47,12 +62,8 @@ public final class Bundler {
             Log.d(TAG, "bind() ignored because Bundle is not found from this Intent.");
     }
 
-    public static <T extends Context> void bind(@NonNull T target, @NonNull Bundle source) {
-        bind(target, source, target.getResources());
-    }
-
     @SuppressWarnings("TryWithIdenticalCatches")
-    private static <T> void bind(@NonNull T target, @NonNull Bundle source, @NonNull Resources res) {
+    public static <T> void bind(@NonNull T target, @NonNull Bundle source) {
         final Class<?> targetClass = target.getClass();
         if (debug)
             Log.d(TAG, "Looking up binding for " + targetClass.getName());
@@ -63,7 +74,7 @@ public final class Bundler {
             return;
         }
         try {
-            constructor.newInstance(target, source, res);
+            constructor.newInstance(target, source);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to invoke " + constructor, e);
         } catch (InstantiationException e) {
@@ -97,7 +108,7 @@ public final class Bundler {
         }
         try {
             Class<?> bindingClass = targetClass.getClassLoader().loadClass(targetClassName + "_ExtraBinding");
-            binding = (Constructor<? extends ExtraBinding>) bindingClass.getConstructor(targetClass, Bundle.class, Resources.class);
+            binding = (Constructor<? extends ExtraBinding>) bindingClass.getConstructor(targetClass, Bundle.class);
             if (debug)
                 Log.d(TAG, "HIT: Loaded binding class, caching in weak map.");
         } catch (ClassNotFoundException e) {

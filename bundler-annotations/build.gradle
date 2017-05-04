@@ -6,8 +6,6 @@ targetCompatibility = config.javaVersion
 
 dependencies {
     testCompile deps.junit
-
-    compile deps.parceler
 }
 
 publish {
