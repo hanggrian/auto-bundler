@@ -6,7 +6,9 @@ import android.util.Log;
 import com.example.bundlerexample.model.User;
 import com.hendraanggrian.bundler.Bundler;
 import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.annotations.MakeBundle;
 
+@MakeBundle
 public class Example2Activity extends BaseActivity {
 
     @BindExtra("user") User user;

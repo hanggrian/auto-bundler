@@ -15,11 +15,8 @@ import javax.lang.model.element.TypeElement;
  */
 final class NameUtils {
 
-    private static final String TOP_SUFFIX = "_ExtraBinding";
-    private static final String INNER_PREFIX = "$";
-
     @NonNull
-    static String guessClassName(@NonNull TypeElement typeElement) {
+    static String guessClassName(@NonNull TypeElement typeElement, @NonNull String suffix) {
         List<String> enclosings = Lists.newArrayList(typeElement.getSimpleName().toString());
         while (typeElement.getNestingKind().isNested()) {
             typeElement = MoreElements.asType(typeElement.getEnclosingElement());
@@ -28,7 +25,7 @@ final class NameUtils {
         Collections.reverse(enclosings);
         String typeName = enclosings.get(0);
         for (int i = 1; i < enclosings.size(); i++)
-            typeName += INNER_PREFIX + enclosings.get(i);
-        return typeName + TOP_SUFFIX;
+            typeName += '$' + enclosings.get(i);
+        return typeName + suffix;
     }
 }

@@ -8,6 +8,7 @@ import com.google.auto.common.MoreTypes;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.annotations.MakeBundle;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -42,25 +43,27 @@ class ExtraBindingGenerator implements Generator {
     @NonNull private final TypeSpec.Builder type;
     @NonNull private final MethodSpec.Builder methodConstructor;
     @NonNull private final Set<String> staticImports;
+    private final boolean shouldMakeBundle;
 
     ExtraBindingGenerator(@NonNull TypeElement typeElement) {
         packageName = MoreElements.getPackage(typeElement).getQualifiedName().toString();
         className = ClassName.get(typeElement);
         superclass = typeElement.getSuperclass();
-        type = TypeSpec.classBuilder(NameUtils.guessClassName(typeElement))
+        type = TypeSpec.classBuilder(newClassName(typeElement))
                 .addModifiers(Modifier.PUBLIC);
         methodConstructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(className, "target")
                 .addParameter(PARAM_SOURCE);
         staticImports = Sets.newHashSet();
+        shouldMakeBundle = typeElement.getAnnotation(MakeBundle.class) != null;
     }
 
     @NonNull
     ExtraBindingGenerator superclass(@NonNull Collection<String> generatedClassNames) {
         boolean hasSuperclass = false;
         if (superclass.getKind() != TypeKind.NONE && superclass.getKind() != TypeKind.VOID) {
-            String className = NameUtils.guessClassName(MoreTypes.asTypeElement(superclass));
+            String className = newClassName(MoreTypes.asTypeElement(superclass));
             if (generatedClassNames.contains(className)) {
                 type.superclass(ClassName.get(packageName, className));
                 hasSuperclass = true;
@@ -102,5 +105,10 @@ class ExtraBindingGenerator implements Generator {
                 .addFileComment("TODO: go drink some water, Bundler got this covered.")
                 .build()
                 .writeTo(filer);
+    }
+
+    @NonNull
+    static String newClassName(@NonNull TypeElement typeElement) {
+        return NameUtils.guessClassName(typeElement, "_ExtraBinding");
     }
 }
