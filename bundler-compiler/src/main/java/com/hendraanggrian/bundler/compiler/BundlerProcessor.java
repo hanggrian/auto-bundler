@@ -6,9 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.hendraanggrian.RParser;
 import com.hendraanggrian.bundler.annotations.BindExtra;
-import com.hendraanggrian.bundler.annotations.BindExtraRes;
 import com.sun.source.util.Trees;
 
 import java.io.IOException;
@@ -32,12 +30,11 @@ import javax.lang.model.util.Types;
 @AutoService(Processor.class)
 public final class BundlerProcessor extends AbstractProcessor {
 
-    private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.of(BindExtra.class, BindExtraRes.class);
+    private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.<Class<? extends Annotation>>of(BindExtra.class);
 
     private Trees trees;
     private Types typeUtils;
     private Elements elementUtils;
-    private RParser parser;
     private Filer filer;
 
     @Override
@@ -47,7 +44,7 @@ public final class BundlerProcessor extends AbstractProcessor {
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        Set<String> names = Sets.newHashSet();
+        Set<String> names = Sets.newLinkedHashSet();
         for (Class<? extends Annotation> cls : SUPPORTED_ANNOTATIONS)
             names.add(cls.getCanonicalName());
         return names;
@@ -63,17 +60,11 @@ public final class BundlerProcessor extends AbstractProcessor {
         }
         typeUtils = processingEnv.getTypeUtils();
         elementUtils = processingEnv.getElementUtils();
-        parser = RParser.builder(trees, typeUtils, elementUtils)
-                .setSupportedAnnotations(SUPPORTED_ANNOTATIONS)
-                .setSupportedTypes("string")
-                .build();
         filer = processingEnv.getFiler();
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
-        // preparing R classes
-        parser.scan(roundEnv);
         // preparing elements
         Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
         Set<String> validClassNames = Sets.newHashSet();
@@ -88,7 +79,7 @@ public final class BundlerProcessor extends AbstractProcessor {
         for (TypeElement key : map.keySet()) {
             Generator generator = new ExtraBindingGenerator(key)
                     .superclass(validClassNames)
-                    .statement(typeUtils, parser, map.get(key));
+                    .statement(typeUtils, map.get(key));
             try {
                 generator.generate(filer);
             } catch (IOException e) {

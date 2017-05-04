@@ -3,9 +3,14 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bundler.iml" filepath="$PROJECT_DIR$/bundler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bundler.iml" filepath="$PROJECT_DIR$/bundler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" filepath="$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" filepath="$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler/bundler-bundler.iml" filepath="$PROJECT_DIR$/bundler/bundler-bundler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bundler/bundler-bundler.iml" filepath="$PROJECT_DIR$/bundler/bundler-bundler.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler-compiler/bundler-compiler.iml" filepath="$PROJECT_DIR$/bundler-compiler/bundler-compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bundler-compiler/bundler-compiler.iml" filepath="$PROJECT_DIR$/bundler-compiler/bundler-compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
       <module fileurl="file://$PROJECT_DIR$/example/example.iml" filepath="$PROJECT_DIR$/example/example.iml" />
     </modules>
   </component>

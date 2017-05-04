@@ -9,6 +9,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,43 +24,55 @@ import javax.lang.model.util.Types;
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 enum ExtraType {
-    PARCELER(new Object(), "getParceler"),
-    BOOLEAN(boolean.class, "getBoolean"),
-    BOOLEAN_ARRAY(ArrayTypeName.of(boolean.class), "getBooleanArray"),
-    BYTE(byte.class, "getByte"),
-    BYTE_BOXED(Byte.class, "getByte"),
-    BYTE_ARRAY(ArrayTypeName.of(byte.class), "getByteArray"),
-    CHAR(char.class, "getChar"),
-    CHAR_ARRAY(ArrayTypeName.of(char.class), "getCharArray"),
-    CHARSEQUENCE(ClassName.get(CharSequence.class), "getCharSequence"),
-    CHARSEQUENCE_ARRAY(ArrayTypeName.of(CharSequence.class), "getCharSequenceArray"),
-    CHARSEQUENCE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList.class), ClassName.get(CharSequence.class)), "getCharSequenceArrayList"),
-    DOUBLE(double.class, "getDouble"),
-    DOUBLE_ARRAY(ArrayTypeName.of(double.class), "getDoubleArray"),
-    FLOAT(float.class, "getFloat"),
-    FLOAT_ARRAY(ArrayTypeName.of(float.class), "getFloatArray"),
-    LONG(long.class, "getLong"),
-    LONG_ARRAY(ArrayTypeName.of(long.class), "getLongArray"),
-    INT(int.class, "getInt"),
-    INT_ARRAY(ArrayTypeName.of(int.class), "getIntArray"),
-    INT_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList.class), ClassName.get(Integer.class)), "getIntArrayList"),
-    PARCELABLE(ClassName.get("android.os", "Parcelable"), "getParcelable"),
-    PARCELABLE_ARRAY(ArrayTypeName.of(ClassName.get("android.os", "Parcelable")), "getParcelableArray"),
-    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList.class), ClassName.get("android.os", "Parcelable")), "getParcelableArrayList"),
-    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(ClassName.get("android.util", "SparseArray"), ClassName.get("android.os", "Parcelable")), "getSparseParcelableArray"),
-    SERIALIZABLE(Serializable.class, "getSerializable"),
-    SHORT(short.class, "getShort"),
-    SHORT_ARRAY(ArrayTypeName.of(short.class), "getShortArray"),
-    STRING(ClassName.get(String.class), "getString"),
-    STRING_ARRAY(ArrayTypeName.of(String.class), "getStringArray"),
-    STRING_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList.class), ClassName.get(String.class)), "getStringArrayList");
+    BOOLEAN("getBoolean", boolean.class),
+    BOOLEAN_ARRAY("getBooleanArray", boolean[].class),
+    BYTE("getByte", byte.class),
+    // BYTE_BOXED("getByte", Byte.class),
+    BYTE_ARRAY("getByteArray", byte[].class),
+    CHAR("getChar", char.class),
+    CHAR_ARRAY("getCharArray", char[].class),
+    CHARSEQUENCE("getCharSequence", CharSequence.class),
+    CHARSEQUENCE_ARRAY("getCharSequenceArray", CharSequence[].class),
+    CHARSEQUENCE_ARRAYLIST("getCharSequenceArrayList", ArrayList.class, CharSequence.class),
+    DOUBLE("getDouble", double.class),
+    DOUBLE_ARRAY("getDoubleArray", double[].class),
+    FLOAT("getFloat", float.class),
+    FLOAT_ARRAY("getFloatArray", float[].class),
+    LONG("getLong", long.class),
+    LONG_ARRAY("getLongArray", long[].class),
+    INT("getInt", int.class),
+    INT_ARRAY("getIntArray", int[].class),
+    INT_ARRAYLIST("getIntegerArrayList", ArrayList.class, Integer.class),
+    PARCELABLE("getParcelable", ClassName.get("android.os", "Parcelable")),
+    PARCELABLE_ARRAY("getParcelableArray", ArrayTypeName.of(ClassName.get("android.os", "Parcelable"))),
+    PARCELABLE_ARRAYLIST("getParcelableArrayList", ClassName.get(ArrayList.class), ClassName.get("android.os", "Parcelable")),
+    PARCELABLE_SPARSEARRAY("getSparseParcelableArray", ClassName.get("android.util", "SparseArray"), ClassName.get("android.os", "Parcelable")),
+    SERIALIZABLE("getSerializable", Serializable.class),
+    SHORT("getShort", short.class),
+    SHORT_ARRAY("getShortArray", short[].class),
+    STRING("getString", String.class),
+    STRING_ARRAY("getStringArray", String[].class),
+    STRING_ARRAYLIST("getStringArrayList", ArrayList.class, String.class),
+    PARCELER("getParceler", TypeName.VOID);
 
-    @NonNull private final Object typeName;
     @NonNull final String methodName;
+    @NonNull private final TypeName typeName;
 
-    ExtraType(@NonNull Object typeName, @NonNull String methodName) {
-        this.typeName = typeName;
+    ExtraType(@NonNull String methodName, @NonNull ClassName cls, @NonNull TypeName... typeNames) {
+        this(methodName, ParameterizedTypeName.get(cls, typeNames));
+    }
+
+    ExtraType(@NonNull String methodName, @NonNull Class<?> cls, @NonNull Type... types) {
+        this(methodName, ParameterizedTypeName.get(cls, types));
+    }
+
+    ExtraType(@NonNull String methodName, @NonNull Type type) {
+        this(methodName, TypeName.get(type));
+    }
+
+    ExtraType(@NonNull String methodName, @NonNull TypeName typeName) {
         this.methodName = methodName;
+        this.typeName = typeName;
     }
 
     @NonNull
@@ -67,11 +80,11 @@ enum ExtraType {
         List<TypeMirror> supertypes = Lists.newArrayList(typeUtils.directSupertypes(fieldElement.asType())); // get all supertypes in case this element is subclass of Parcelable or Serializable
         supertypes.add(0, fieldElement.asType()); // also add current element's kind in case element does not have supertypes
         while (!supertypes.isEmpty()) {
-            TypeMirror currentType = supertypes.get(0);
+            TypeName currentType = TypeName.get(supertypes.get(0));
             for (ExtraType type : values()) {
-                if (type.typeName instanceof Class && ((Class) type.typeName).getSimpleName().equals(currentType.toString()))
+                if ((type.typeName.isPrimitive() || type.typeName.isBoxedPrimitive()) && type.typeName.unbox().equals(currentType))
                     return type;
-                else if (type.typeName instanceof TypeName && (TypeName.get(currentType)).equals(type.typeName))
+                else if (type.typeName.equals(currentType))
                     return type;
             }
             supertypes.remove(0);

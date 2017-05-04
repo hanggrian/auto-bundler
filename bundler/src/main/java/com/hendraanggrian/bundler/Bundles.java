@@ -31,12 +31,9 @@ public final class Bundles {
 
     //region Bundle
     public static byte getByte(@NonNull Bundle source, @NonNull String key, byte defaultValue) {
-        return source.getByte(key, defaultValue);
-    }
-
-    @Nullable
-    public static Byte getByte(@NonNull Bundle source, @NonNull String key, @Nullable Byte defaultValue) {
-        return source.getByte(key, defaultValue);
+        return source.containsKey(key)
+                ? source.getByte(key, defaultValue)
+                : defaultValue;
     }
 
     public static char getChar(@NonNull Bundle source, @NonNull String key, char defaultValue) {

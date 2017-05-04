@@ -35,7 +35,7 @@ def versionTestEspresso = '2.2.2'
 def versionSupport = '25.3.1'
 def versionAutoService = '1.0-rc3'
 def versionAutoCommon = '0.8'
-def versionRParser = '0.2'
+def versionJavapoet = '1.8.0'
 def versionParceler = '1.1.6'
 
 ext.deps = [
@@ -49,7 +49,7 @@ ext.deps = [
         supportFragment   : "com.android.support:support-fragment:$versionSupport",
         autoService       : "com.google.auto.service:auto-service:$versionAutoService",
         autoCommon        : "com.google.auto:auto-common:$versionAutoCommon",
-        rparser           : "com.hendraanggrian:r-parser:$versionRParser",
+        javapoet          : "com.squareup:javapoet:$versionJavapoet",
         parceler          : "org.parceler:parceler-api:$versionParceler",
         parcelerCompiler  : "org.parceler:parceler:$versionParceler"
 ]

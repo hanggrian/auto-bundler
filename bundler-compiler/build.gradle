@@ -18,8 +18,9 @@ dependencies {
     compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
     compileOnly deps.autoService
 
+    compile deps.supportFragment
     compile deps.autoCommon
-    compile deps.rparser
+    compile deps.javapoet
     compile deps.parcelerCompiler
     compile project(':bundler-annotations')
 }

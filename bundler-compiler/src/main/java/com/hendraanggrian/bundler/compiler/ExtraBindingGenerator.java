@@ -7,9 +7,7 @@ import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-import com.hendraanggrian.RParser;
 import com.hendraanggrian.bundler.annotations.BindExtra;
-import com.hendraanggrian.bundler.annotations.BindExtraRes;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
@@ -80,20 +78,19 @@ class ExtraBindingGenerator implements Generator {
     }
 
     @NonNull
-    ExtraBindingGenerator statement(@NonNull Types typeUtils, @NonNull RParser parser, @NonNull Iterable<Element> fieldElements) {
+    ExtraBindingGenerator statement(@NonNull Types typeUtils, @NonNull Iterable<Element> fieldElements) {
         for (Element fieldElement : fieldElements) {
             ExtraType type = ExtraType.valueOf(typeUtils, fieldElement);
             String field = fieldElement.getSimpleName().toString();
-            BindExtra bindExtra = fieldElement.getAnnotation(BindExtra.class);
-            String key = bindExtra != null
-                    ? "\"" + (!bindExtra.value().isEmpty() ? bindExtra.value() : field) + "\""
-                    : parser.parse(packageName, fieldElement.getAnnotation(BindExtraRes.class).value());
+            String key = fieldElement.getAnnotation(BindExtra.class).value();
+            if (key.isEmpty())
+                key = field;
             if (fieldElement.getAnnotation(Nullable.class) == null) {
                 staticImports.add("checkRequired");
-                methodConstructor.addStatement("checkRequired(source, $L, $S)", key, className.simpleName() + "#" + field);
+                methodConstructor.addStatement("checkRequired(source, $S, $S)", key, className.simpleName() + "#" + field);
             }
             staticImports.add(type.methodName);
-            methodConstructor.addStatement("target.$L = $L(source, $L, target.$L)", field, type.methodName, key, field);
+            methodConstructor.addStatement("target.$L = $L(source, $S, target.$L)", field, type.methodName, key, field);
         }
         return this;
     }
