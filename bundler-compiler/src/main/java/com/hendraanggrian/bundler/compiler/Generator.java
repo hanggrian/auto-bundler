@@ -110,9 +110,9 @@ final class Generator {
             bindingConstructor.addStatement("target.$L = $L($S, target.$L)", field, type.getMethodName(), key, field);
             if (wrappingConstructor != null) {
                 if (type == ExtraType.PARCELER)
-                    wrappingConstructor.addStatement("source.$L($S, wrap(next()))", type.putMethodName(), key);
+                    wrappingConstructor.addStatement("if(!args.isEmpty()) source.$L($S, wrap(next()))", type.putMethodName(), key);
                 else
-                    wrappingConstructor.addStatement("source.$L($S, ($L) next())", type.putMethodName(), key, fieldElement.asType());
+                    wrappingConstructor.addStatement("if(!args.isEmpty()) source.$L($S, ($L) next())", type.putMethodName(), key, fieldElement.asType());
             }
         }
         return this;

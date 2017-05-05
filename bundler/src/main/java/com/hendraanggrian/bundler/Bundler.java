@@ -93,8 +93,6 @@ public final class Bundler {
             @NonNull Class<?>[] constructorArgClasses,
             @NonNull Object[] constructorArgs,
             @NonNull T defaultValue) {
-        Log.d("constructorArgClasses", Arrays.toString(constructorArgClasses));
-        Log.d("constructorArgs", Arrays.toString(constructorArgs));
         if (debug)
             Log.d(TAG, "Looking up constructor for " + targetClass.getName());
         Constructor<T> constructor = findConstructor(targetClass, clsNameSuffix, constructorArgClasses);

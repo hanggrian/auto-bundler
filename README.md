@@ -8,8 +8,8 @@ Bundler aims to minify the process with annotation processing.
 
 ```groovy
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.2.1'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.2.1'
+    compile 'com.hendraanggrian:bundler:0.2.3'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.2.3'
 }
 ```
 
