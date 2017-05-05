@@ -76,7 +76,7 @@ public final class Bundler {
 
     @NonNull
     public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull List<?> args) {
-        return newConstructorInstance(
+        return Bundler.newConstructorInstance(
                 targetClass,
                 WrapExtras.SUFFIX,
                 new Class<?>[]{List.class},
@@ -93,6 +93,8 @@ public final class Bundler {
             @NonNull Class<?>[] constructorArgClasses,
             @NonNull Object[] constructorArgs,
             @NonNull T defaultValue) {
+        Log.d("constructorArgClasses", Arrays.toString(constructorArgClasses));
+        Log.d("constructorArgs", Arrays.toString(constructorArgs));
         if (debug)
             Log.d(TAG, "Looking up constructor for " + targetClass.getName());
         Constructor<T> constructor = findConstructor(targetClass, clsNameSuffix, constructorArgClasses);
@@ -148,7 +150,12 @@ public final class Bundler {
         } catch (ClassNotFoundException e) {
             if (debug)
                 Log.d(TAG, "Not found. Trying superclass " + targetClass.getSuperclass().getName());
-            constructor = findConstructor(targetClass.getSuperclass(), clsNameSuffix, constructorArgClasses);
+            Class<?> targetSuperclass = targetClass.getSuperclass();
+            //region abstract classes binding fix
+            if (constructorArgClasses[0] == targetClass && constructorArgClasses[0].getSuperclass() == targetSuperclass)
+                constructorArgClasses[0] = targetSuperclass;
+            //endregion
+            constructor = findConstructor(targetSuperclass, clsNameSuffix, constructorArgClasses);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find constructor constructor for " + targetClassName, e);
         }

@@ -261,7 +261,7 @@ public abstract class ExtraBinding {
     @Nullable
     protected Serializable getSerializable(@NonNull String key, @Nullable Serializable defaultValue) {
         if (source.containsKey(key))
-            source.getSerializable(key);
+            return source.getSerializable(key);
         return defaultValue;
     }
     //endregion

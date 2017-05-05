@@ -5,10 +5,11 @@ data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value
 pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
+
 ```groovy
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.2.0'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.2.0'
+    compile 'com.hendraanggrian:bundler:0.2.1'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.2.1'
 }
 ```
 
