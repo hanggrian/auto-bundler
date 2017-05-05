@@ -34,27 +34,27 @@ final class Generator {
     @NonNull private final String packageName;
     @NonNull private final ClassName targetClassName;
     @NonNull private final TypeMirror targetSuperclass;
-    @NonNull private final TypeSpec.Builder typeSpecExtra;
-    @NonNull private final MethodSpec.Builder constructorExtra;
-    @Nullable private TypeSpec.Builder typeSpecExtras;
-    @Nullable private MethodSpec.Builder constructorExtras;
+    @NonNull private final TypeSpec.Builder bindingType;
+    @NonNull private final MethodSpec.Builder bindingConstructor;
+    @Nullable private TypeSpec.Builder wrappingType;
+    @Nullable private MethodSpec.Builder wrappingConstructor;
 
     Generator(@NonNull TypeElement typeElement) {
         packageName = MoreElements.getPackage(typeElement).getQualifiedName().toString();
 
         targetClassName = ClassName.get(typeElement);
         targetSuperclass = typeElement.getSuperclass();
-        typeSpecExtra = TypeSpec.classBuilder(guessExtraClassName(typeElement))
+        bindingType = TypeSpec.classBuilder(NameUtils.guessClassName(typeElement, BindExtra.SUFFIX))
                 .addModifiers(Modifier.PUBLIC);
-        constructorExtra = MethodSpec.constructorBuilder()
+        bindingConstructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(targetClassName, "target")
                 .addParameter(ParameterSpec.builder(ClassName.get("android.os", "Bundle"), "source").build());
 
         if (typeElement.getAnnotation(WrapExtras.class) != null) {
-            typeSpecExtras = TypeSpec.classBuilder(guessExtrasClassName(typeElement))
+            wrappingType = TypeSpec.classBuilder(NameUtils.guessClassName(typeElement, WrapExtras.SUFFIX))
                     .addModifiers(Modifier.PUBLIC);
-            constructorExtras = MethodSpec.constructorBuilder()
+            wrappingConstructor = MethodSpec.constructorBuilder()
                     .addModifiers(Modifier.PUBLIC)
                     .addParameter(TypeName.get(List.class), "args");
         }
@@ -66,32 +66,32 @@ final class Generator {
         boolean extrasHasSuperclass = false;
         if (targetSuperclass.getKind() != TypeKind.NONE && targetSuperclass.getKind() != TypeKind.VOID) {
             TypeElement superclass = MoreTypes.asTypeElement(targetSuperclass);
-            String extraClassName = guessExtraClassName(superclass);
+            String extraClassName = NameUtils.guessClassName(superclass, BindExtra.SUFFIX);
             if (extraClassNames.contains(extraClassName)) {
-                typeSpecExtra.superclass(ClassName.get(packageName, extraClassName));
+                bindingType.superclass(ClassName.get(packageName, extraClassName));
                 extraHasSuperclass = true;
             }
-            String extrasClassName = guessExtrasClassName(superclass);
+            String extrasClassName = NameUtils.guessClassName(superclass, WrapExtras.SUFFIX);
             if (extrasClassNames.contains(extrasClassName)) {
-                if (typeSpecExtras != null)
-                    typeSpecExtras.superclass(ClassName.get(packageName, extrasClassName));
+                if (wrappingType != null)
+                    wrappingType.superclass(ClassName.get(packageName, extrasClassName));
                 extrasHasSuperclass = true;
             }
         }
         if (!extraHasSuperclass) {
-            typeSpecExtra.superclass(ClassName.get("com.hendraanggrian.bundler", "ExtraBinding"));
-            constructorExtra.addStatement("super(source)");
+            bindingType.superclass(ClassName.get("com.hendraanggrian.bundler", "ExtraBinding"));
+            bindingConstructor.addStatement("super(source)");
         } else {
-            constructorExtra.addStatement("super(target, source)");
+            bindingConstructor.addStatement("super(target, source)");
         }
         if (!extrasHasSuperclass) {
-            if (typeSpecExtras != null)
-                typeSpecExtras.superclass(ClassName.get("com.hendraanggrian.bundler", "ExtrasBinding"));
-            if (constructorExtras != null)
-                constructorExtras.addStatement("super(args)");
+            if (wrappingType != null)
+                wrappingType.superclass(ClassName.get("com.hendraanggrian.bundler", "ExtrasWrapping"));
+            if (wrappingConstructor != null)
+                wrappingConstructor.addStatement("super(args)");
         } else {
-            if (constructorExtras != null)
-                constructorExtras.addStatement("super(args)");
+            if (wrappingConstructor != null)
+                wrappingConstructor.addStatement("super(args)");
         }
         return this;
     }
@@ -105,44 +105,34 @@ final class Generator {
             if (key.isEmpty())
                 key = field;
             if (fieldElement.getAnnotation(Nullable.class) == null) {
-                constructorExtra.addStatement("checkRequired($S, $S)", key, targetClassName.simpleName() + "#" + field);
+                bindingConstructor.addStatement("checkRequired($S, $S)", key, targetClassName.simpleName() + "#" + field);
             }
-            constructorExtra.addStatement("target.$L = $L($S, target.$L)", field, type.getMethodName(), key, field);
-            if (constructorExtras != null) {
+            bindingConstructor.addStatement("target.$L = $L($S, target.$L)", field, type.getMethodName(), key, field);
+            if (wrappingConstructor != null) {
                 if (type == ExtraType.PARCELER)
-                    constructorExtras.addStatement("source.$L($S, wrap(next()))", type.putMethodName(), key);
+                    wrappingConstructor.addStatement("source.$L($S, wrap(next()))", type.putMethodName(), key);
                 else
-                    constructorExtras.addStatement("source.$L($S, ($L) next())", type.putMethodName(), key, fieldElement.asType());
+                    wrappingConstructor.addStatement("source.$L($S, ($L) next())", type.putMethodName(), key, fieldElement.asType());
             }
         }
         return this;
     }
 
     void generate(@NonNull Filer filer) throws IOException {
-        JavaFile.builder(packageName, typeSpecExtra
-                .addMethod(constructorExtra.build())
+        JavaFile.builder(packageName, bindingType
+                .addMethod(bindingConstructor.build())
                 .build())
                 .addFileComment("TODO: go drink some water, Bundler got this covered.")
                 .build()
                 .writeTo(filer);
-        if (typeSpecExtras != null && constructorExtras != null) {
-            JavaFile.builder(packageName, typeSpecExtras
-                    .addMethod(constructorExtras.build())
+        if (wrappingType != null && wrappingConstructor != null) {
+            JavaFile.builder(packageName, wrappingType
+                    .addMethod(wrappingConstructor.build())
                     .build())
                     .addFileComment("TODO: go drink some water, Bundler got this covered.")
                     .addStaticImport(ClassName.get("org.parceler", "Parcels"), "wrap")
                     .build()
                     .writeTo(filer);
         }
-    }
-
-    @NonNull
-    static String guessExtraClassName(@NonNull TypeElement typeElement) {
-        return NameUtils.guessClassName(typeElement, "_ExtraBinding");
-    }
-
-    @NonNull
-    static String guessExtrasClassName(@NonNull TypeElement typeElement) {
-        return NameUtils.guessClassName(typeElement, "_ExtrasBinding");
     }
 }

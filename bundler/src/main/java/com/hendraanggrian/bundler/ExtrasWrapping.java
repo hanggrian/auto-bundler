@@ -4,17 +4,26 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-public abstract class ExtrasBinding extends Binding {
+public abstract class ExtrasWrapping {
 
+    static final ExtrasWrapping EMPTY;
+
+    static {
+        EMPTY = new ExtrasWrapping(Collections.EMPTY_LIST) {
+        };
+    }
+
+    @NonNull protected final Bundle source;
     @NonNull private final List args;
 
-    protected ExtrasBinding(@NonNull List args) {
-        super(new Bundle());
+    protected ExtrasWrapping(@NonNull List args) {
+        this.source = new Bundle();
         this.args = args;
     }
 

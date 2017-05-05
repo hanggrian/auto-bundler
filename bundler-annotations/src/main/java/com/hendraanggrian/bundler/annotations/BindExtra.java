@@ -12,5 +12,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.SOURCE)
 public @interface BindExtra {
 
+    String SUFFIX = "_ExtraBinding";
+
     String value() default "";
 }

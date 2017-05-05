@@ -8,6 +8,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.annotations.WrapExtras;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -23,7 +26,7 @@ public final class Bundler {
 
     private static final String TAG = Bundler.class.getSimpleName();
     private static boolean debug;
-    @Nullable private static Map<String, Constructor<? extends Binding>> bindings;
+    @Nullable private static Map<String, Constructor<?>> cachingMap;
 
     private Bundler() {
     }
@@ -33,82 +36,73 @@ public final class Bundler {
     }
 
     public static void bind(@NonNull android.support.v4.app.Fragment target) {
-        Bundle bundle = target.getArguments();
-        if (bundle != null)
-            bind(target, bundle);
-        else if (debug)
-            Log.d(TAG, "bind() ignored because Bundle is not found from this Fragment.");
+        bind(target, target.getArguments());
     }
 
     public static void bind(@NonNull Fragment target) {
-        Bundle bundle = target.getArguments();
-        if (bundle != null)
-            bind(target, bundle);
-        else if (debug)
-            Log.d(TAG, "bind() ignored because Bundle is not found from this Fragment.");
+        bind(target, target.getArguments());
     }
 
     public static void bind(@NonNull Activity target) {
-        Intent intent = target.getIntent();
-        if (intent != null)
-            bind(target, intent);
-        else if (debug)
-            Log.d(TAG, "bind() ignored because Bundle is not found from this Activity.");
+        bind(target, target.getIntent());
     }
 
-    public static <T> void bind(@NonNull T target, @NonNull Intent source) {
-        Bundle bundle = source.getExtras();
-        if (bundle != null)
-            bind(target, bundle);
-        else if (debug)
+    public static <T> void bind(@NonNull T target, @Nullable Intent source) {
+        if (source == null) {
             Log.d(TAG, "bind() ignored because Bundle is not found from this Intent.");
-    }
-
-    @SuppressWarnings("TryWithIdenticalCatches")
-    public static <T> void bind(@NonNull T target, @NonNull Bundle source) {
-        final Class<?> targetClass = target.getClass();
-        if (debug)
-            Log.d(TAG, "Looking up binding for " + targetClass.getName());
-        Constructor<? extends ExtraBinding> constructor = findExtraBinding(targetClass);
-        if (constructor == null) {
-            if (debug)
-                Log.d(TAG, "Ignored because no binding was found in " + targetClass.getSimpleName());
             return;
         }
-        try {
-            constructor.newInstance(target, source);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Unable to invoke " + constructor, e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException("Unable to invoke " + constructor, e);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof RuntimeException)
-                throw (RuntimeException) cause;
-            if (cause instanceof Error)
-                throw (Error) cause;
-            throw new RuntimeException("Unable to create binding instance.", cause);
+        bind(target, source.getExtras());
+    }
+
+    public static <T> void bind(@NonNull T target, @Nullable Bundle source) {
+        if (source == null) {
+            Log.d(TAG, "bind() ignored because Bundle is null.");
+            return;
         }
+        newConstructorInstance(
+                target.getClass(),
+                BindExtra.SUFFIX,
+                new Class<?>[]{target.getClass(), Bundle.class},
+                new Object[]{target, source},
+                ExtraBinding.EMPTY
+        );
     }
 
     @NonNull
-    public static Bundle wrap(Class<?> targetClass, Object... args) {
+    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull Object... args) {
         return wrap(targetClass, new ArrayList<>(Arrays.asList(args)));
     }
 
     @NonNull
+    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull List<?> args) {
+        return newConstructorInstance(
+                targetClass,
+                WrapExtras.SUFFIX,
+                new Class<?>[]{List.class},
+                new Object[]{args},
+                ExtrasWrapping.EMPTY
+        ).source;
+    }
+
+    @NonNull
     @SuppressWarnings("TryWithIdenticalCatches")
-    public static Bundle wrap(Class<?> targetClass, List args) {
+    private static <T> T newConstructorInstance(
+            @NonNull Class<?> targetClass,
+            @NonNull String clsNameSuffix,
+            @NonNull Class<?>[] constructorArgClasses,
+            @NonNull Object[] constructorArgs,
+            @NonNull T defaultValue) {
         if (debug)
-            Log.d(TAG, "Looking up binding for " + targetClass.getName());
-        Constructor<? extends ExtrasBinding> constructor = findExtrasBinding(targetClass);
+            Log.d(TAG, "Looking up constructor for " + targetClass.getName());
+        Constructor<T> constructor = findConstructor(targetClass, clsNameSuffix, constructorArgClasses);
         if (constructor == null) {
             if (debug)
-                Log.d(TAG, "Ignored because no binding was found in " + targetClass.getSimpleName());
-            return new Bundle();
+                Log.d(TAG, "Ignored because no constructor was found in " + targetClass.getSimpleName());
+            return defaultValue;
         }
         try {
-            return constructor.newInstance(args).source;
+            return constructor.newInstance(constructorArgs);
         } catch (IllegalAccessException e) {
             throw new RuntimeException("Unable to invoke " + constructor, e);
         } catch (InstantiationException e) {
@@ -119,32 +113,25 @@ public final class Bundler {
                 throw (RuntimeException) cause;
             if (cause instanceof Error)
                 throw (Error) cause;
-            throw new RuntimeException("Unable to create binding instance.", cause);
+            throw new RuntimeException("Unable to create constructor instance.", cause);
         }
     }
 
     @Nullable
-    private static Constructor<? extends ExtraBinding> findExtraBinding(@NonNull Class<?> targetClass) {
-        return findBinding(targetClass, "_ExtraBinding", targetClass, Bundle.class);
-    }
-
-    @Nullable
-    private static Constructor<? extends ExtrasBinding> findExtrasBinding(@NonNull Class<?> targetClass) {
-        return findBinding(targetClass, "_ExtrasBinding", List.class);
-    }
-
-    @Nullable
     @SuppressWarnings("unchecked")
-    private static <T extends Binding> Constructor<T> findBinding(@NonNull Class<?> targetClass, @NonNull String clsNameSuffix, @NonNull Class<?>... constructorArgs) {
-        if (bindings == null)
-            bindings = new WeakHashMap<>();
-        final String targetClassName = targetClass.getName();
-        final String generatedClassName = targetClassName + clsNameSuffix;
-        Constructor<T> binding = (Constructor<T>) bindings.get(generatedClassName);
-        if (binding != null) {
+    private static <T> Constructor<T> findConstructor(
+            @NonNull Class<?> targetClass,
+            @NonNull String clsNameSuffix,
+            @NonNull Class<?>[] constructorArgClasses) {
+        if (cachingMap == null)
+            cachingMap = new WeakHashMap<>();
+        String targetClassName = targetClass.getName();
+        String generatedClassName = targetClassName + clsNameSuffix;
+        Constructor<T> constructor = (Constructor<T>) cachingMap.get(generatedClassName);
+        if (constructor != null) {
             if (debug)
-                Log.d(TAG, "HIT: Cache found in binding weak map.");
-            return binding;
+                Log.d(TAG, "HIT: Cache found in constructor weak map.");
+            return constructor;
         }
         if (targetClassName.startsWith("android.") || targetClassName.startsWith("java.")) {
             if (debug)
@@ -152,20 +139,20 @@ public final class Bundler {
             return null;
         }
         try {
-            binding = (Constructor<T>) targetClass
+            constructor = (Constructor<T>) targetClass
                     .getClassLoader()
                     .loadClass(generatedClassName)
-                    .getConstructor(constructorArgs);
+                    .getConstructor(constructorArgClasses);
             if (debug)
-                Log.d(TAG, "HIT: Loaded binding class, caching in weak map.");
+                Log.d(TAG, "HIT: Loaded constructor class, caching in weak map.");
         } catch (ClassNotFoundException e) {
             if (debug)
                 Log.d(TAG, "Not found. Trying superclass " + targetClass.getSuperclass().getName());
-            binding = findBinding(targetClass.getSuperclass(), clsNameSuffix, constructorArgs);
+            constructor = findConstructor(targetClass.getSuperclass(), clsNameSuffix, constructorArgClasses);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Unable to find binding constructor for " + targetClassName, e);
+            throw new RuntimeException("Unable to find constructor constructor for " + targetClassName, e);
         }
-        bindings.put(generatedClassName, binding);
-        return binding;
+        cachingMap.put(generatedClassName, constructor);
+        return constructor;
     }
 }

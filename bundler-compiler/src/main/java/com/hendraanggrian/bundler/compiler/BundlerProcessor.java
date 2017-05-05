@@ -66,8 +66,8 @@ public final class BundlerProcessor extends AbstractProcessor {
         for (Element fieldElement : roundEnv.getElementsAnnotatedWith(BindExtra.class)) {
             TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
             map.put(typeElement, fieldElement);
-            extraClassNames.add(Generator.guessExtraClassName(typeElement));
-            extrasClassNames.add(Generator.guessExtrasClassName(typeElement));
+            extraClassNames.add(NameUtils.guessClassName(typeElement, BindExtra.SUFFIX));
+            extrasClassNames.add(NameUtils.guessClassName(typeElement, WrapExtras.SUFFIX));
         }
         // generate classes and keep results
         for (TypeElement key : map.keySet()) {
