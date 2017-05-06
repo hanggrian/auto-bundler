@@ -21,7 +21,6 @@ dependencies {
     compile deps.supportFragment
     compile deps.autoCommon
     compile deps.javapoet
-    compile deps.parcelerCompiler
     compile project(':bundler-annotations')
 }
 

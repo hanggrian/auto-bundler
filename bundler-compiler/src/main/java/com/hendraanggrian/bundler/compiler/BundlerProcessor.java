@@ -4,13 +4,14 @@ import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.hendraanggrian.bundler.annotations.BindExtra;
-import com.hendraanggrian.bundler.annotations.WrapExtras;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -21,6 +22,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 
 /**
@@ -29,12 +31,12 @@ import javax.lang.model.util.Types;
 @AutoService(Processor.class)
 public final class BundlerProcessor extends AbstractProcessor {
 
-    private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.of(
-            BindExtra.class,
-            WrapExtras.class
+    private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.<Class<? extends Annotation>>of(
+            BindExtra.class
     );
 
     private Types typeUtils;
+    private Elements elementUtils;
     private Filer filer;
 
     @Override
@@ -54,6 +56,7 @@ public final class BundlerProcessor extends AbstractProcessor {
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
         typeUtils = processingEnv.getTypeUtils();
+        elementUtils = processingEnv.getElementUtils();
         filer = processingEnv.getFiler();
     }
 
@@ -62,24 +65,33 @@ public final class BundlerProcessor extends AbstractProcessor {
         // preparing elements
         Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
         Set<String> extraClassNames = Sets.newHashSet();
-        Set<String> extrasClassNames = Sets.newHashSet();
         for (Element fieldElement : roundEnv.getElementsAnnotatedWith(BindExtra.class)) {
             TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
             map.put(typeElement, fieldElement);
-            extraClassNames.add(NameUtils.guessClassName(typeElement, BindExtra.SUFFIX));
-            extrasClassNames.add(NameUtils.guessClassName(typeElement, WrapExtras.SUFFIX));
+            extraClassNames.add(Name.guessGeneratedName(typeElement, BindExtra.SUFFIX));
         }
-        // generate classes and keep results
+        // write classes and keep results
+        List<ExtraTypeSpec> extraTypes = Lists.newArrayList();
         for (TypeElement key : map.keySet()) {
-            Generator generator = new Generator(key)
-                    .superclass(extraClassNames, extrasClassNames)
-                    .statement(typeUtils, map.get(key));
             try {
-                generator.generate(filer);
+                extraTypes.add(new BindingWriter(key)
+                        .superclass(extraClassNames)
+                        .statement(typeUtils, map.get(key))
+                        .write(filer));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+        // build E class
+        try {
+            new EWriter(extraTypes, isParcelerAvailable())
+                    .write(filer);
+        } catch (IOException ignored) {
+        }
         return false;
+    }
+
+    private boolean isParcelerAvailable() {
+        return elementUtils.getTypeElement(Name.CLASS_PARCELS.toString()) != null;
     }
 }

@@ -6,10 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.SparseArray;
 
-import org.parceler.Parcels;
-
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
@@ -24,9 +24,19 @@ public abstract class ExtraBinding {
     }
 
     @NonNull protected final Bundle source;
+    @NonNull private final List args;
 
     protected ExtraBinding(@NonNull Bundle source) {
+        this(source, Collections.EMPTY_LIST);
+    }
+
+    protected ExtraBinding(@NonNull List args) {
+        this(new Bundle(), args);
+    }
+
+    private ExtraBinding(@NonNull Bundle source, @NonNull List args) {
         this.source = source;
+        this.args = args;
     }
 
     //region Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
@@ -251,13 +261,6 @@ public abstract class ExtraBinding {
     //endregion
 
     //region Others: Parceler and Serializable.
-    @Nullable
-    protected <T> T getParcelable(@NonNull String key, @Nullable T defaultValue) {
-        if (source.containsKey(key))
-            return Parcels.unwrap(source.getParcelable(key));
-        return defaultValue;
-    }
-
     @Nullable
     protected Serializable getSerializable(@NonNull String key, @Nullable Serializable defaultValue) {
         if (source.containsKey(key))

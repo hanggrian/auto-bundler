@@ -3,17 +3,15 @@ package com.example.bundlerexample;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.hendraanggrian.bundler.Bundler;
 import com.hendraanggrian.bundler.annotations.BindExtra;
-import com.hendraanggrian.bundler.annotations.WrapExtras;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
-@WrapExtras
 public abstract class Example1BaseActivity extends BaseActivity {
 
     @Nullable @BindExtra("BOOLEAN") boolean BOOLEAN;
@@ -52,7 +50,6 @@ public abstract class Example1BaseActivity extends BaseActivity {
     @Nullable @BindExtra("STRING") String STRING;
     @Nullable @BindExtra("STRING_ARRAY") String[] STRING_ARRAY;
     @Nullable @BindExtra("STRING_ARRAYLIST") ArrayList<String> STRING_ARRAYLIST;
-    @Nullable @BindExtra List<String> asd;
 
     @Override
     protected int getContentLayout() {
@@ -63,5 +60,7 @@ public abstract class Example1BaseActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundler.bind(this);
+        Log.d("ASD", String.valueOf(BOOLEAN));
+        Log.d("ASD", String.valueOf(BOOLEAN_ARRAY));
     }
 }
