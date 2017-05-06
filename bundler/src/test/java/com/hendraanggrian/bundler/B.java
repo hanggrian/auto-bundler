@@ -1,4 +1,4 @@
-package com.example.bundlerexample.test;
+package com.hendraanggrian.bundler;
 
 import com.hendraanggrian.bundler.annotations.BindExtra;
 

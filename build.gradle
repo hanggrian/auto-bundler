@@ -29,29 +29,23 @@ ext.config = [
         javaVersion: JavaVersion.VERSION_1_7
 ]
 
-def versionJunit = '4.12'
-def versionTestRunner = '0.5'
-def versionTestEspresso = '2.2.2'
-def versionSupport = '25.3.1'
-def versionAutoService = '1.0-rc3'
-def versionAutoCommon = '0.8'
-def versionJavapoet = '1.8.0'
-def versionParceler = '1.1.6'
-
 ext.deps = [
-        // test
-        junit             : "junit:junit:$versionJunit",
-        // android test
-        testRunner        : "com.android.support.test:runner:$versionTestRunner",
-        testEspresso      : "com.android.support.test.espresso:espresso-core:$versionTestEspresso",
-        // main
-        supportAnnotations: "com.android.support:support-annotations:$versionSupport",
-        supportFragment   : "com.android.support:support-fragment:$versionSupport",
-        autoService       : "com.google.auto.service:auto-service:$versionAutoService",
-        autoCommon        : "com.google.auto:auto-common:$versionAutoCommon",
-        javapoet          : "com.squareup:javapoet:$versionJavapoet",
-        parceler          : "org.parceler:parceler-api:$versionParceler",
-        parcelerCompiler  : "org.parceler:parceler:$versionParceler"
+        // junit
+        junit             : 'junit:junit:4.12',
+        // google
+        autoService       : 'com.google.auto.service:auto-service:1.0-rc3',
+        autoCommon        : 'com.google.auto:auto-common:0.8',
+        compileTesting    : 'com.google.testing.compile:compile-testing:0.9',
+        // android
+        supportAnnotations: 'com.android.support:support-annotations:25.3.1',
+        supportFragment   : 'com.android.support:support-fragment:25.3.1',
+        testRunner        : 'com.android.support.test:runner:0.5',
+        testEspresso      : 'com.android.support.test.espresso:espresso-core:2.2.2',
+        // square
+        javapoet          : 'com.squareup:javapoet:1.8.0',
+        // parceler
+        parceler          : 'org.parceler:parceler-api:1.1.6',
+        parcelerCompiler  : 'org.parceler:parceler:1.1.6'
 ]
 
 ext.bintray = [

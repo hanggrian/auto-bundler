@@ -3,13 +3,14 @@ package com.example.bundlerexample;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import com.example.bundlerexample.model.User;
-import com.example.bundlerexample.test.C;
 import com.hendraanggrian.bundler.Bundler;
+import com.hendraanggrian.bundler.E;
+
+import org.parceler.Parcels;
 
 import butterknife.BindView;
 
@@ -30,10 +31,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         setSupportActionBar(toolbar);
         buttonExample1.setOnClickListener(this);
         buttonExample2.setOnClickListener(this);
-
-        if (true) {
-            Log.d("ASD", Bundler.wrap(C.class, "Hello", "World", "!").toString());
-        }
     }
 
     @Override
@@ -41,14 +38,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         switch (v.getId()) {
             case R.id.button_main_example1:
                 startActivity(new Intent(this, Example1Activity.class)
-                        .putExtras(Bundler.wrap(Example1Activity.class, true, false)));
+                        .putExtras(Bundler.wrap(Example1Activity.class, true)));
                 break;
             case R.id.button_main_example2:
                 User user = new User();
                 user.name = "Hendra";
                 startActivity(new Intent(this, Example2Activity.class)
-                        //.putExtra(E.Example2Activity.user, Parcels.wrap(user)));
-                        .putExtras(Bundler.wrap(Example2Activity.class, user)));
+                        .putExtra(E.Example2Activity.user, Parcels.wrap(user)));
                 break;
         }
     }

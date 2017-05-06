@@ -27,7 +27,7 @@ public final class Bundler {
 
     private static final String TAG = Bundler.class.getSimpleName();
     private static boolean debug;
-    @Nullable private static Map<Class<?>, Constructor<? extends ExtraBinding>> bindings;
+    @Nullable private static Map<String, Constructor<? extends ExtraBinding>> bindings;
 
     private Bundler() {
     }
@@ -85,7 +85,7 @@ public final class Bundler {
 
     @NonNull
     @SuppressWarnings("TryWithIdenticalCatches")
-    private static <T extends ExtraBinding> ExtraBinding createBinding(
+    private static ExtraBinding createBinding(
             @NonNull Class<?> targetClass,
             @NonNull Class<?>[] constructorParameterTypes,
             @NonNull Object[] constructorParameters
@@ -122,7 +122,8 @@ public final class Bundler {
     ) {
         if (bindings == null)
             bindings = new WeakHashMap<>();
-        Constructor<? extends ExtraBinding> binding = bindings.get(targetClass);
+        String bindingKey = targetClass.toString() + constructorParameterTypes.length;
+        Constructor<? extends ExtraBinding> binding = bindings.get(bindingKey);
         if (binding != null) {
             if (debug)
                 Log.d(TAG, "HIT: Cache found in binding weak map.");
@@ -153,7 +154,7 @@ public final class Bundler {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find binding constructor for " + targetClassName, e);
         }
-        bindings.put(targetClass, binding);
+        bindings.put(bindingKey, binding);
         return binding;
     }
 }

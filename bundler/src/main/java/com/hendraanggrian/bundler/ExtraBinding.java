@@ -24,7 +24,6 @@ public abstract class ExtraBinding {
     }
 
     @NonNull protected final Bundle source;
-    @NonNull private final List args;
 
     protected ExtraBinding(@NonNull Bundle source) {
         this(source, Collections.EMPTY_LIST);
@@ -36,7 +35,6 @@ public abstract class ExtraBinding {
 
     private ExtraBinding(@NonNull Bundle source, @NonNull List args) {
         this.source = source;
-        this.args = args;
     }
 
     //region Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).

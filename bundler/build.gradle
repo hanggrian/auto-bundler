@@ -16,7 +16,9 @@ android {
 }
 
 dependencies {
-    testCompile deps.junit
+    compile project(':bundler-annotations')
+    compile deps.supportFragment
+
     androidTestCompile(deps.testRunner) {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
@@ -24,8 +26,25 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
-    compile deps.supportFragment
-    compile project(':bundler-annotations')
+    testCompile deps.junit
+    testCompile deps.compileTesting
+    testCompile files(getRuntimeJar())
+    testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
+    testCompile project(':bundler-compiler')
+}
+
+def getRuntimeJar() {
+    try {
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
+        File runtimeJar = new File(javaBase, "lib/rt.jar");
+        if (runtimeJar.exists()) {
+            return runtimeJar;
+        }
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
+        return runtimeJar.exists() ? runtimeJar : null;
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
 }
 
 publish {

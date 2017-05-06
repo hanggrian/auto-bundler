@@ -4,10 +4,6 @@ apply plugin: 'com.novoda.bintray-release'
 sourceCompatibility = config.javaVersion
 targetCompatibility = config.javaVersion
 
-dependencies {
-    testCompile deps.junit
-}
-
 publish {
     userOrg = bintray.user
     groupId = bintray.group

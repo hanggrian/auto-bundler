@@ -61,6 +61,6 @@ public abstract class Example1BaseActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         Bundler.bind(this);
         Log.d("ASD", String.valueOf(BOOLEAN));
-        Log.d("ASD", String.valueOf(BOOLEAN_ARRAY));
+        //Log.d("ASD", BOOLEAN_ARRAY.toString());
     }
 }
