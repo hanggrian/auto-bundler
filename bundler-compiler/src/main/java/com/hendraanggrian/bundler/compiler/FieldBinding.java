@@ -12,13 +12,13 @@ import javax.lang.model.util.Types;
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-final class ExtraFieldBinding {
+final class FieldBinding {
 
     @NonNull private final ExtraType type;
     @NonNull private final Name name;
     @NonNull private final String key;
 
-    ExtraFieldBinding(@NonNull Element fieldElement, @NonNull Types typeUtils) {
+    FieldBinding(@NonNull Element fieldElement, @NonNull Types typeUtils) {
         this.type = ExtraType.valueOf(fieldElement, typeUtils);
         this.name = fieldElement.getSimpleName();
         String key = fieldElement.getAnnotation(BindExtra.class).value();
@@ -26,27 +26,27 @@ final class ExtraFieldBinding {
     }
 
     @NonNull
-    CodeBlock checkRequiredStatement() {
+    CodeBlock checkRequiredCodeBlock() {
         return CodeBlock.of("checkRequired($S, $S);\n", key, name);
     }
 
     @NonNull
-    CodeBlock getStatement() {
+    CodeBlock getCodeBlock() {
         if (type != ExtraType.PARCELER)
             return CodeBlock.of("$L.$L = $L($S, $L.$L);\n",
-                    Names.TARGET, name, type.getMethodName(), key, Names.TARGET, name);
+                    Spec.TARGET, name, type.getMethodName(), key, Spec.TARGET, name);
         else
             return CodeBlock.of("$L.$L = $T.getParceler($L, $S, $L.$L);\n",
-                    Names.TARGET, name, Names.CLASS_BUNDLER_UTILS, Names.SOURCE, key, Names.TARGET, name);
+                    Spec.TARGET, name, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name);
     }
 
     @NonNull
-    CodeBlock putStatement() {
+    CodeBlock putCodeBlock() {
         if (type != ExtraType.PARCELER)
             return CodeBlock.of("if(!$L.isEmpty()) $L.$L($S, ($L) nextArg());\n",
-                    Names.ARGS, Names.SOURCE, type.putMethodName(), key, type.typeName.toString());
+                    Spec.ARGS, Spec.SOURCE, type.putMethodName(), key, type.typeName.toString());
         else
             return CodeBlock.of("if(!$L.isEmpty()) $T.putParceler($L, $S, nextArg());\n",
-                    Names.ARGS, Names.CLASS_BUNDLER_UTILS, Names.SOURCE, key);
+                    Spec.ARGS, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key);
     }
 }

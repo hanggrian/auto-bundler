@@ -19,7 +19,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
-import static com.hendraanggrian.bundler.compiler.Names.safeUnbox;
+import static com.hendraanggrian.bundler.compiler.Spec.safeUnbox;
 
 /**
  * Represents Bundle-compatible values.
@@ -49,10 +49,10 @@ enum ExtraType {
     CHARSEQUENCE("CharSequence", CharSequence.class),
     CHARSEQUENCE_ARRAY("CharSequenceArray", CharSequence[].class),
     CHARSEQUENCE_ARRAYLIST("CharSequenceArrayList", ArrayList.class, CharSequence.class),
-    PARCELABLE("Parcelable", Names.CLASS_PARCELABLE),
-    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(Names.CLASS_PARCELABLE)),
-    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList.class), Names.CLASS_PARCELABLE),
-    PARCELABLE_SPARSEARRAY("SparseParcelableArray", Names.CLASS_SPARSE_ARRAY, Names.CLASS_PARCELABLE),
+    PARCELABLE("Parcelable", Spec.CLASS_PARCELABLE),
+    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(Spec.CLASS_PARCELABLE)),
+    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList.class), Spec.CLASS_PARCELABLE),
+    PARCELABLE_SPARSEARRAY("SparseParcelableArray", Spec.CLASS_SPARSE_ARRAY, Spec.CLASS_PARCELABLE),
     STRING("String", String.class),
     STRING_ARRAY("StringArray", String[].class),
     STRING_ARRAYLIST("StringArrayList", ArrayList.class, String.class),
@@ -114,7 +114,7 @@ enum ExtraType {
         // this element is not primitive and not subclass of Parcelable or Serializable
         // check if this class is parceled by parceler
         for (AnnotationMirror annotationMirror : MoreTypes.asTypeElement(fieldElement.asType()).getAnnotationMirrors())
-            if (TypeName.get(annotationMirror.getAnnotationType()).equals(Names.CLASS_PARCEL))
+            if (TypeName.get(annotationMirror.getAnnotationType()).equals(Spec.CLASS_PARCEL))
                 return PARCELER;
         // not supported, throw exception
         throw new RuntimeException(String.format(

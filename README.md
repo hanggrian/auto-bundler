@@ -82,7 +82,6 @@ intent.putExtra("user", Parcels.wrap(user));
 
 `Bundler.bind()` automatically converts the Parcelable back to original object.
 ```java
-@WrapExtras
 public class UserActivity extends Activity {
     @BindExtra("user") User user;
 

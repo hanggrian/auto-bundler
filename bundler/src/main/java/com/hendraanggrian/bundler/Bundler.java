@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import static com.hendraanggrian.bundler.Preconditions.checkNotNull;
+
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
@@ -47,21 +49,17 @@ public final class Bundler {
         bind(target, target.getIntent());
     }
 
-    public static <T> void bind(@NonNull T target, @Nullable Intent source) {
-        if (source == null)
-            Log.d(TAG, "bind() ignored because Bundle is not found from this Intent.");
-        else
-            bind(target, source.getExtras());
+    public static <T> void bind(@NonNull T target, @NonNull Intent source) {
+        checkNotNull(source);
+        bind(target, source.getExtras());
     }
 
-    public static <T> void bind(@NonNull T target, @Nullable Bundle source) {
-        if (source == null)
-            Log.d(TAG, "bind() ignored because Bundle is null.");
-        else
-            createBinding(target.getClass(),
-                    new Class<?>[]{target.getClass(), Bundle.class},
-                    new Object[]{target, source}
-            );
+    public static <T> void bind(@NonNull T target, @NonNull Bundle source) {
+        checkNotNull(source);
+        createBinding(target.getClass(),
+                new Class<?>[]{target.getClass(), Bundle.class},
+                new Object[]{target, source}
+        );
     }
 
     @NonNull

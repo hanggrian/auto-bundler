@@ -271,7 +271,8 @@ public abstract class BundleBinding {
 
     protected void checkRequired(@NonNull String key, @NonNull String targetName) {
         if (!source.containsKey(key))
-            throw new IllegalStateException(String.format("Required extra '%s' with key '%s' not found, if this extra is optional add @Nullable to this field.", targetName, key));
+            throw new IllegalStateException(String.format("Required extra '%s' with key '%s' not found, if this extra is optional add @Nullable to this field.",
+                    targetName, key));
     }
 
     @Nullable

@@ -40,8 +40,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             case R.id.button_main_example2:
                 User user = new User();
                 user.name = "Hendra";
-                startActivity(new Intent(this, Example2Activity.class));
-                        //.putExtra(E.Example2Activity.user, Parcels.wrap(user)));
+                startActivity(new Intent(this, Example2Activity.class)
+                        .putExtras(Bundler.wrap(Example2Activity.class, user)));
                 break;
         }
     }

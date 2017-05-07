@@ -5,7 +5,10 @@ import android.support.annotation.NonNull;
 import com.google.auto.common.MoreElements;
 import com.google.common.collect.Lists;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +18,7 @@ import javax.lang.model.element.TypeElement;
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-final class Names {
+abstract class Spec {
 
     // internal
     static final ClassName CLASS_BUNDLE_BINDING;
@@ -68,5 +71,24 @@ final class Names {
         if (input.isBoxedPrimitive())
             return input.unbox();
         return input;
+    }
+
+    @NonNull
+    abstract String packageName();
+
+    @NonNull
+    abstract TypeSpec.Builder typeSpec();
+
+    @NonNull
+    abstract Iterable<MethodSpec.Builder> methodSpecs();
+
+    @NonNull
+    JavaFile toJavaFile() {
+        TypeSpec.Builder typeSpecBuilder = typeSpec();
+        for (MethodSpec.Builder builder : methodSpecs())
+            typeSpecBuilder.addMethod(builder.build());
+        return JavaFile.builder(packageName(), typeSpecBuilder.build())
+                .addFileComment("Bundler generated class, do not modify! https://github.com/HendraAnggrian/bundler")
+                .build();
     }
 }
