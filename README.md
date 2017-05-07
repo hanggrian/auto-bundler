@@ -5,19 +5,6 @@ data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value
 pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
-
-```groovy
-dependencies {
-    compile 'com.hendraanggrian:bundler:0.3.0'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
-}
-```
-
-Usage
------
-#### Extra binding
-`@BindExtra` for binding extra value to field, field cannot be private.
-When key is not provided, field name will be used as the key.
 ```java
 public class ExampleActivity extends Activity {
     @BindExtra String username;
@@ -30,6 +17,16 @@ public class ExampleActivity extends Activity {
         // TODO: Use fields...
     }
 }
+```
+
+Usage
+-----
+#### Extra binding
+`@BindExtra` for binding extra value to field, field cannot be private.
+When key is not provided, field name will be used as the key.
+```java
+@BindExtra String username;
+@BindExtra int age;
 ```
 
 #### Extras Wrapping
@@ -101,6 +98,15 @@ If this is not a desired behavior, annotate the field with `@Nullable` from
 [Android's support design library][2].
 ```java
 @Nullable @BindExtra String username;
+```
+
+Download
+--------
+```groovy
+dependencies {
+    compile 'com.hendraanggrian:bundler:0.3.0'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
+}
 ```
 
 License
