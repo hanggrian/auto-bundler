@@ -15,7 +15,7 @@ dependencies {
 
 Usage
 -----
-### Extra binding
+#### Extra binding
 `@BindExtra` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
 ```java
@@ -32,7 +32,7 @@ public class ExampleActivity extends Activity {
 }
 ```
 
-### Extras Wrapping
+#### Extras Wrapping
 Create extras with varargs argument with `Bundle.wrap()`.
 This is optional, any Bundle would work just fine.
 ```java
