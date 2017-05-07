@@ -15,11 +15,11 @@ import javax.lang.model.element.TypeElement;
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-final class Name {
+final class Names {
 
     // internal
-    static final ClassName CLASS_EXTRA_BINDING;
-    static final ClassName CLASS_E;
+    static final ClassName CLASS_BUNDLE_BINDING;
+    static final ClassName CLASS_BUNDLER_UTILS;
     // Android
     static final ClassName CLASS_BUNDLE;
     static final ClassName CLASS_PARCELABLE;
@@ -34,8 +34,8 @@ final class Name {
 
     static {
         final String bundler = "com.hendraanggrian.bundler";
-        CLASS_EXTRA_BINDING = ClassName.get(bundler, "ExtraBinding");
-        CLASS_E = ClassName.get(bundler, "E");
+        CLASS_BUNDLE_BINDING = ClassName.get(bundler, "BundleBinding");
+        CLASS_BUNDLER_UTILS = ClassName.get(bundler, "BundlerUtils");
 
         final String android = "android";
         final String androidOs = android + ".os";

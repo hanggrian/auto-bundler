@@ -14,7 +14,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public final class Bundler {
 
     private static final String TAG = Bundler.class.getSimpleName();
     private static boolean debug;
-    @Nullable private static Map<String, Constructor<? extends ExtraBinding>> bindings;
+    @Nullable private static Map<String, Constructor<? extends BundleBinding>> bindings;
 
     private Bundler() {
     }
@@ -76,27 +75,27 @@ public final class Bundler {
     }
 
     @NonNull
-    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull Collection<?> args) {
+    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull List<?> args) {
         return createBinding(targetClass,
                 new Class<?>[]{List.class},
-                new Object[]{new ShrinkingArrayList<>(args)}
+                new Object[]{args}
         ).source;
     }
 
     @NonNull
     @SuppressWarnings("TryWithIdenticalCatches")
-    private static ExtraBinding createBinding(
+    private static BundleBinding createBinding(
             @NonNull Class<?> targetClass,
             @NonNull Class<?>[] constructorParameterTypes,
             @NonNull Object[] constructorParameters
     ) {
         if (debug)
             Log.d(TAG, "Looking up constructor for " + targetClass.getName());
-        Constructor<? extends ExtraBinding> constructor = findBinding(targetClass, constructorParameterTypes);
+        Constructor<? extends BundleBinding> constructor = findBinding(targetClass, constructorParameterTypes);
         if (constructor == null) {
             if (debug)
                 Log.d(TAG, "Ignored because no constructor was found in " + targetClass.getSimpleName());
-            return ExtraBinding.EMPTY;
+            return BundleBinding.EMPTY;
         }
         try {
             return constructor.newInstance(constructorParameters);
@@ -116,14 +115,14 @@ public final class Bundler {
 
     @Nullable
     @SuppressWarnings("unchecked")
-    private static Constructor<? extends ExtraBinding> findBinding(
+    private static Constructor<? extends BundleBinding> findBinding(
             @NonNull Class<?> targetClass,
             @NonNull Class<?>... constructorParameterTypes
     ) {
         if (bindings == null)
             bindings = new WeakHashMap<>();
         String bindingKey = targetClass.toString() + constructorParameterTypes.length;
-        Constructor<? extends ExtraBinding> binding = bindings.get(bindingKey);
+        Constructor<? extends BundleBinding> binding = bindings.get(bindingKey);
         if (binding != null) {
             if (debug)
                 Log.d(TAG, "HIT: Cache found in binding weak map.");
@@ -136,7 +135,7 @@ public final class Bundler {
             return null;
         }
         try {
-            binding = (Constructor<? extends ExtraBinding>) targetClass
+            binding = (Constructor<? extends BundleBinding>) targetClass
                     .getClassLoader()
                     .loadClass(targetClassName + BindExtra.SUFFIX)
                     .getConstructor(constructorParameterTypes);

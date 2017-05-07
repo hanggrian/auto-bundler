@@ -8,8 +8,8 @@ Bundler aims to minify the process with annotation processing.
 
 ```groovy
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.2.3'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.2.3'
+    compile 'com.hendraanggrian:bundler:0.3.0'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
 }
 ```
 
@@ -18,9 +18,7 @@ Usage
 ### Extra binding
 `@BindExtra` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
-`@WrapExtras` are optional, as described below.
 ```java
-@WrapExtras
 public class ExampleActivity extends Activity {
     @BindExtra String username;
     @BindExtra int age;
@@ -35,7 +33,8 @@ public class ExampleActivity extends Activity {
 ```
 
 ### Extras Wrapping
-`@WrapExtras` for creating Bundle with with single `Bundler.wrap()` call.
+Create extras with varargs argument with `Bundle.wrap()`.
+This is optional, any Bundle would work just fine.
 ```java
 Intent intent = new Intent(context, ExampleActivity.class);
 intent.putExtras(Bundler.wrap(ExampleActivity.class, "Hendra Anggrian", 24));
@@ -44,16 +43,16 @@ startActivity(intent);
 
 Supported extra types
 ---------------------
-Bundler supports extra types initially supported by Bundle, plus [Parceler][1]:
  * primitive data types and array of them.
  * `CharSequence`, `CharSequence[]`, and `ArrayList<CharSequence>`
  * `String`, `String[]`, and `ArrayList<String>`
  * `Parcelable`, `Parcelable[]`, `ArrayList<Parcelable>`,
    and `SparseArray<Parcelable>`
  * `Serializable`
- * object of any class annotated with `@Parcel`
-
-[Parceler][1] is included in this library, it is a library that easily makes any
+ 
+Parceler
+--------
+[Parceler][1] is supported with this library, it is a library that easily makes any
 object implements Parcelable with generated code, making it able to be inserted
 to Bundle as Parcelable.
 To use, annotate class with `@Parcel`.
@@ -70,6 +69,17 @@ public class User {
 }
 ```
 
+`Bundler.wrap()` automatically converts the object to Parcelable.
+Without `Bundler.wrap()`, object must be wrapped using `Parcels.wrap()`.
+Head to [Parceler doc][1] for more information.
+```java
+User user = new User("Hendra Anggrian", 24);
+// with Bundler.wrap()
+intent.putExtras(Bundler.wrap(UserActivity.class, user));
+// without Bundler.wrap()
+intent.putExtra("user", Parcels.wrap(user));
+```
+
 `Bundler.bind()` automatically converts the Parcelable back to original object.
 ```java
 @WrapExtras
@@ -82,17 +92,6 @@ public class UserActivity extends Activity {
         Bundler.bind(this);
     }
 }
-```
-
-`Bundler.wrap()` automatically converts the object to Parcelable.
-Without `Bundler.wrap()`, object must be wrapped using `Parcels.wrap()`.
-Head to [Parceler doc][1] for more information.
-```java
-User user = new User("Hendra Anggrian", 24);
-// with Bundler.wrap()
-intent.putExtras(Bundler.wrap(UserActivity.class, user));
-// without Bundler.wrap()
-intent.putExtra("user", Parcels.wrap(user));
 ```
 
 Optional bindings

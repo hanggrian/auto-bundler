@@ -17,9 +17,8 @@ dependencies {
     compile deps.javapoet
     compile deps.autoCommon
 
-    compileOnly deps.supportFragment
+    compileOnly deps.supportAnnotations
     compileOnly deps.autoService
-    compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
 
     testCompile deps.junit
 }

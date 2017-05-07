@@ -19,6 +19,7 @@ dependencies {
     compile project(':bundler-annotations')
     compile deps.supportFragment
 
+    androidTestCompile deps.truth
     androidTestCompile(deps.testRunner) {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
@@ -27,6 +28,7 @@ dependencies {
     }
 
     testCompile deps.junit
+    testCompile deps.truth
     testCompile deps.compileTesting
     testCompile files(getRuntimeJar())
     testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())

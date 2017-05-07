@@ -14,27 +14,29 @@ import java.util.List;
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
-public abstract class ExtraBinding {
+public abstract class BundleBinding {
 
-    static final ExtraBinding EMPTY;
+    static final BundleBinding EMPTY;
 
     static {
-        EMPTY = new ExtraBinding(Bundle.EMPTY) {
+        EMPTY = new BundleBinding(Bundle.EMPTY) {
         };
     }
 
     @NonNull protected final Bundle source;
+    @NonNull private final List args;
 
-    protected ExtraBinding(@NonNull Bundle source) {
+    protected BundleBinding(@NonNull Bundle source) {
         this(source, Collections.EMPTY_LIST);
     }
 
-    protected ExtraBinding(@NonNull List args) {
+    protected BundleBinding(@NonNull List args) {
         this(new Bundle(), args);
     }
 
-    private ExtraBinding(@NonNull Bundle source, @NonNull List args) {
+    private BundleBinding(@NonNull Bundle source, @NonNull List args) {
         this.source = source;
+        this.args = args;
     }
 
     //region Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
@@ -269,6 +271,13 @@ public abstract class ExtraBinding {
 
     protected void checkRequired(@NonNull String key, @NonNull String targetName) {
         if (!source.containsKey(key))
-            throw new IllegalStateException(String.format("Required extra '%s' wrap key '%s' not found, if this extra is optional add @Nullable to this field.", targetName, key));
+            throw new IllegalStateException(String.format("Required extra '%s' with key '%s' not found, if this extra is optional add @Nullable to this field.", targetName, key));
+    }
+
+    @Nullable
+    protected Object nextArg() {
+        Object arg = args.get(0);
+        args.remove(0);
+        return arg;
     }
 }

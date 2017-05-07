@@ -19,7 +19,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
 
-import static com.hendraanggrian.bundler.compiler.Name.safeUnbox;
+import static com.hendraanggrian.bundler.compiler.Names.safeUnbox;
 
 /**
  * Represents Bundle-compatible values.
@@ -49,10 +49,10 @@ enum ExtraType {
     CHARSEQUENCE("CharSequence", CharSequence.class),
     CHARSEQUENCE_ARRAY("CharSequenceArray", CharSequence[].class),
     CHARSEQUENCE_ARRAYLIST("CharSequenceArrayList", ArrayList.class, CharSequence.class),
-    PARCELABLE("Parcelable", Name.CLASS_PARCELABLE),
-    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(Name.CLASS_PARCELABLE)),
-    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList.class), Name.CLASS_PARCELABLE),
-    PARCELABLE_SPARSEARRAY("SparseParcelableArray", Name.CLASS_SPARSE_ARRAY, Name.CLASS_PARCELABLE),
+    PARCELABLE("Parcelable", Names.CLASS_PARCELABLE),
+    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(Names.CLASS_PARCELABLE)),
+    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList.class), Names.CLASS_PARCELABLE),
+    PARCELABLE_SPARSEARRAY("SparseParcelableArray", Names.CLASS_SPARSE_ARRAY, Names.CLASS_PARCELABLE),
     STRING("String", String.class),
     STRING_ARRAY("StringArray", String[].class),
     STRING_ARRAYLIST("StringArrayList", ArrayList.class, String.class),
@@ -61,7 +61,7 @@ enum ExtraType {
     SERIALIZABLE("Serializable", Serializable.class);
 
     @NonNull private final String methodName;
-    @NonNull private final TypeName typeName;
+    @NonNull final TypeName typeName;
 
     ExtraType(@NonNull String methodName, @NonNull ClassName cls, @NonNull TypeName... typeNames) {
         this(methodName, ParameterizedTypeName.get(cls, typeNames));
@@ -91,7 +91,7 @@ enum ExtraType {
     }
 
     @NonNull
-    public static ExtraType valueOf(@NonNull Types typeUtils, @NonNull Element fieldElement) {
+    public static ExtraType valueOf(@NonNull Element fieldElement, @NonNull Types typeUtils) {
         // get all supertypes in case this element is subclass of Parcelable or Serializable
         // also add current element's kind in case element does not have supertypes
         List<TypeMirror> supertypes = Lists.newArrayList(typeUtils.directSupertypes(fieldElement.asType()));
@@ -114,7 +114,7 @@ enum ExtraType {
         // this element is not primitive and not subclass of Parcelable or Serializable
         // check if this class is parceled by parceler
         for (AnnotationMirror annotationMirror : MoreTypes.asTypeElement(fieldElement.asType()).getAnnotationMirrors())
-            if (TypeName.get(annotationMirror.getAnnotationType()).equals(Name.CLASS_PARCEL))
+            if (TypeName.get(annotationMirror.getAnnotationType()).equals(Names.CLASS_PARCEL))
                 return PARCELER;
         // not supported, throw exception
         throw new RuntimeException(String.format(
