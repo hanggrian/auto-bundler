@@ -1,9 +1,7 @@
 Bundler
 =======
-Passing key-value pairs with Bundle is the most common approach of exchanging
-data across Android components.
-Unfortunately, much of the process of sending and receiving those key-value
-pairs (known as extra) requires a lot of boilerplate code.
+Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
+Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
 ```java
 public class ExampleActivity extends Activity {
@@ -49,22 +47,7 @@ Supported extra types
  
 Parceler
 --------
-[Parceler][1] is supported with this library, it is a library that easily makes any
-object implements Parcelable with generated code, making it able to be inserted
-to Bundle as Parcelable.
-To use, annotate class with `@Parcel`.
-```java
-@Parcel
-public class User {
-    String name;
-    int age;
-
-    public User(String name, int age) {
-        this.name = name;
-        this.age = age;
-    }
-}
-```
+[Parceler][1] is supported with this library, it is a library that easily makes any object implements Parcelable with generated code, making it able to be inserted to Bundle as Parcelable.
 
 `Bundler.wrap()` automatically converts the object to Parcelable.
 Without `Bundler.wrap()`, object must be wrapped using `Parcels.wrap()`.
@@ -92,17 +75,15 @@ public class UserActivity extends Activity {
 
 Optional bindings
 -----------------
-Extra bindings are required by default, an exception will be thrown if key is
-not found in Bundle.
-If this is not a desired behavior, annotate the field with `@Nullable` from
-[Android's support design library][2].
+Extra bindings are required by default, an exception will be thrown if key is not found in Bundle.
+If this is not a desired behavior, annotate the field with `@Nullable` from [Android's support design library][2].
 ```java
 @Nullable @BindExtra String username;
 ```
 
 Download
 --------
-```groovy
+```gradle
 dependencies {
     compile 'com.hendraanggrian:bundler:0.3.0'
     annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
