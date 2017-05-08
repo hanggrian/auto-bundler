@@ -62,8 +62,9 @@ public final class BundlerProcessor extends AbstractProcessor {
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnv) {
-        // build utility class if parceler is available
-        if (elementUtils.getTypeElement(Spec.CLASS_PARCELS.toString()) != null) {
+        // build utility class if parceler is available and if it has not yet already been created
+        if (elementUtils.getTypeElement(Spec.CLASS_PARCELS.toString()) != null &&
+                elementUtils.getTypeElement(Spec.CLASS_BUNDLER_UTILS.toString()) == null) {
             JavaFile file = new UtilsSpec().toJavaFile();
             try {
                 file.writeTo(filer);

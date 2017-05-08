@@ -3,6 +3,7 @@ Bundler
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
+
 ```java
 public class ExampleActivity extends Activity {
     @BindExtra String username;
@@ -85,7 +86,7 @@ Download
 --------
 ```gradle
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.3.0'
+    compile 'com.hendraanggrian:bundler:0.3.1'
     annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
 }
 ```

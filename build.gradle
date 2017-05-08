@@ -57,7 +57,7 @@ ext.bintray = [
                 compiler   : 'bundler-compiler',
                 main       : 'bundler'
         ],
-        version : '0.3.0',
+        version : '0.3.1',
         desc    : 'Android extra field binder with annotation processor.',
         website : 'https://github.com/HendraAnggrian/bundler'
 ]
