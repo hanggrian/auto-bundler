@@ -9,9 +9,8 @@ android {
         targetSdkVersion config.sdk.target
         testInstrumentationRunner config.testRunner
     }
-    compileOptions {
-        sourceCompatibility = config.javaVersion
-        targetCompatibility = config.javaVersion
+    defaultConfig {
+        consumerProguardFiles 'proguard-rules.pro'
     }
 }
 

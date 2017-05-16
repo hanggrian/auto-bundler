@@ -1,25 +1,7 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in /Users/hendraanggrian/Library/Android/sdk/tools/proguard/proguard-android.txt
-# You can edit the include path and order by changing the proguardFiles
-# directive in build.gradle.
-#
-# For more details, see
-#   http://developer.android.com/guide/developing/tools/proguard.html
+-keep public class * implements com.hendraanggrian.bundler.BundleBinding {
+    public <init>(**, android.os.Bundle);
+    public <init>(java.util.List);
+}
 
-# Add any project specific keep options here:
-
-# If your project uses WebView wrap JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.wrap.javascript.interface.for.webview {
-#   public *;
-#}
-
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
-
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-keep class com.hendraanggrian.bundler.*
+-keepclasseswithmembernames class * { @com.hendraanggrian.bundler.annotations.* <fields>; }

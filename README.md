@@ -85,9 +85,13 @@ If this is not a desired behavior, annotate the field with `@Nullable` from [And
 Download
 --------
 ```gradle
+repositories {
+    jcenter()
+}
+
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.3.1'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.0'
+    compile 'com.hendraanggrian:bundler:0.3.2'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.2'
 }
 ```
 
