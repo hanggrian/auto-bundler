@@ -9,57 +9,47 @@ buildscript {
 }
 
 allprojects {
+    ext.versions = [
+            // config
+            java      : JavaVersion.VERSION_1_7,
+            sdk       : [
+                    'min'   : 9,
+                    'target': 25
+            ],
+            buildTools: '25.0.3',
+
+            // main
+            support   : '25.3.1',
+            javapoet  : '1.8.0',
+            google    : [
+                    auto: [
+                            service: '1.0-rc3',
+                            common : '0.8'
+                    ],
+                    test: [
+                            truth  : '0.31',
+                            compile: '0.9'
+                    ]
+            ],
+
+            // test
+            junit     : '4.12',
+            runner    : '0.5',
+            espresso  : '2.2.2',
+
+            release   : '0.4.0'
+    ]
     repositories {
         jcenter()
+    }
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+        options.addStringOption('encoding', 'UTF-8')
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-
-
-ext.config = [
-        sdk        : [
-                'min'   : 12,
-                'target': 25
-        ],
-        buildTools : '25.0.2',
-        testRunner : 'android.support.test.runner.AndroidJUnitRunner',
-        javaVersion: JavaVersion.VERSION_1_7
-]
-
-ext.deps = [
-        // junit
-        junit             : 'junit:junit:4.12',
-        // google
-        truth             : 'com.google.truth:truth:0.31',
-        compileTesting    : 'com.google.testing.compile:compile-testing:0.9',
-        autoService       : 'com.google.auto.service:auto-service:1.0-rc3',
-        autoCommon        : 'com.google.auto:auto-common:0.8',
-        // android
-        supportAnnotations: 'com.android.support:support-annotations:25.3.1',
-        supportFragment   : 'com.android.support:support-fragment:25.3.1',
-        testRunner        : 'com.android.support.test:runner:0.5',
-        testEspresso      : 'com.android.support.test.espresso:espresso-core:2.2.2',
-        // square
-        javapoet          : 'com.squareup:javapoet:1.8.0',
-        // parceler
-        parceler          : 'org.parceler:parceler-api:1.1.6',
-        parcelerCompiler  : 'org.parceler:parceler:1.1.6'
-]
-
-ext.bintray = [
-        user    : 'hendraanggrian',
-        group   : 'com.hendraanggrian',
-        artifact: [
-                annotations: 'bundler-annotations',
-                compiler   : 'bundler-compiler',
-                main       : 'bundler'
-        ],
-        version : '0.3.2',
-        desc    : 'Android extra field binder with annotation processor.',
-        website : 'https://github.com/HendraAnggrian/bundler'
-]
 
 //$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey= -PdryRun=false

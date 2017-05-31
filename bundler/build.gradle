@@ -1,46 +1,46 @@
+import org.gradle.internal.jvm.Jvm
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
+apply from: 'https://raw.githubusercontent.com/HendraAnggrian/hendraanggrian.github.io/master/bintray.gradle'
 
 android {
-    compileSdkVersion config.sdk.target
-    buildToolsVersion config.buildTools
+    compileSdkVersion versions.sdk.target
+    buildToolsVersion versions.buildTools
     defaultConfig {
-        minSdkVersion config.sdk.min
-        targetSdkVersion config.sdk.target
-        testInstrumentationRunner config.testRunner
-    }
-    defaultConfig {
+        minSdkVersion versions.sdk.min
+        targetSdkVersion versions.sdk.target
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
     }
 }
 
 dependencies {
     compile project(':bundler-annotations')
-    compile deps.supportFragment
+    compile "com.android.support:support-fragment:$versions.support"
 
-    androidTestCompile deps.truth
-    androidTestCompile(deps.testRunner) {
+    androidTestCompile "com.google.truth:truth:$versions.google.test.truth"
+    androidTestCompile("com.android.support.test:runner:$versions.runner") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-    androidTestCompile(deps.testEspresso) {
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$versions.espresso") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
-    testCompile deps.junit
-    testCompile deps.truth
-    testCompile deps.compileTesting
-    testCompile files(getRuntimeJar())
-    testCompile files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
     testCompile project(':bundler-compiler')
+    testCompile "com.google.truth:truth:$versions.google.test.truth"
+    testCompile "com.google.testing.compile:compile-testing:$versions.google.test.compile"
+    testCompile "junit:junit:$versions.junit"
+    testCompile files(getRuntimeJar())
+    testCompile files(Jvm.current().getToolsJar())
 }
 
-def getRuntimeJar() {
+static def getRuntimeJar() {
     try {
         final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
         File runtimeJar = new File(javaBase, "lib/rt.jar");
-        if (runtimeJar.exists()) {
+        if (runtimeJar.exists())
             return runtimeJar;
-        }
         runtimeJar = new File(javaBase, "jre/lib/rt.jar");
         return runtimeJar.exists() ? runtimeJar : null;
     } catch (IOException e) {
@@ -51,8 +51,8 @@ def getRuntimeJar() {
 publish {
     userOrg = bintray.user
     groupId = bintray.group
-    artifactId = bintray.artifact.main
-    publishVersion = bintray.version
-    desc = bintray.desc
-    website = bintray.website
+    artifactId = bintray.artifact.bundler.id
+    publishVersion = versions.release
+    desc = bintray.artifact.bundler.desc
+    website = bintray.artifact.bundler.website
 }

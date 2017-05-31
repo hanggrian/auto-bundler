@@ -1,11 +1,13 @@
 package com.hendraanggrian.bundler;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.hendraanggrian.bundler.annotations.BindExtra;
@@ -19,14 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import static com.hendraanggrian.bundler.Preconditions.checkNotNull;
-
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public final class Bundler {
 
-    private static final String TAG = Bundler.class.getSimpleName();
+    private static final String TAG = "Bundler";
     private static boolean debug;
     @Nullable private static Map<String, Constructor<? extends BundleBinding>> bindings;
 
@@ -41,6 +41,8 @@ public final class Bundler {
         bind(target, target.getArguments());
     }
 
+    @RequiresApi(11)
+    @TargetApi(11)
     public static void bind(@NonNull Fragment target) {
         bind(target, target.getArguments());
     }
@@ -50,16 +52,16 @@ public final class Bundler {
     }
 
     public static <T> void bind(@NonNull T target, @NonNull Intent source) {
-        checkNotNull(source);
         bind(target, source.getExtras());
     }
 
     public static <T> void bind(@NonNull T target, @NonNull Bundle source) {
-        checkNotNull(source);
-        createBinding(target.getClass(),
+        BundleBinding binding = createBinding(target.getClass(),
                 new Class<?>[]{target.getClass(), Bundle.class},
                 new Object[]{target, source}
         );
+        if (debug)
+            Log.d(TAG, toString(target.getClass(), binding.source));
     }
 
     @NonNull
@@ -74,10 +76,13 @@ public final class Bundler {
 
     @NonNull
     public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull List<?> args) {
-        return createBinding(targetClass,
+        BundleBinding binding = createBinding(targetClass,
                 new Class<?>[]{List.class},
                 new Object[]{args}
-        ).source;
+        );
+        if (debug)
+            Log.d(TAG, toString(targetClass, binding.source));
+        return binding.source;
     }
 
     @NonNull
@@ -153,5 +158,15 @@ public final class Bundler {
         }
         bindings.put(bindingKey, binding);
         return binding;
+    }
+
+    @NonNull
+    public static String toString(@NonNull Class<?> cls, @NonNull Bundle bundle) {
+        String content = "";
+        for (String key : bundle.keySet())
+            content += key + "=" + bundle.get(key) + ", ";
+        if (content.endsWith(", "))
+            content = content.substring(0, content.length() - 2);
+        return cls.getSimpleName() + "[" + content + "]";
     }
 }

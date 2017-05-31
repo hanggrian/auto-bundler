@@ -1,15 +1,27 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+buildscript {
+    ext.butterknife = '8.6.0'
+    ext.parceler = '1.1.6'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:3.6.1'
+    }
+}
 
 android {
-    compileSdkVersion config.sdk.target
-    buildToolsVersion config.buildTools
+    compileSdkVersion versions.sdk.target
+    buildToolsVersion versions.buildTools
     defaultConfig {
+        minSdkVersion 12
+        targetSdkVersion versions.sdk.target
         applicationId "com.example.bundlerexample"
         versionCode 1
         versionName "1.0"
-        minSdkVersion config.sdk.min
-        targetSdkVersion config.sdk.target
-        testInstrumentationRunner config.testRunner
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -20,23 +32,24 @@ android {
 }
 
 dependencies {
-    testCompile deps.junit
-    androidTestCompile(deps.testRunner) {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    androidTestCompile(deps.testEspresso) {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:design:25.3.1'
-
-    compile 'com.jakewharton:butterknife:8.5.1'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-
-    compile deps.parceler
-    annotationProcessor deps.parcelerCompiler
+    compile "com.android.support:appcompat-v7:$versions.support"
+    compile "com.android.support:design:$versions.support"
 
     compile project(':bundler')
     annotationProcessor project(':bundler-compiler')
+
+    compile "com.jakewharton:butterknife:$butterknife"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknife"
+
+    compile "org.parceler:parceler-api:$parceler"
+    annotationProcessor "org.parceler:parceler:$parceler"
+
+    androidTestCompile("com.android.support.test:runner:$versions.runner") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$versions.espresso") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    testCompile "junit:junit:$versions.junit"
 }

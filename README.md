@@ -90,8 +90,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.3.2'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.3.2'
+    compile 'com.hendraanggrian:bundler:0.4.0'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.4.0'
 }
 ```
 

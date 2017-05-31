@@ -1,9 +1,11 @@
 package com.hendraanggrian.bundler;
 
+import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
 import android.util.SparseArray;
 
 import java.io.Serializable;
@@ -12,16 +14,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * Superclass of all generated bundle bindings.
+ *
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public abstract class BundleBinding {
 
-    static final BundleBinding EMPTY;
-
-    static {
-        EMPTY = new BundleBinding(Bundle.EMPTY) {
-        };
-    }
+    static final BundleBinding EMPTY = new BundleBinding(Bundle.EMPTY) {
+    };
 
     @NonNull protected final Bundle source;
     @NonNull private final List args;
@@ -193,6 +193,8 @@ public abstract class BundleBinding {
     //endregion
 
     //region Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
+    @RequiresApi(12)
+    @TargetApi(12)
     @Nullable
     protected CharSequence getCharSequence(@NonNull String key, @Nullable CharSequence defaultValue) {
         return source.getCharSequence(key, defaultValue);
@@ -240,6 +242,8 @@ public abstract class BundleBinding {
         return defaultValue;
     }
 
+    @RequiresApi(12)
+    @TargetApi(12)
     @Nullable
     protected String getString(@NonNull String key, @Nullable String defaultValue) {
         return source.getString(key, defaultValue);

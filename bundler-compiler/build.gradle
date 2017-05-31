@@ -1,12 +1,14 @@
+import com.android.build.gradle.internal.LoggerWrapper
+import com.android.build.gradle.internal.SdkHandler
+
 apply plugin: 'java'
 apply plugin: 'com.novoda.bintray-release'
+apply from: 'https://raw.githubusercontent.com/HendraAnggrian/hendraanggrian.github.io/master/bintray.gradle'
 
-sourceCompatibility = config.javaVersion
-targetCompatibility = config.javaVersion
+sourceCompatibility = versions.java
+targetCompatibility = versions.java
 
-def logger = new com.android.build.gradle.internal.LoggerWrapper(project.logger)
-def sdkHandler = new com.android.build.gradle.internal.SdkHandler(project, logger)
-for (File file : sdkHandler.sdkLoader.repositories) {
+for (File file : new SdkHandler(project, new LoggerWrapper(project.logger)).sdkLoader.repositories) {
     repositories.maven {
         url = file.toURI()
     }
@@ -14,20 +16,20 @@ for (File file : sdkHandler.sdkLoader.repositories) {
 
 dependencies {
     compile project(':bundler-annotations')
-    compile deps.javapoet
-    compile deps.autoCommon
+    compile "com.squareup:javapoet:$versions.javapoet"
+    compile "com.google.auto:auto-common:$versions.google.auto.common"
 
-    compileOnly deps.supportAnnotations
-    compileOnly deps.autoService
+    compileOnly "com.android.support:support-annotations:$versions.support"
+    compileOnly "com.google.auto.service:auto-service:$versions.google.auto.service"
 
-    testCompile deps.junit
+    testCompile "junit:junit:$versions.junit"
 }
 
 publish {
     userOrg = bintray.user
     groupId = bintray.group
-    artifactId = bintray.artifact.compiler
-    publishVersion = bintray.version
-    desc = bintray.desc
-    website = bintray.website
+    artifactId = bintray.artifact.bundler.id + '-compiler'
+    publishVersion = versions.release
+    desc = bintray.artifact.bundler.desc
+    website = bintray.artifact.bundler.website
 }
