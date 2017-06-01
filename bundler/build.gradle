@@ -10,8 +10,8 @@ android {
     defaultConfig {
         minSdkVersion versions.sdk.min
         targetSdkVersion versions.sdk.target
-        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
         consumerProguardFiles 'proguard-rules.pro'
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
 }
 
@@ -35,7 +35,7 @@ dependencies {
     testCompile files(Jvm.current().getToolsJar())
 }
 
-static def getRuntimeJar() {
+def getRuntimeJar() {
     try {
         final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
         File runtimeJar = new File(javaBase, "lib/rt.jar");
