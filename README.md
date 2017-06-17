@@ -7,20 +7,27 @@ Bundler aims to minify the process with annotation processing.
 ```java
 public class ExampleActivity extends Activity {
     @BindExtra String username;
-    @BindExtra int age;
+    @BindState int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundler.bind(this);
+        Bundler.bindExtras(this);
+        Bundler.bindStates(this, savedInstanceState);
         // TODO: Use fields...
+    }
+    
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundler.onSaveInstanceState(this, outState);
     }
 }
 ```
 
-Usage
------
-#### Extra binding
+Extra binding
+-------------
+#### Binding
 `@BindExtra` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
 ```java
@@ -28,13 +35,23 @@ When key is not provided, field name will be used as the key.
 @BindExtra int age;
 ```
 
-#### Extras Wrapping
+#### Wrapping
 Create extras with varargs argument with `Bundle.wrap()`.
 This is optional, any Bundle would work just fine.
 ```java
 Intent intent = new Intent(context, ExampleActivity.class);
 intent.putExtras(Bundler.wrap(ExampleActivity.class, "Hendra Anggrian", 24));
 startActivity(intent);
+```
+
+State binding
+-------------
+#### Restoring
+`@BindExtra` for binding extra value to field, field cannot be private.
+When key is not provided, field name will be used as the key.
+```java
+@BindState String username;
+@BindState int age;
 ```
 
 Supported extra types
@@ -87,11 +104,12 @@ Download
 ```gradle
 repositories {
     jcenter()
+    maven { url "https://maven.google.com" }
 }
 
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.4.0'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.4.0'
+    compile 'com.hendraanggrian:bundler:0.5.0'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.5.0'
 }
 ```
 

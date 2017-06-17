@@ -19,7 +19,7 @@ public class RequiredTest {
                 .that(JavaFileObjects.forSourceLines("test.Test",
                         "package test;",
                         "import android.support.annotation.Nullable;",
-                        "import com.hendraanggrian.bundler.annotations.BindExtra;",
+                        "import com.hendraanggrian.bundler.BindExtra;",
                         "public class Test {",
                         "   @BindExtra boolean required;",
                         "   @Nullable @BindExtra Boolean notRequired;",
@@ -29,7 +29,7 @@ public class RequiredTest {
                 .processedWith(new BundlerProcessor())
                 .compilesWithoutError()
                 .and()
-                .generatesSources(JavaFileObjects.forSourceLines("test/Test_BundleBinding",
+                .generatesSources(JavaFileObjects.forSourceLines("test/Test_ExtraBinding",
                         "// Bundler generated class, do not modify! https://github.com/HendraAnggrian/bundler",
                         "package test;",
                         "import android.os.Bundle;",

@@ -6,7 +6,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.BindExtra;
+import com.hendraanggrian.bundler.BindState;
 import com.squareup.javapoet.JavaFile;
 
 import java.io.IOException;
@@ -31,7 +32,8 @@ import javax.lang.model.util.Types;
 public final class BundlerProcessor extends AbstractProcessor {
 
     private static final Set<Class<? extends Annotation>> SUPPORTED_ANNOTATIONS = ImmutableSet.<Class<? extends Annotation>>of(
-            BindExtra.class
+            BindExtra.class,
+            BindState.class
     );
 
     private Types typeUtils;
@@ -46,8 +48,9 @@ public final class BundlerProcessor extends AbstractProcessor {
     @Override
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> names = Sets.newLinkedHashSet();
-        for (Class<? extends Annotation> cls : SUPPORTED_ANNOTATIONS)
+        for (Class<? extends Annotation> cls : SUPPORTED_ANNOTATIONS) {
             names.add(cls.getCanonicalName());
+        }
         return names;
     }
 
@@ -72,23 +75,28 @@ public final class BundlerProcessor extends AbstractProcessor {
             }
         }
         // preparing elements
-        Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
-        Set<String> extraClassNames = Sets.newHashSet();
-        for (Element fieldElement : roundEnv.getElementsAnnotatedWith(BindExtra.class)) {
-            TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
-            map.put(typeElement, fieldElement);
-            extraClassNames.add(Spec.guessGeneratedName(typeElement, BindExtra.SUFFIX));
-        }
-        // write classes and keep results
-        for (TypeElement key : map.keySet()) {
-            JavaFile file = new BindingSpec(key)
-                    .superclass(extraClassNames)
-                    .statement(map.get(key), typeUtils)
-                    .toJavaFile();
-            try {
-                file.writeTo(filer);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        for (Class<? extends Annotation> annotation : SUPPORTED_ANNOTATIONS) {
+            String suffix = annotation == BindExtra.class
+                    ? BindExtra.SUFFIX
+                    : BindState.SUFFIX;
+            Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
+            Set<String> generatedClassNames = Sets.newHashSet();
+            for (Element fieldElement : roundEnv.getElementsAnnotatedWith(annotation)) {
+                TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
+                map.put(typeElement, fieldElement);
+                generatedClassNames.add(Spec.guessGeneratedName(typeElement, suffix));
+            }
+            // write classes and keep results
+            for (TypeElement key : map.keySet()) {
+                JavaFile file = new BindingSpec(key, suffix)
+                        .superclass(generatedClassNames)
+                        .statement(map.get(key), typeUtils)
+                        .toJavaFile();
+                try {
+                    file.writeTo(filer);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return false;

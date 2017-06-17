@@ -1,4 +1,4 @@
-package com.hendraanggrian.bundler.annotations;
+package com.hendraanggrian.bundler;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -15,10 +15,10 @@ import java.lang.annotation.Target;
  * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 @Target(ElementType.FIELD)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface BindExtra {
 
-    String SUFFIX = "_BundleBinding";
+    String SUFFIX = "_ExtraBinding";
 
     /**
      * Key in bundle key-value pair.

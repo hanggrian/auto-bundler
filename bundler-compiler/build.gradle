@@ -5,8 +5,8 @@ apply plugin: 'java'
 apply plugin: 'com.novoda.bintray-release'
 apply from: 'https://raw.githubusercontent.com/HendraAnggrian/hendraanggrian.github.io/master/bintray.gradle'
 
-sourceCompatibility = versions.java
-targetCompatibility = versions.java
+sourceCompatibility = versions.sdk.java
+targetCompatibility = versions.sdk.java
 
 for (File file : new SdkHandler(project, new LoggerWrapper(project.logger)).sdkLoader.repositories) {
     repositories.maven {
@@ -17,9 +17,12 @@ for (File file : new SdkHandler(project, new LoggerWrapper(project.logger)).sdkL
 dependencies {
     compile project(':bundler-annotations')
     compile "com.squareup:javapoet:$versions.javapoet"
-    compile "com.google.auto:auto-common:$versions.google.auto.common"
 
-    compileOnly "com.android.support:support-annotations:$versions.support"
+    // android
+    compileOnly "com.android.support:support-annotations:$versions.android.support"
+
+    // google
+    compile "com.google.auto:auto-common:$versions.google.auto.common"
     compileOnly "com.google.auto.service:auto-service:$versions.google.auto.service"
 
     testCompile "junit:junit:$versions.junit"

@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
-import com.hendraanggrian.bundler.annotations.BindExtra;
+import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -27,76 +27,120 @@ import java.util.WeakHashMap;
 public final class Bundler {
 
     private static final String TAG = "Bundler";
-    private static boolean debug;
-    @Nullable private static Map<String, Constructor<? extends BundleBinding>> bindings;
+    private static boolean DEBUG;
+    @Nullable private static Map<String, Constructor<? extends BundleBinding>> BINDINGS;
 
     private Bundler() {
     }
 
     public static void setDebug(boolean debug) {
-        Bundler.debug = debug;
+        Bundler.DEBUG = debug;
     }
 
-    public static void bind(@NonNull android.support.v4.app.Fragment target) {
-        bind(target, target.getArguments());
+    /**
+     * Bind extra fields in support Fragment with default behavior.
+     */
+    public static void bindExtras(@NonNull android.support.v4.app.Fragment target) {
+        bindExtras(target, target.getArguments());
     }
 
+    /**
+     * Bind extra fields in Fragment with default behavior,
+     * not available pre-11.
+     */
     @RequiresApi(11)
     @TargetApi(11)
-    public static void bind(@NonNull Fragment target) {
-        bind(target, target.getArguments());
+    public static void bindExtras(@NonNull Fragment target) {
+        bindExtras(target, target.getArguments());
     }
 
-    public static void bind(@NonNull Activity target) {
-        bind(target, target.getIntent());
+    /**
+     * Bind extra fields in Activity with default behavior.
+     */
+    public static void bindExtras(@NonNull Activity target) {
+        bindExtras(target, target.getIntent());
     }
 
-    public static <T> void bind(@NonNull T target, @NonNull Intent source) {
-        bind(target, source.getExtras());
+    /**
+     * Bind extra fields in target from source Bundle attached to Intent.
+     */
+    public static <T> void bindExtras(@NonNull T target, @NonNull Intent source) {
+        bindExtras(target, source.getExtras());
     }
 
-    public static <T> void bind(@NonNull T target, @NonNull Bundle source) {
-        BundleBinding binding = createBinding(target.getClass(),
+    /**
+     * Bind extra fields in target from source Bundle.
+     */
+    public static <T> void bindExtras(@NonNull T target, @NonNull Bundle source) {
+        BundleBinding binding = createBinding(
+                target.getClass(),
+                BindExtra.SUFFIX,
                 new Class<?>[]{target.getClass(), Bundle.class},
                 new Object[]{target, source}
         );
-        if (debug)
-            Log.d(TAG, toString(target.getClass(), binding.source));
+        if (DEBUG) printContent(binding.source);
+    }
+
+    /**
+     * Bind state fields in target from source Bundle.
+     */
+    public static <T> void bindStates(@NonNull T target, @NonNull Bundle source) {
+        BundleBinding binding = createBinding(
+                target.getClass(),
+                BindState.SUFFIX,
+                new Class<?>[]{target.getClass(), Bundle.class},
+                new Object[]{target, source}
+        );
+        if (DEBUG) printContent(binding.source);
     }
 
     @NonNull
-    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull Object arg) {
-        return wrap(targetClass, new ArrayList<>(Collections.singletonList(arg)));
+    public static Bundle wrapExtras(@NonNull Class<?> targetClass, @NonNull Object arg) {
+        return wrapExtras(targetClass, new ArrayList<>(Collections.singletonList(arg)));
     }
 
     @NonNull
-    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull Object... args) {
-        return wrap(targetClass, new ArrayList<>(Arrays.asList(args)));
+    public static Bundle wrapExtras(@NonNull Class<?> targetClass, @NonNull Object... args) {
+        return wrapExtras(targetClass, new ArrayList<>(Arrays.asList(args)));
     }
 
     @NonNull
-    public static Bundle wrap(@NonNull Class<?> targetClass, @NonNull List<?> args) {
-        BundleBinding binding = createBinding(targetClass,
+    public static Bundle wrapExtras(@NonNull Class<?> targetClass, @NonNull List<?> args) {
+        BundleBinding binding = createBinding(
+                targetClass,
+                BindExtra.SUFFIX,
                 new Class<?>[]{List.class},
                 new Object[]{args}
         );
-        if (debug)
-            Log.d(TAG, toString(targetClass, binding.source));
+        if (DEBUG) printContent(binding.source);
         return binding.source;
+    }
+
+    @NonNull
+    public static Bundle onSaveInstanceState(@NonNull Bundle source, @NonNull Class<?> targetClass, @NonNull List<?> args) {
+        BundleBinding binding = createBinding(
+                targetClass,
+                BindState.SUFFIX,
+                new Class<?>[]{List.class},
+                new Object[]{args}
+        );
+        source.putAll(binding.source);
+        if (DEBUG) printContent(binding.source);
+        return source;
     }
 
     @NonNull
     @SuppressWarnings("TryWithIdenticalCatches")
     private static BundleBinding createBinding(
             @NonNull Class<?> targetClass,
+            @NonNull String targetClassSuffix,
             @NonNull Class<?>[] constructorParameterTypes,
             @NonNull Object[] constructorParameters
     ) {
-        if (debug)
-            Log.d(TAG, "Looking up constructor for " + targetClass.getName());
-        Constructor<? extends BundleBinding> constructor = findBinding(targetClass, constructorParameterTypes);
+        if (DEBUG) Log.d(TAG, "Looking up constructor for " + targetClass.getName());
+        Constructor<? extends BundleBinding> constructor = findBinding(targetClass, targetClassSuffix, constructorParameterTypes);
         if (constructor == null) {
-            if (debug)
+            if (DEBUG)
                 Log.d(TAG, "Ignored because no constructor was found in " + targetClass.getSimpleName());
             return BundleBinding.EMPTY;
         }
@@ -120,53 +164,58 @@ public final class Bundler {
     @SuppressWarnings("unchecked")
     private static Constructor<? extends BundleBinding> findBinding(
             @NonNull Class<?> targetClass,
-            @NonNull Class<?>... constructorParameterTypes
+            @NonNull String targetClassSuffix,
+            @NonNull Class<?>[] constructorParameterTypes
     ) {
-        if (bindings == null)
-            bindings = new WeakHashMap<>();
+        if (BINDINGS == null) {
+            BINDINGS = new WeakHashMap<>();
+        }
         String bindingKey = targetClass.toString() + constructorParameterTypes.length;
-        Constructor<? extends BundleBinding> binding = bindings.get(bindingKey);
+        Constructor<? extends BundleBinding> binding = BINDINGS.get(bindingKey);
         if (binding != null) {
-            if (debug)
-                Log.d(TAG, "HIT: Cache found in binding weak map.");
+            if (DEBUG) Log.d(TAG, "HIT: Cache found in binding weak map.");
             return binding;
         }
         String targetClassName = targetClass.getName();
         if (targetClassName.startsWith("android.") || targetClassName.startsWith("java.")) {
-            if (debug)
-                Log.d(TAG, "MISS: Reached framework class. Abandoning search.");
+            if (DEBUG) Log.d(TAG, "MISS: Reached framework class. Abandoning search.");
             return null;
         }
         try {
             binding = (Constructor<? extends BundleBinding>) targetClass
                     .getClassLoader()
-                    .loadClass(targetClassName + BindExtra.SUFFIX)
+                    .loadClass(targetClassName + targetClassSuffix)
                     .getConstructor(constructorParameterTypes);
-            if (debug)
-                Log.d(TAG, "HIT: Loaded binding class, caching in weak map.");
+            if (DEBUG) Log.d(TAG, "HIT: Loaded binding class, caching in weak map.");
         } catch (ClassNotFoundException e) {
-            if (debug)
+            if (DEBUG)
                 Log.d(TAG, "Not found. Trying superclass " + targetClass.getSuperclass().getName());
             Class<?> targetSuperclass = targetClass.getSuperclass();
             //region abstract classes binding fix
-            if (constructorParameterTypes[0] == targetClass && constructorParameterTypes[0].getSuperclass() == targetSuperclass)
+            if (constructorParameterTypes[0] == targetClass && constructorParameterTypes[0].getSuperclass() == targetSuperclass) {
                 constructorParameterTypes[0] = targetSuperclass;
+            }
             //endregion
-            binding = findBinding(targetSuperclass, constructorParameterTypes);
+            binding = findBinding(targetSuperclass, targetClassSuffix, constructorParameterTypes);
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find binding constructor for " + targetClassName, e);
         }
-        bindings.put(bindingKey, binding);
+        BINDINGS.put(bindingKey, binding);
         return binding;
     }
 
-    @NonNull
-    public static String toString(@NonNull Class<?> cls, @NonNull Bundle bundle) {
-        String content = "";
-        for (String key : bundle.keySet())
-            content += key + "=" + bundle.get(key) + ", ";
-        if (content.endsWith(", "))
-            content = content.substring(0, content.length() - 2);
-        return cls.getSimpleName() + "[" + content + "]";
+    private static void printContent(@NonNull Bundle bundle) {
+        try {
+            JSONObject jsonObject = new JSONObject();
+            for (String key : bundle.keySet()) {
+                jsonObject.put(key, bundle.get(key));
+            }
+            String json = jsonObject.toString(4);
+            for (String line : json.split("\\r?\\n")) {
+                Log.d(TAG, line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

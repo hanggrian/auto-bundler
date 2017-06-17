@@ -17,25 +17,37 @@ android {
 
 dependencies {
     compile project(':bundler-annotations')
-    compile "com.android.support:support-fragment:$versions.support"
-
-    androidTestCompile "com.google.truth:truth:$versions.google.test.truth"
-    androidTestCompile("com.android.support.test:runner:$versions.runner") {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$versions.espresso") {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-
     testCompile project(':bundler-compiler')
+
+    // android
+    compile "com.android.support:support-fragment:$versions.android.support"
+    androidTestCompile("com.android.support.test:runner:$versions.android.runner") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:$versions.android.espresso") {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    }
+
+    // google
+    androidTestCompile "com.google.truth:truth:$versions.google.test.truth"
     testCompile "com.google.truth:truth:$versions.google.test.truth"
     testCompile "com.google.testing.compile:compile-testing:$versions.google.test.compile"
-    testCompile "junit:junit:$versions.junit"
     testCompile files(getRuntimeJar())
     testCompile files(Jvm.current().getToolsJar())
+
+    testCompile "junit:junit:$versions.junit"
 }
 
-def getRuntimeJar() {
+publish {
+    userOrg = bintray.user
+    groupId = bintray.group
+    artifactId = bintray.artifact.bundler.id
+    publishVersion = versions.release
+    desc = bintray.artifact.bundler.desc
+    website = bintray.artifact.bundler.website
+}
+
+static def getRuntimeJar() {
     try {
         final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
         File runtimeJar = new File(javaBase, "lib/rt.jar");
@@ -46,13 +58,4 @@ def getRuntimeJar() {
     } catch (IOException e) {
         throw new RuntimeException(e);
     }
-}
-
-publish {
-    userOrg = bintray.user
-    groupId = bintray.group
-    artifactId = bintray.artifact.bundler.id
-    publishVersion = versions.release
-    desc = bintray.artifact.bundler.desc
-    website = bintray.artifact.bundler.website
 }

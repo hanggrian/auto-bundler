@@ -4,4 +4,4 @@
 }
 
 -keep class com.hendraanggrian.bundler.*
--keepclasseswithmembernames class * { @com.hendraanggrian.bundler.annotations.BindExtra <fields>; }
+-keepclasseswithmembernames class * { @com.hendraanggrian.bundler.annotations.* <fields>; }

@@ -2,8 +2,8 @@ apply plugin: 'java'
 apply plugin: 'com.novoda.bintray-release'
 apply from: 'https://raw.githubusercontent.com/HendraAnggrian/hendraanggrian.github.io/master/bintray.gradle'
 
-sourceCompatibility = versions.java
-targetCompatibility = versions.java
+sourceCompatibility = versions.sdk.java
+targetCompatibility = versions.sdk.java
 
 publish {
     userOrg = bintray.user

@@ -2,8 +2,11 @@ package com.hendraanggrian.bundler.compiler;
 
 import android.support.annotation.NonNull;
 
-import com.hendraanggrian.bundler.annotations.BindExtra;
+import com.hendraanggrian.bundler.BindExtra;
+import com.hendraanggrian.bundler.BindState;
 import com.squareup.javapoet.CodeBlock;
+
+import java.lang.annotation.Annotation;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
@@ -16,13 +19,31 @@ final class FieldBinding {
 
     @NonNull private final ExtraType type;
     @NonNull private final Name name;
+    @NonNull private final Annotation annotation;
     @NonNull private final String key;
 
     FieldBinding(@NonNull Element fieldElement, @NonNull Types typeUtils) {
         this.type = ExtraType.valueOf(fieldElement, typeUtils);
         this.name = fieldElement.getSimpleName();
-        String key = fieldElement.getAnnotation(BindExtra.class).value();
-        this.key = !key.isEmpty() ? key : name.toString();
+        BindExtra bindExtra = fieldElement.getAnnotation(BindExtra.class);
+        BindState bindState = fieldElement.getAnnotation(BindState.class);
+        if (bindExtra != null && bindState != null) {
+            throw new IllegalStateException(name.toString() + " is annotated with BindExtra and BindState, this is unsupported behavior.");
+        } else if (bindExtra != null) {
+            annotation = bindExtra;
+            String key = bindExtra.value();
+            this.key = !key.isEmpty() ? key : name.toString();
+        } else if (bindState != null) {
+            annotation = bindState;
+            String key = bindState.value();
+            this.key = !key.isEmpty() ? key : name.toString();
+        } else {
+            throw new IllegalStateException("Couldn't read key from " + name.toString());
+        }
+    }
+
+    boolean isBindExtra() {
+        return annotation instanceof BindExtra;
     }
 
     @NonNull

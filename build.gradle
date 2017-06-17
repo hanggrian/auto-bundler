@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.2'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.novoda:bintray-release:0.3.4'
     }
 }
@@ -11,15 +11,14 @@ buildscript {
 allprojects {
     ext.versions = [
             // config
-            java      : JavaVersion.VERSION_1_7,
             sdk       : [
+                    'java'  : JavaVersion.VERSION_1_7,
                     'min'   : 9,
                     'target': 25
             ],
             buildTools: '25.0.3',
 
-            // main
-            support   : '25.3.1',
+            // dependencies
             javapoet  : '1.8.0',
             google    : [
                     auto: [
@@ -27,20 +26,22 @@ allprojects {
                             common : '0.8'
                     ],
                     test: [
-                            truth  : '0.31',
-                            compile: '0.9'
+                            truth  : '0.33',
+                            compile: '0.11'
                     ]
             ],
-
-            // test
+            android   : [
+                    support : '25.4.0',
+                    runner  : '0.5',
+                    espresso: '2.2.2',
+            ],
             junit     : '4.12',
-            runner    : '0.5',
-            espresso  : '2.2.2',
 
             release   : '0.4.0'
     ]
     repositories {
         jcenter()
+        maven { url "https://maven.google.com" }
     }
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')

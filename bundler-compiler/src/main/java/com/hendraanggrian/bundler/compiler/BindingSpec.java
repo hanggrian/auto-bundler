@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.common.MoreElements;
 import com.google.auto.common.MoreTypes;
-import com.hendraanggrian.bundler.annotations.BindExtra;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -26,22 +25,24 @@ import javax.lang.model.util.Types;
  */
 final class BindingSpec extends Spec {
 
+    @NonNull private final String suffix;
     @NonNull private final String packageName;
     @NonNull private final TypeMirror targetSuperclass;
     @NonNull private final TypeSpec.Builder typeSpec;
     @NonNull private final MethodSpec.Builder methodSpecGet;
     @NonNull private final MethodSpec.Builder methodSpecPut;
 
-    BindingSpec(@NonNull TypeElement typeElement) {
-        packageName = MoreElements.getPackage(typeElement).getQualifiedName().toString();
-        targetSuperclass = typeElement.getSuperclass();
-        typeSpec = TypeSpec.classBuilder(guessGeneratedName(typeElement, BindExtra.SUFFIX))
+    BindingSpec(@NonNull TypeElement typeElement, @NonNull String suffix) {
+        this.suffix = suffix;
+        this.packageName = MoreElements.getPackage(typeElement).getQualifiedName().toString();
+        this.targetSuperclass = typeElement.getSuperclass();
+        this.typeSpec = TypeSpec.classBuilder(guessGeneratedName(typeElement, suffix))
                 .addModifiers(Modifier.PUBLIC);
-        methodSpecGet = MethodSpec.constructorBuilder()
+        this.methodSpecGet = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(ClassName.get(typeElement), TARGET)
                 .addParameter(CLASS_BUNDLE, SOURCE);
-        methodSpecPut = MethodSpec.constructorBuilder()
+        this.methodSpecPut = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(List.class, ARGS);
     }
@@ -51,7 +52,7 @@ final class BindingSpec extends Spec {
         boolean extraHasSuperclass = false;
         if (targetSuperclass.getKind() != TypeKind.NONE && targetSuperclass.getKind() != TypeKind.VOID) {
             TypeElement superclass = MoreTypes.asTypeElement(targetSuperclass);
-            String extraClassName = guessGeneratedName(superclass, BindExtra.SUFFIX);
+            String extraClassName = guessGeneratedName(superclass, suffix);
             if (extraClassNames.contains(extraClassName)) {
                 typeSpec.superclass(ClassName.get(packageName, extraClassName));
                 extraHasSuperclass = true;
@@ -71,10 +72,15 @@ final class BindingSpec extends Spec {
     BindingSpec statement(@NonNull Iterable<Element> fieldElements, @NonNull Types typeUtils) {
         for (Element fieldElement : fieldElements) {
             FieldBinding field = new FieldBinding(fieldElement, typeUtils);
-            if (!MoreElements.isAnnotationPresent(fieldElement, Nullable.class))
+            if (field.isBindExtra() && !MoreElements.isAnnotationPresent(fieldElement, Nullable.class)) {
                 methodSpecGet.addCode(field.checkRequiredCodeBlock());
+            }
             methodSpecGet.addCode(field.getCodeBlock());
-            methodSpecPut.addCode(field.putCodeBlock());
+            if (field.isBindExtra()) {
+                methodSpecPut.addCode(field.putCodeBlock());
+            } else {
+
+            }
         }
         return this;
     }
