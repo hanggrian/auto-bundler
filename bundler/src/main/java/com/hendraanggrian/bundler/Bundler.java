@@ -117,12 +117,12 @@ public final class Bundler {
     }
 
     @NonNull
-    public static Bundle onSaveInstanceState(@NonNull Bundle source, @NonNull Class<?> targetClass, @NonNull List<?> args) {
+    public static <T> Bundle saveStates(@NonNull T target, @NonNull Bundle source) {
         BundleBinding binding = createBinding(
-                targetClass,
+                target.getClass(),
                 BindState.SUFFIX,
-                new Class<?>[]{List.class},
-                new Object[]{args}
+                new Class<?>[]{Bundle.class, target.getClass()},
+                new Object[]{source, target}
         );
         source.putAll(binding.source);
         if (DEBUG) printContent(binding.source);
@@ -170,7 +170,7 @@ public final class Bundler {
         if (BINDINGS == null) {
             BINDINGS = new WeakHashMap<>();
         }
-        String bindingKey = targetClass.toString() + constructorParameterTypes.length;
+        String bindingKey = targetClass.getCanonicalName() + targetClassSuffix + constructorParameterTypes[0].getSimpleName();
         Constructor<? extends BundleBinding> binding = BINDINGS.get(bindingKey);
         if (binding != null) {
             if (DEBUG) Log.d(TAG, "HIT: Cache found in binding weak map.");

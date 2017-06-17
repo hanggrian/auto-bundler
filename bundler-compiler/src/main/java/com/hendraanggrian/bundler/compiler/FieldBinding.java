@@ -53,21 +53,34 @@ final class FieldBinding {
 
     @NonNull
     CodeBlock getCodeBlock() {
-        if (type != ExtraType.PARCELER)
+        if (type != ExtraType.PARCELER) {
             return CodeBlock.of("$L.$L = $L($S, $L.$L);\n",
                     Spec.TARGET, name, type.getMethodName(), key, Spec.TARGET, name);
-        else
+        } else {
             return CodeBlock.of("$L.$L = $T.getParceler($L, $S, $L.$L);\n",
                     Spec.TARGET, name, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name);
+        }
+    }
+
+    @NonNull
+    CodeBlock putCodeBlockWithList() {
+        if (type != ExtraType.PARCELER) {
+            return CodeBlock.of("if(!$L.isEmpty()) $L.$L($S, ($L) nextArg());\n",
+                    Spec.ARGS, Spec.SOURCE, type.putMethodName(), key, type.typeName.toString());
+        } else {
+            return CodeBlock.of("if(!$L.isEmpty()) $T.putParceler($L, $S, nextArg());\n",
+                    Spec.ARGS, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key);
+        }
     }
 
     @NonNull
     CodeBlock putCodeBlock() {
-        if (type != ExtraType.PARCELER)
-            return CodeBlock.of("if(!$L.isEmpty()) $L.$L($S, ($L) nextArg());\n",
-                    Spec.ARGS, Spec.SOURCE, type.putMethodName(), key, type.typeName.toString());
-        else
-            return CodeBlock.of("if(!$L.isEmpty()) $T.putParceler($L, $S, nextArg());\n",
-                    Spec.ARGS, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key);
+        if (type != ExtraType.PARCELER) {
+            return CodeBlock.of("$L.$L($S, $L.$L);\n",
+                    Spec.SOURCE, type.putMethodName(), key, Spec.TARGET, name);
+        } else {
+            return CodeBlock.of("$T.putParceler($L, $S, $L.$L);\n",
+                    Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name);
+        }
     }
 }

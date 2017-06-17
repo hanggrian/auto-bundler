@@ -76,19 +76,21 @@ public final class BundlerProcessor extends AbstractProcessor {
         }
         // preparing elements
         for (Class<? extends Annotation> annotation : SUPPORTED_ANNOTATIONS) {
-            String suffix = annotation == BindExtra.class
-                    ? BindExtra.SUFFIX
-                    : BindState.SUFFIX;
             Multimap<TypeElement, Element> map = LinkedHashMultimap.create();
             Set<String> generatedClassNames = Sets.newHashSet();
             for (Element fieldElement : roundEnv.getElementsAnnotatedWith(annotation)) {
                 TypeElement typeElement = MoreElements.asType(fieldElement.getEnclosingElement());
                 map.put(typeElement, fieldElement);
-                generatedClassNames.add(Spec.guessGeneratedName(typeElement, suffix));
+                generatedClassNames.add(Spec.guessGeneratedName(typeElement, annotation == BindExtra.class
+                        ? BindExtra.SUFFIX
+                        : BindState.SUFFIX));
             }
             // write classes and keep results
             for (TypeElement key : map.keySet()) {
-                JavaFile file = new BindingSpec(key, suffix)
+                BindingSpec spec = annotation == BindExtra.class
+                        ? new ExtraBindingSpec(key)
+                        : new StateBindingSpec(key);
+                JavaFile file = spec
                         .superclass(generatedClassNames)
                         .statement(map.get(key), typeUtils)
                         .toJavaFile();

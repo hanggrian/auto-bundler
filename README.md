@@ -20,7 +20,7 @@ public class ExampleActivity extends Activity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Bundler.onSaveInstanceState(this, outState);
+        Bundler.saveStates(this, outState);
     }
 }
 ```
@@ -32,26 +32,34 @@ Extra binding
 When key is not provided, field name will be used as the key.
 ```java
 @BindExtra String username;
-@BindExtra int age;
 ```
 
 #### Wrapping
-Create extras with varargs argument with `Bundle.wrap()`.
+Create extras with varargs argument with `Bundle.wrapExtras()`.
 This is optional, any Bundle would work just fine.
 ```java
 Intent intent = new Intent(context, ExampleActivity.class);
-intent.putExtras(Bundler.wrap(ExampleActivity.class, "Hendra Anggrian", 24));
+intent.putExtras(Bundler.wrapExtras(ExampleActivity.class, "Hendra Anggrian", 24));
 startActivity(intent);
 ```
 
 State binding
 -------------
 #### Restoring
-`@BindExtra` for binding extra value to field, field cannot be private.
+`@BindState` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
 ```java
-@BindState String username;
-@BindState int age;
+@BindState int position;
+```
+
+#### Saving
+Simply call `Bundle.saveStates()` to save states.
+```java
+@Override
+public void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    Bundler.saveStates(this, outState);
+}
 ```
 
 Supported extra types

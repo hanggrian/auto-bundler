@@ -85,8 +85,9 @@ abstract class Spec {
     @NonNull
     JavaFile toJavaFile() {
         TypeSpec.Builder typeSpecBuilder = typeSpec();
-        for (MethodSpec.Builder builder : methodSpecs())
+        for (MethodSpec.Builder builder : methodSpecs()) {
             typeSpecBuilder.addMethod(builder.build());
+        }
         return JavaFile.builder(packageName(), typeSpecBuilder.build())
                 .addFileComment("Bundler generated class, do not modify! https://github.com/HendraAnggrian/bundler")
                 .build();

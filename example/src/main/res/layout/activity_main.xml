@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.hendraanggrian.widget.RevealFrameLayout
-    android:id="@+id/revealableLayout"
+    android:id="@+id/revealFrameLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -8,18 +8,19 @@
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
+        android:layout_width="192dp"
+        android:layout_height="192dp"
         android:layout_gravity="top|center_horizontal"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
+        android:foreground="?selectableItemBackground"
         android:theme="@style/Theme.AppCompat"
         android:visibility="invisible"
         app:cardBackgroundColor="?colorAccent">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:navigationIcon="?homeAsUpIndicator">
 
         </android.support.v7.widget.Toolbar>
@@ -31,6 +32,6 @@
         android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="32dp"
         android:text="Tap me"/>
 </com.hendraanggrian.widget.RevealFrameLayout>
