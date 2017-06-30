@@ -1,5 +1,7 @@
 Bundler
 =======
+![icon][icon]
+
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
@@ -73,11 +75,11 @@ Supported extra types
  
 Parceler
 --------
-[Parceler][1] is supported with this library, it is a library that easily makes any object implements Parcelable with generated code, making it able to be inserted to Bundle as Parcelable.
+[Parceler][parceler] is supported with this library, it is a library that easily makes any object implements Parcelable with generated code, making it able to be inserted to Bundle as Parcelable.
 
 `Bundler.wrap()` automatically converts the object to Parcelable.
 Without `Bundler.wrap()`, object must be wrapped using `Parcels.wrap()`.
-Head to [Parceler doc][1] for more information.
+Head to [Parceler doc][parceler] for more information.
 ```java
 User user = new User("Hendra Anggrian", 24);
 // with Bundler.wrap()
@@ -102,7 +104,7 @@ public class UserActivity extends Activity {
 Optional bindings
 -----------------
 Extra bindings are required by default, an exception will be thrown if key is not found in Bundle.
-If this is not a desired behavior, annotate the field with `@Nullable` from [Android's support design library][2].
+If this is not a desired behavior, annotate the field with `@Nullable` from [Android's support design library][support-annotations].
 ```java
 @Nullable @BindExtra String username;
 ```
@@ -137,6 +139,6 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
- [1]: https://github.com/johncarl81/parceler
- [2]: http://tools.android.com/tech-docs/support-annotations
+[icon]: /example/res/mipmap-xxxhdpi/ic_launcher.png
+[parceler]: https://github.com/johncarl81/parceler
+[support-annotations]: http://tools.android.com/tech-docs/support-annotations
