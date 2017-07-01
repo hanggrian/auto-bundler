@@ -1,7 +1,5 @@
 Bundler
 =======
-![icon][icon]
-
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
@@ -139,6 +137,5 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-[icon]: /example/res/mipmap-xxxhdpi/ic_launcher.png
 [parceler]: https://github.com/johncarl81/parceler
 [support-annotations]: http://tools.android.com/tech-docs/support-annotations
