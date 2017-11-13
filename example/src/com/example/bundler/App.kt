@@ -1,4 +1,4 @@
-package com.example.bundlerexample
+package com.example.bundler
 
 import android.app.Application
 import butterknife.ButterKnife

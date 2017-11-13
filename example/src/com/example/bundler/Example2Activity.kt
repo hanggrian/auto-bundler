@@ -1,18 +1,18 @@
-package com.example.bundlerexample
+package com.example.bundler
 
 import android.os.Bundle
 import android.util.Log
-import com.example.bundlerexample.model.User
-import com.hendraanggrian.bundler.BindExtra
-import com.hendraanggrian.bundler.Bundler
+import com.example.bundler.model.User
+import com.hendraanggrian.bundler.Extra
+import com.hendraanggrian.bundler.initExtras
 
 class Example2Activity(override val contentLayout: Int = R.layout.activity_example1) : BaseActivity() {
 
-    @BindExtra("user") lateinit var user: User
+    @Extra("user") lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Bundler.bindExtras(this)
+        initExtras()
         Log.d("user.name", user.name)
     }
 }

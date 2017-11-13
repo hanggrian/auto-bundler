@@ -15,8 +15,6 @@ import java.util.List;
 
 /**
  * Superclass of all generated bundle bindings.
- *
- * @author Hendra Anggrian (hendraanggrian@gmail.com)
  */
 public abstract class BundleBinding {
 

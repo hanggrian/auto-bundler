@@ -12,7 +12,7 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundler.bindExtras(this);
+        Bundler.initExtras(this);
         Bundler.bindStates(this, savedInstanceState);
         // TODO: Use fields...
     }

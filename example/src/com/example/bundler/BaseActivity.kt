@@ -1,4 +1,4 @@
-package com.example.bundlerexample
+package com.example.bundler
 
 import android.os.Bundle
 import android.support.annotation.LayoutRes

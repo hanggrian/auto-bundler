@@ -1,4 +1,4 @@
-package com.example.bundlerexample.model
+package com.example.bundler.model
 
 import org.parceler.Parcel
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.example.bundlerexample"
+    package="com.example.bundler"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name=".App"
+        android:name="com.example.bundler.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -13,7 +13,7 @@
         android:theme="@style/Theme.App">
 
         <activity
-            android:name=".MainActivity">
+            android:name="com.example.bundler.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -21,15 +21,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".NextActivity"
+            android:name="com.example.bundler.NextActivity"
             android:theme="@style/Theme.Next"/>
 
         <activity
-            android:name=".ExampleActivity"
+            android:name="com.example.bundler.ExampleActivity"
             android:exported="true"/>
         <activity
-            android:name=".Example1Activity"/>
+            android:name="com.example.bundler.Example1Activity"/>
         <activity
-            android:name=".Example2Activity"/>
+            android:name="com.example.bundler.Example2Activity"/>
     </application>
 </manifest>

@@ -1,52 +1,22 @@
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath 'com.novoda:bintray-release:0.3.4'
+        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin"
+        classpath 'com.novoda:bintray-release:0.7.0'
     }
 }
 
 allprojects {
-    ext.versions = [
-            // config
-            sdk       : [
-                    'java'  : JavaVersion.VERSION_1_7,
-                    'min'   : 9,
-                    'target': 25
-            ],
-            buildTools: '25.0.3',
-
-            // dependencies
-            javapoet  : '1.8.0',
-            google    : [
-                    auto: [
-                            service: '1.0-rc3',
-                            common : '0.8'
-                    ],
-                    test: [
-                            truth  : '0.33',
-                            compile: '0.11'
-                    ]
-            ],
-            android   : [
-                    support : '25.4.0',
-                    runner  : '0.5',
-                    espresso: '2.2.2',
-            ],
-            junit     : '4.12',
-
-            // release
-            release   : '0.5.0'
-    ]
     repositories {
+        google()
         jcenter()
-        maven { url "https://maven.google.com" }
     }
     tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-        options.addStringOption('encoding', 'UTF-8')
+        enabled = false
     }
 }
 

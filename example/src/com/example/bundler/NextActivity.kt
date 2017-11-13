@@ -1,4 +1,4 @@
-package com.example.bundlerexample
+package com.example.bundler
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -8,8 +8,8 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
 import butterknife.BindView
-import com.hendraanggrian.bundler.BindExtra
-import com.hendraanggrian.bundler.Bundler
+import com.hendraanggrian.bundler.Extra
+import com.hendraanggrian.bundler.initExtras
 import com.hendraanggrian.widget.RevealFrameLayout
 
 
@@ -18,7 +18,7 @@ import com.hendraanggrian.widget.RevealFrameLayout
  */
 class NextActivity(override val contentLayout: Int = R.layout.activity_next) : BaseActivity() {
 
-    @BindExtra lateinit var rect: Rect
+    @Extra lateinit var rect: Rect
 
     @BindView(R.id.revealFrameLayout) lateinit var revealFrameLayout: RevealFrameLayout
     @BindView(R.id.view) lateinit var view: View
@@ -27,7 +27,7 @@ class NextActivity(override val contentLayout: Int = R.layout.activity_next) : B
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
-        Bundler.bindExtras(this)
+        initExtras()
         view.post {
             revealFrameLayout.animate(view, rect.centerX(), rect.centerY()).start()
         }

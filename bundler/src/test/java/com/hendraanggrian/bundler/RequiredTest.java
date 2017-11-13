@@ -19,10 +19,10 @@ public class RequiredTest {
                 .that(JavaFileObjects.forSourceLines("test.Test",
                         "package test;",
                         "import android.support.annotation.Nullable;",
-                        "import com.hendraanggrian.bundler.BindExtra;",
+                        "import com.hendraanggrian.bundler.Extra;",
                         "public class Test {",
-                        "   @BindExtra boolean required;",
-                        "   @Nullable @BindExtra Boolean notRequired;",
+                        "   @Extra boolean required;",
+                        "   @Nullable @Extra Boolean notRequired;",
                         "}"
                 ))
                 .withCompilerOptions("-Xlint:-processing")
