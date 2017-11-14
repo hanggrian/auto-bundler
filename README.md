@@ -12,7 +12,7 @@ public class ExampleActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundler.initExtras(this);
+        Bundler.bindExtras(this);
         Bundler.bindStates(this, savedInstanceState);
         // TODO: Use fields...
     }
@@ -35,11 +35,11 @@ When key is not provided, field name will be used as the key.
 ```
 
 #### Wrapping
-Create extras with varargs argument with `Bundle.wrapExtras()`.
+Create extras with varargs argument with `Bundle.extrasOf()`.
 This is optional, any Bundle would work just fine.
 ```java
 Intent intent = new Intent(context, ExampleActivity.class);
-intent.putExtras(Bundler.wrapExtras(ExampleActivity.class, "Hendra Anggrian", 24));
+intent.putExtras(Bundler.extrasOf(ExampleActivity.class, "Hendra Anggrian", 24));
 startActivity(intent);
 ```
 

@@ -1,5 +1,5 @@
 # Retain generated classes
--keep public class * extends com.hendraanggrian.bundler.BundleBinding {
+-keep public class * extends BundleBinding {
     public <init>(**, android.os.Bundle);   # extras and states binding
     public <init>(android.os.Bundle, **);   # states saving
     public <init>(java.util.List);          # extras wrapping

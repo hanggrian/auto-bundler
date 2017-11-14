@@ -1,8 +1,8 @@
 import org.gradle.internal.jvm.Jvm
 
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'com.novoda.bintray-release'
-apply from: 'https://raw.githubusercontent.com/HendraAnggrian/hendraanggrian.github.io/master/bintray.gradle'
 
 android {
     compileSdkVersion sdk_target.toInteger()
@@ -10,17 +10,36 @@ android {
     defaultConfig {
         minSdkVersion sdk_min.toInteger()
         targetSdkVersion sdk_target.toInteger()
-        consumerProguardFiles 'proguard-rules.pro'
         testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'proguard-rules.pro'
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+    }
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs 'src'
+        }
+        androidTest {
+            setRoot('tests')
+            manifest.srcFile 'tests/AndroidManifest.xml'
+            assets.srcDir 'tests/assets'
+            java.srcDir 'tests/src'
+            res.srcDir 'tests/res'
+            resources.srcDir 'tests/src'
+        }
     }
 }
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
     compile project(':bundler-annotations')
-    testCompile project(':bundler-compiler')
-
-    // android
     compile "com.android.support:support-fragment:$support"
+
+    androidTestCompile "com.google.truth:truth:$google_truth"
     androidTestCompile("com.android.support.test:runner:$runner") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
@@ -28,17 +47,15 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
-    // google
-    androidTestCompile "com.google.truth:truth:$google_truth"
+    testCompile "junit:junit:$junit"
     testCompile "com.google.truth:truth:$google_truth"
     testCompile "com.google.testing.compile:compile-testing:$google_compile"
     testCompile files(getRuntimeJar())
     testCompile files(Jvm.current().getToolsJar())
-
-    testCompile "junit:junit:$junit"
+    testCompile project(':bundler-compiler')
 }
 
-def getRuntimeJar() {
+static def getRuntimeJar() {
     try {
         final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
         File runtimeJar = new File(javaBase, "lib/rt.jar");

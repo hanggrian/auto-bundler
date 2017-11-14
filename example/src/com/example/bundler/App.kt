@@ -4,9 +4,6 @@ import android.app.Application
 import butterknife.ButterKnife
 import com.hendraanggrian.bundler.Bundler
 
-/**
- * @author Hendra Anggrian (hendraanggrian@gmail.com)
- */
 class App : Application() {
 
     override fun onCreate() {

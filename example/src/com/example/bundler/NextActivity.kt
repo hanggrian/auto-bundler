@@ -9,7 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import butterknife.BindView
 import com.hendraanggrian.bundler.Extra
-import com.hendraanggrian.bundler.initExtras
+import com.hendraanggrian.bundler.bindExtras
 import com.hendraanggrian.widget.RevealFrameLayout
 
 
@@ -27,7 +27,7 @@ class NextActivity(override val contentLayout: Int = R.layout.activity_next) : B
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
-        initExtras()
+        bindExtras()
         view.post {
             revealFrameLayout.animate(view, rect.centerX(), rect.centerY()).start()
         }

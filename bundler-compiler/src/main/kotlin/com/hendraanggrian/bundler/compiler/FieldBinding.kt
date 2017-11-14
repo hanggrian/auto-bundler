@@ -8,7 +8,7 @@ import javax.lang.model.util.Types
 
 internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
 
-    private val type = ExtraType.valueOf(fieldElement, typeUtils)
+    private val type = BundleValueType.valueOf(fieldElement, typeUtils)
     private val name = fieldElement.simpleName
     private val annotation: Annotation
     private val key: String
@@ -17,7 +17,7 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
 
     val codeBlock: CodeBlock
         get() = when {
-            type != ExtraType.PARCELER -> CodeBlock.of("\$L.\$L = \$L(\$S, \$L.\$L);\n", Spec.TARGET, name, type.getMethodName, key, Spec.TARGET, name)
+            type != BundleValueType.PARCELER -> CodeBlock.of("\$L.\$L = \$L(\$S, \$L.\$L);\n", Spec.TARGET, name, type.getMethodName, key, Spec.TARGET, name)
             else -> CodeBlock.of("\$L.\$L = \$T.getParceler(\$L, \$S, \$L.\$L);\n",
                     Spec.TARGET, name, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name)
         }
@@ -44,7 +44,7 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
 
     val putCodeBlockWithList: CodeBlock
         get() = when {
-            type != ExtraType.PARCELER -> CodeBlock.of("if(!\$L.isEmpty()) \$L.\$L(\$S, (\$L) nextArg());\n",
+            type != BundleValueType.PARCELER -> CodeBlock.of("if(!\$L.isEmpty()) \$L.\$L(\$S, (\$L) nextArg());\n",
                     Spec.ARGS, Spec.SOURCE, type.putMethodName, key, type.typeName.toString())
             else -> CodeBlock.of("if(!\$L.isEmpty()) \$T.putParceler(\$L, \$S, nextArg());\n",
                     Spec.ARGS, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key)
@@ -52,7 +52,7 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
 
     val putCodeBlock: CodeBlock
         get() = when {
-            type != ExtraType.PARCELER -> CodeBlock.of("\$L.\$L(\$S, \$L.\$L);\n",
+            type != BundleValueType.PARCELER -> CodeBlock.of("\$L.\$L(\$S, \$L.\$L);\n",
                     Spec.SOURCE, type.putMethodName, key, Spec.TARGET, name)
             else -> CodeBlock.of("\$T.putParceler(\$L, \$S, \$L.\$L);\n",
                     Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name)

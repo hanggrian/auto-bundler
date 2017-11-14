@@ -12,29 +12,25 @@ import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.util.Types
 
-/**
- * Represents Bundle-compatible values.
- *
- * @author Hendra Anggrian (hendraanggrian@gmail.com)
- */
-internal enum class ExtraType(private val methodName: String, val typeName: TypeName) {
+/** Represents Bundle-compatible values. */
+internal enum class BundleValueType(private val methodName: String, val typeName: TypeName) {
     // Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
-    BOOLEAN("Boolean", Boolean::class.java),
+    BOOLEAN("Boolean", Boolean::class.javaPrimitiveType!!),
     BOOLEAN_ARRAY("BooleanArray", BooleanArray::class.java),
-    BYTE("Byte", Byte::class.java),
+    BYTE("Byte", Byte::class.javaPrimitiveType!!),
     BYTE_ARRAY("ByteArray", ByteArray::class.java),
-    CHAR("Char", Char::class.java),
+    CHAR("Char", Char::class.javaPrimitiveType!!),
     CHAR_ARRAY("CharArray", CharArray::class.java),
-    DOUBLE("Double", Double::class.java),
+    DOUBLE("Double", Double::class.javaPrimitiveType!!),
     DOUBLE_ARRAY("DoubleArray", DoubleArray::class.java),
-    FLOAT("Float", Float::class.java),
+    FLOAT("Float", Float::class.javaPrimitiveType!!),
     FLOAT_ARRAY("FloatArray", FloatArray::class.java),
-    INT("Int", Int::class.java),
+    INT("Int", Int::class.javaPrimitiveType!!),
     INT_ARRAY("IntArray", IntArray::class.java),
     INT_ARRAYLIST("IntegerArrayList", ArrayList::class.java, Int::class.java),
-    LONG("Long", Long::class.java),
+    LONG("Long", Long::class.javaPrimitiveType!!),
     LONG_ARRAY("LongArray", LongArray::class.java),
-    SHORT("Short", Short::class.java),
+    SHORT("Short", Short::class.javaPrimitiveType!!),
     SHORT_ARRAY("ShortArray", ShortArray::class.java),
     // Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
     CHARSEQUENCE("CharSequence", CharSequence::class.java),
@@ -51,21 +47,17 @@ internal enum class ExtraType(private val methodName: String, val typeName: Type
     PARCELER("Parcelable", TypeName.VOID),
     SERIALIZABLE("Serializable", Serializable::class.java);
 
-    private constructor(methodName: String, cls: ClassName, vararg typeNames: TypeName) : this(methodName, ParameterizedTypeName.get(cls, *typeNames)) {}
+    private constructor(methodName: String, cls: ClassName, vararg typeNames: TypeName) : this(methodName, ParameterizedTypeName.get(cls, *typeNames))
+    private constructor(methodName: String, cls: Class<*>, vararg types: Type) : this(methodName, ParameterizedTypeName.get(cls, *types))
+    private constructor(methodName: String, type: Type) : this(methodName, TypeName.get(type))
 
-    private constructor(methodName: String, cls: Class<*>, vararg types: Type) : this(methodName, ParameterizedTypeName.get(cls, *types)) {}
-
-    private constructor(methodName: String, type: Type) : this(methodName, TypeName.get(type)) {}
-
-    val getMethodName: String get() = "get" + methodName
-
-    val putMethodName: String get() = "put" + methodName
+    val getMethodName: String get() = "get$methodName"
+    val putMethodName: String get() = "put$methodName"
 
     companion object {
-
         private val TypeName.safeUnboxed: TypeName get() = if (isBoxedPrimitive) unbox() else this
 
-        fun valueOf(fieldElement: Element, typeUtils: Types): ExtraType {
+        fun valueOf(fieldElement: Element, typeUtils: Types): BundleValueType {
             // get all supertypes in case this element is subclass of Parcelable or Serializable
             // also add current element's kind in case element does not have supertypes
             val supertypes = Lists.newArrayList(typeUtils.directSupertypes(fieldElement.asType()))

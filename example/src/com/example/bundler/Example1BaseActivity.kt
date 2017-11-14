@@ -6,7 +6,7 @@ import android.support.annotation.Nullable
 import android.util.Log
 import android.util.SparseArray
 import com.hendraanggrian.bundler.Extra
-import com.hendraanggrian.bundler.initExtras
+import com.hendraanggrian.bundler.bindExtras
 import java.io.Serializable
 import java.util.*
 
@@ -51,7 +51,7 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        initExtras()
+        bindExtras()
         Log.d("ASD", BOOLEAN.toString())
         //Log.d("ASD", BOOLEAN_ARRAY.format());
     }

@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.Button
 import butterknife.BindView
 import com.example.bundler.model.User
-import com.hendraanggrian.bundler.wrapExtras
+import com.hendraanggrian.bundler.extrasOf
 
 class ExampleActivity : BaseActivity(), View.OnClickListener {
 
@@ -28,12 +28,12 @@ class ExampleActivity : BaseActivity(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.button_main_example1 -> startActivity(Intent(this, Example1Activity::class.java)
-                    .putExtras(wrapExtras(Example1Activity::class.java, true)))
+                    .putExtras(extrasOf(Example1Activity::class.java, true)))
             R.id.button_main_example2 -> {
                 val user = User()
                 user.name = "Hendra"
                 startActivity(Intent(this, Example2Activity::class.java)
-                        .putExtras(wrapExtras(Example2Activity::class.java, user)))
+                        .putExtras(extrasOf(Example2Activity::class.java, user)))
             }
         }
     }

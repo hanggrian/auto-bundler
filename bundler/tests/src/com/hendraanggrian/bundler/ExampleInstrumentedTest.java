@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
     @Test
     public void useAppContext() throws Exception {
-        // Context wrapExtras the app under test.
+        // Context extrasOf the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
         assertEquals("com.hendraanggrian.bundler.test", appContext.getPackageName());

@@ -10,7 +10,7 @@ dependencies {
     compile project(':bundler-annotations')
     compile "com.google.auto:auto-common:$google_autocommon"
     compile "com.squareup:javapoet:$javapoet"
-
+    compile "com.google.guava:guava:$google_guava-jre"
     compileOnly "com.android.support:support-annotations:$support"
 
     testCompile "junit:junit:$junit"
