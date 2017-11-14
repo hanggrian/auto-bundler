@@ -80,11 +80,8 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
     }
 
     override fun onBackPressed() {
-        if (cardViewShown) {
-            onClick(toolbar)
-        } else {
-            super.onBackPressed()
-        }
+        if (cardViewShown) onClick(toolbar)
+        else super.onBackPressed()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

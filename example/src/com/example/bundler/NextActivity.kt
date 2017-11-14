@@ -28,15 +28,11 @@ class NextActivity(override val contentLayout: Int = R.layout.activity_next) : B
         super.onCreate(savedInstanceState)
         setSupportActionBar(toolbar)
         bindExtras()
-        view.post {
-            revealFrameLayout.animate(view, rect.centerX(), rect.centerY()).start()
-        }
+        view.post { revealFrameLayout.animate(view, rect.centerX(), rect.centerY()).start() }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            onBackPressed()
-        }
+        if (item.itemId == android.R.id.home) onBackPressed()
         return super.onOptionsItemSelected(item)
     }
 

@@ -39,32 +39,31 @@ dependencies {
     compile project(':bundler-annotations')
     compile "com.android.support:support-fragment:$support"
 
-    androidTestCompile "com.google.truth:truth:$google_truth"
-    androidTestCompile("com.android.support.test:runner:$runner") {
+    androidTestImplementation "com.google.truth:truth:$google_truth"
+    androidTestImplementation("com.android.support.test:runner:$runner") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$espresso") {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espresso") {
         exclude group: 'com.android.support', module: 'support-annotations'
     }
 
-    testCompile "junit:junit:$junit"
-    testCompile "com.google.truth:truth:$google_truth"
-    testCompile "com.google.testing.compile:compile-testing:$google_compile"
-    testCompile files(getRuntimeJar())
-    testCompile files(Jvm.current().getToolsJar())
-    testCompile project(':bundler-compiler')
+    testImplementation "junit:junit:$junit"
+    testImplementation "com.google.truth:truth:$google_truth"
+    testImplementation "com.google.testing.compile:compile-testing:$google_compile"
+    testImplementation files(getRuntimeJar())
+    testImplementation files(Jvm.current().getToolsJar())
+    testImplementation project(':bundler-compiler')
 }
 
 static def getRuntimeJar() {
     try {
-        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
-        File runtimeJar = new File(javaBase, "lib/rt.jar");
-        if (runtimeJar.exists())
-            return runtimeJar;
-        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
-        return runtimeJar.exists() ? runtimeJar : null;
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile()
+        File runtimeJar = new File(javaBase, "lib/rt.jar")
+        if (runtimeJar.exists()) return runtimeJar
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar")
+        return runtimeJar.exists() ? runtimeJar : null
     } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(e)
     }
 }
 

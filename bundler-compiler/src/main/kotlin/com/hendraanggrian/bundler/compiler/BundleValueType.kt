@@ -1,7 +1,6 @@
 package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreTypes
-import com.google.common.collect.Lists
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
@@ -26,7 +25,7 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
     FLOAT_ARRAY(TypeName.get(FloatArray::class.java), "FloatArray"),
     INT(TypeName.INT, "Int"),
     INT_ARRAY(TypeName.get(IntArray::class.java), "IntArray"),
-    INT_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, Int::class.java), "IntegerArrayList"),
+    INT_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, Integer::class.java), "IntegerArrayList"),
     LONG(TypeName.LONG, "Long"),
     LONG_ARRAY(TypeName.get(LongArray::class.java), "LongArray"),
     SHORT(TypeName.SHORT, "Short"),
@@ -56,22 +55,27 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
         fun valueOf(fieldElement: Element, typeUtils: Types): BundleValueType {
             // get all supertypes in case this element is subclass of Parcelable or Serializable
             // also add current element's kind in case element does not have supertypes
-            val supertypes = Lists.newArrayList(typeUtils.directSupertypes(fieldElement.asType()))
+            val supertypes = typeUtils.directSupertypes(fieldElement.asType()).toMutableList()
             supertypes.add(0, fieldElement.asType())
             while (!supertypes.isEmpty()) {
-                val currentType = TypeName.get(supertypes[0])
-                for (type in values()) {
-                    if (currentType is ArrayTypeName && type.typeName is ArrayTypeName) {
-                        if (currentType.componentType.safeUnboxed == type.typeName.componentType.safeUnboxed)
+                try {
+                    val currentType = TypeName.get(supertypes[0])
+                    for (type in values()) {
+                        if (currentType is ArrayTypeName && type.typeName is ArrayTypeName) {
+                            if (currentType.componentType.safeUnboxed == type.typeName.componentType.safeUnboxed)
+                                return type
+                        } else if ((currentType.isPrimitive || currentType.isBoxedPrimitive) && (type.typeName.isPrimitive || type.typeName.isBoxedPrimitive)) {
+                            if (currentType.safeUnboxed == type.typeName.safeUnboxed)
+                                return type
+                        } else if (type.typeName == currentType) {
                             return type
-                    } else if ((currentType.isPrimitive || currentType.isBoxedPrimitive) && (type.typeName.isPrimitive || type.typeName.isBoxedPrimitive)) {
-                        if (currentType.safeUnboxed == type.typeName.safeUnboxed)
-                            return type
-                    } else if (type.typeName == currentType) {
-                        return type
+                        }
                     }
+                } catch (e: Exception) {
+                    // some bad shit
+                } finally {
+                    supertypes.removeAt(0)
                 }
-                supertypes.removeAt(0)
             }
             // this element is not primitive and not subclass of Parcelable or Serializable
             // check if this class is parceled by parceler

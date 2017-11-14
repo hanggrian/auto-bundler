@@ -7,6 +7,7 @@ import android.util.Log
 import android.util.SparseArray
 import com.hendraanggrian.bundler.Extra
 import com.hendraanggrian.bundler.bindExtras
+import kota.debug
 import java.io.Serializable
 import java.util.*
 
@@ -52,8 +53,7 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bindExtras()
-        Log.d("ASD", BOOLEAN.toString())
-        //Log.d("ASD", BOOLEAN_ARRAY.format());
+        debug("ASD", BOOLEAN.toString())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

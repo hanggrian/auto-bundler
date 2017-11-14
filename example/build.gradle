@@ -31,6 +31,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+    }
 }
 
 repositories {
@@ -42,7 +45,11 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$support"
     implementation "com.android.support:cardview-v7:$support"
     implementation "com.android.support:design:$support"
+
     implementation "com.hendraanggrian:reveallayout:$reveallayout"
+    implementation "com.hendraanggrian:kota-appcompat-v7:$kota"
+    implementation "com.hendraanggrian:kota-design:$kota"
+    implementation "com.hendraanggrian:kota-preference-v7:$kota"
 
     implementation project(':bundler')
     kapt project(':bundler-compiler')
