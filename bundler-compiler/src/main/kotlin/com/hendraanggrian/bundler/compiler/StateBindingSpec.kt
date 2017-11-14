@@ -1,5 +1,6 @@
 package com.hendraanggrian.bundler.compiler
 
+import android.os.Bundle
 import com.google.auto.common.MoreTypes
 import com.hendraanggrian.bundler.State
 import com.squareup.javapoet.ClassName
@@ -16,10 +17,10 @@ internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
     private val constructorBinding = MethodSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter(ClassName.get(typeElement), TARGET)
-            .addParameter(TYPE_BUNDLE, SOURCE)
+            .addParameter(Bundle::class.java, SOURCE)
     private val constructorSaving = MethodSpec.constructorBuilder()
             .addModifiers(PUBLIC)
-            .addParameter(TYPE_BUNDLE, SOURCE)
+            .addParameter(Bundle::class.java, SOURCE)
             .addParameter(ClassName.get(typeElement), TARGET)
 
     override fun superclass(extraClassNames: Collection<String>): StateBindingSpec {

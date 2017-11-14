@@ -6,7 +6,6 @@ import android.app.Activity
 import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
-import android.support.annotation.RequiresApi
 import android.util.Log.d
 import com.hendraanggrian.bundler.Bundler.TAG
 import com.hendraanggrian.bundler.Bundler.mBindings
@@ -19,59 +18,54 @@ import java.lang.reflect.InvocationTargetException
 import java.util.*
 
 /** Bind extra fields in support Fragment with default behavior. */
-fun android.support.v4.app.Fragment.bindExtras() = arguments!! bindExtrasTo this
+inline fun android.support.v4.app.Fragment.bindExtras() = arguments!!.bindExtrasTo(this)
 
 /** Bind extra fields in Fragment with default behavior. */
-fun Fragment.bindExtras() = arguments bindExtrasTo this
+inline fun Fragment.bindExtras() = arguments.bindExtrasTo(this)
 
 /** Bind extra fields in Activity with default behavior. */
-fun Activity.bindExtras() = intent bindExtrasTo this
+inline fun Activity.bindExtras() = intent.bindExtrasTo(this)
 
 /** Bind extra fields in target from source Bundle attached to Intent. */
-infix fun Intent.bindExtrasTo(target: Any) = extras bindExtrasTo target
+inline fun Intent.bindExtrasTo(target: Any) = extras.bindExtrasTo(target)
 
 /** Bind extra fields in target from source Bundle. */
-infix fun Bundle.bindExtrasTo(target: Any) {
-    val binding = javaClass.bindingOf(Extra.SUFFIX, arrayOf(target.javaClass, Bundle::class.java), arrayOf(target, this))
+fun Bundle.bindExtrasTo(target: Any) {
+    val binding = target.javaClass.bindingOf(Extra.SUFFIX, Pair(target.javaClass, target), Pair(Bundle::class.java, this))
     if (mDebug) binding.mSource.print()
 }
 
-/** Bind state fields in target from source Bundle. */
-infix fun Bundle.bindStatesTo(target: Any) {
-    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(target.javaClass, Bundle::class.java), arrayOf(target, this))
-    if (mDebug) binding.mSource.print()
-}
+inline fun extrasOf(targetClass: Class<*>, arg: Any): Bundle = extrasOf(targetClass, mutableListOf(arg))
 
-fun extrasOf(targetClass: Class<*>, arg: Any): Bundle = extrasOf(targetClass, listOf(arg))
+inline fun extrasOf(targetClass: Class<*>, vararg args: Any): Bundle = extrasOf(targetClass, args.toMutableList())
 
-fun extrasOf(targetClass: Class<*>, vararg args: Any): Bundle = extrasOf(targetClass, args.toList())
-
-fun extrasOf(targetClass: Class<*>, args: List<*>): Bundle {
-    val binding = targetClass.bindingOf(Extra.SUFFIX, arrayOf(List::class.java), arrayOf(args))
+fun extrasOf(targetClass: Class<*>, args: MutableList<*>): Bundle {
+    val binding = targetClass.bindingOf(Extra.SUFFIX, Pair(MutableList::class.java, args))
     if (mDebug) binding.mSource.print()
     return binding.mSource
 }
 
-infix fun Bundle.saveStatesTo(target: Any): Bundle {
-    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(Bundle::class.java, target.javaClass), arrayOf(this, target))
-    putAll(binding.mSource)
+/** Bind state fields in target from source Bundle. */
+fun Bundle.restoreStatesTo(target: Any) {
+    val binding = target.javaClass.bindingOf(State.SUFFIX, Pair(target.javaClass, target), Pair(Bundle::class.java, this))
     if (mDebug) binding.mSource.print()
-    return this
 }
 
-private fun Class<out Any>.bindingOf(
-        targetClassSuffix: String,
-        constructorParameterTypes: Array<Class<*>>,
-        constructorParameters: Array<Any>
-): BundleBinding {
+fun Bundle.saveStatesTo(target: Any) {
+    val binding = target.javaClass.bindingOf(State.SUFFIX, Pair(Bundle::class.java, this), Pair(target.javaClass, target))
+    putAll(binding.mSource)
+    if (mDebug) binding.mSource.print()
+}
+
+private fun Class<out Any>.bindingOf(targetSuffix: String, vararg constructorParams: Pair<Class<*>, Any>): BundleBinding {
     if (mDebug) d(TAG, "Looking up constructor for $name")
-    val constructor = bindingConstructorOf(targetClassSuffix, constructorParameterTypes)
+    val constructor = bindingConstructorOf(targetSuffix, constructorParams.map { it.first }.toTypedArray())
     if (constructor == null) {
         if (mDebug) d(TAG, "Ignored because no constructor was found in $simpleName")
         return EMPTY
     }
     try {
-        return constructor.newInstance(*constructorParameters)
+        return constructor.newInstance(*constructorParams.map { it.second }.toTypedArray())
     } catch (e: IllegalAccessException) {
         throw RuntimeException("Unable to invoke $constructor", e)
     } catch (e: InstantiationException) {
@@ -84,12 +78,9 @@ private fun Class<out Any>.bindingOf(
     }
 }
 
-private fun Class<out Any>.bindingConstructorOf(
-        targetClassSuffix: String,
-        constructorParameterTypes: Array<Class<*>>
-): Constructor<BundleBinding>? {
+private fun Class<out Any>.bindingConstructorOf(targetSuffix: String, constructorParamTypes: Array<Class<*>>): Constructor<BundleBinding>? {
     if (mBindings == null) mBindings = WeakHashMap<String, Constructor<BundleBinding>>()
-    val bindingKey = canonicalName + targetClassSuffix + constructorParameterTypes[0].simpleName
+    val bindingKey = canonicalName + targetSuffix + constructorParamTypes[0].simpleName
     var binding = mBindings!![bindingKey]
     if (binding != null) {
         if (mDebug) d(TAG, "HIT: Cache found in binding weak map.")
@@ -103,18 +94,18 @@ private fun Class<out Any>.bindingConstructorOf(
     @Suppress("UNCHECKED_CAST")
     try {
         binding = classLoader
-                .loadClass(targetClassName + targetClassSuffix)
-                .getConstructor(*constructorParameterTypes) as Constructor<BundleBinding>
+                .loadClass(targetClassName + targetSuffix)
+                .getConstructor(*constructorParamTypes) as Constructor<BundleBinding>
         if (mDebug) d(TAG, "HIT: Loaded binding class, caching in weak map.")
     } catch (e: ClassNotFoundException) {
         if (mDebug) d(TAG, "Not found. Trying superclass ${superclass.name}")
         val targetSuperclass = superclass
         //region abstract classes binding fix
-        if (constructorParameterTypes[0] == this && constructorParameterTypes[0].superclass == targetSuperclass) {
-            constructorParameterTypes[0] = targetSuperclass
+        if (constructorParamTypes[0] == this && constructorParamTypes[0].superclass == targetSuperclass) {
+            constructorParamTypes[0] = targetSuperclass
         }
         //endregion
-        binding = targetSuperclass.bindingConstructorOf(targetClassSuffix, constructorParameterTypes)
+        binding = targetSuperclass.bindingConstructorOf(targetSuffix, constructorParamTypes)
     } catch (e: NoSuchMethodException) {
         throw RuntimeException("Unable to find binding constructor for $targetClassName", e)
     }
@@ -125,14 +116,10 @@ private fun Class<out Any>.bindingConstructorOf(
 private fun Bundle.print() {
     try {
         val jsonObject = JSONObject()
-        for (key in keySet()) {
-            jsonObject.put(key, get(key))
-        }
+        for (key in keySet()) jsonObject.put(key, get(key))
         val json = jsonObject.toString(4)
-        for (line in json.split("\\r?\\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) {
-            d(TAG, line)
-        }
+        for (line in json.split("\\r?\\n".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()) d(TAG, line)
     } catch (e: Exception) {
-        e.printStackTrace()
+        if (mDebug) e.printStackTrace()
     }
 }

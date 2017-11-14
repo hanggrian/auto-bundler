@@ -24,4 +24,13 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-//$ ./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PbintrayKey= -PdryRun=false
+/**
+ ./gradlew :bundler-annotations:clean :bundler-annotations:build
+ ./gradlew :bundler-annotations:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
+
+ ./gradlew :bundler-compiler:clean :bundler-compiler:build
+ ./gradlew :bundler-compiler:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
+
+ ./gradlew :bundler:clean :bundler:build
+ ./gradlew :bundler:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
+ */

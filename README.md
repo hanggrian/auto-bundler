@@ -6,8 +6,8 @@ Bundler aims to minify the process with annotation processing.
 
 ```java
 public class ExampleActivity extends Activity {
-    @BindExtra String username;
-    @BindState int position;
+    @Extra String username;
+    @State int position;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +28,14 @@ public class ExampleActivity extends Activity {
 Extra binding
 -------------
 #### Binding
-`@BindExtra` for binding extra value to field, field cannot be private.
+`@Extra` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
 ```java
-@BindExtra String username;
+@Extra String username;
 ```
 
 #### Wrapping
-Create extras with varargs argument with `Bundle.extrasOf()`.
+Create extras with varargs argument with `extrasOf()`.
 This is optional, any Bundle would work just fine.
 ```java
 Intent intent = new Intent(context, ExampleActivity.class);
@@ -46,19 +46,18 @@ startActivity(intent);
 State binding
 -------------
 #### Restoring
-`@BindState` for binding extra value to field, field cannot be private.
+`@State` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
 ```java
-@BindState int position;
+@State int position;
 ```
 
 #### Saving
 Simply call `Bundle.saveStates()` to save states.
-```java
-@Override
-public void onSaveInstanceState(Bundle outState) {
-    super.onSaveInstanceState(outState);
-    Bundler.saveStates(this, outState);
+```kotlin
+override fun onSaveInstanceState(outState : Bundle) {
+    super.onSaveInstanceState(outState)
+    outState.saveStatesTo(this)
 }
 ```
 
@@ -87,14 +86,13 @@ intent.putExtra("user", Parcels.wrap(user));
 ```
 
 `Bundler.bind()` automatically converts the Parcelable back to original object.
-```java
-public class UserActivity extends Activity {
-    @BindExtra("user") User user;
+```kotlin
+class UserActivity : Activity {
+    @Extra("user") lateinit var user : User
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundler.bind(this);
+    override fun onCreate(savedInstanceState : Bundle) {
+        super.onCreate(savedInstanceState)
+        bindExtras()
     }
 }
 ```
@@ -111,13 +109,13 @@ Download
 --------
 ```gradle
 repositories {
+    google()
     jcenter()
-    maven { url "https://maven.google.com" }
 }
 
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.5.0'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.5.0'
+    compile 'com.hendraanggrian:bundler:0.6'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.6' // or kapt if this is a kotlin project
 }
 ```
 

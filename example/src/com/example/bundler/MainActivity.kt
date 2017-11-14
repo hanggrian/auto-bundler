@@ -15,8 +15,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import butterknife.BindView
 import com.hendraanggrian.bundler.State
-import com.hendraanggrian.bundler.bindStatesTo
 import com.hendraanggrian.bundler.extrasOf
+import com.hendraanggrian.bundler.restoreStatesTo
 import com.hendraanggrian.bundler.saveStatesTo
 import com.hendraanggrian.widget.RevealFrameLayout
 
@@ -34,12 +34,10 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.let {
-            it bindStatesTo this
-            if (cardViewShown) {
-                button.visibility = View.INVISIBLE
-                cardView.visibility = View.VISIBLE
-            }
+        savedInstanceState?.restoreStatesTo(this)
+        if (cardViewShown) {
+            button.visibility = View.INVISIBLE
+            cardView.visibility = View.VISIBLE
         }
         button.setOnClickListener(this)
         cardView.setOnClickListener(this)
@@ -85,7 +83,9 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState saveStatesTo this)
+        // super.onSaveInstanceState(outState saveStatesTo this)
+        super.onSaveInstanceState(outState)
+        outState.saveStatesTo(this)
     }
 
     companion object {

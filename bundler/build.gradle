@@ -35,9 +35,9 @@ android {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
-    compile project(':bundler-annotations')
-    compile "com.android.support:support-fragment:$support"
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
+    api project(':bundler-annotations')
+    api "com.android.support:support-fragment:$support"
 
     androidTestImplementation "com.google.truth:truth:$google_truth"
     androidTestImplementation("com.android.support.test:runner:$runner") {
@@ -55,12 +55,12 @@ dependencies {
     testImplementation project(':bundler-compiler')
 }
 
-def getRuntimeJar() {
+static def getRuntimeJar() {
     try {
-        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile()
-        File runtimeJar = new File(javaBase, "lib/rt.jar")
+        final File javaBase = new File(System.getProperty('java.home')).getCanonicalFile()
+        File runtimeJar = new File(javaBase, 'lib/rt.jar')
         if (runtimeJar.exists()) return runtimeJar
-        runtimeJar = new File(javaBase, "jre/lib/rt.jar")
+        runtimeJar = new File(javaBase, 'jre/lib/rt.jar')
         return runtimeJar.exists() ? runtimeJar : null
     } catch (IOException e) {
         throw new RuntimeException(e)

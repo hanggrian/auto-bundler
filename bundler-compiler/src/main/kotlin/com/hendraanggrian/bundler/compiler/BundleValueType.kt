@@ -1,5 +1,7 @@
 package com.hendraanggrian.bundler.compiler
 
+import android.os.Parcelable
+import android.util.SparseArray
 import com.google.auto.common.MoreTypes
 import com.squareup.javapoet.ArrayTypeName
 import com.squareup.javapoet.ClassName
@@ -34,10 +36,10 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
     CHARSEQUENCE(TypeName.get(CharSequence::class.java), "CharSequence"),
     CHARSEQUENCE_ARRAY(TypeName.get(Array<CharSequence>::class.java), "CharSequenceArray"),
     CHARSEQUENCE_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, CharSequence::class.java), "CharSequenceArrayList"),
-    PARCELABLE(TYPE_PARCELABLE, "Parcelable"),
-    PARCELABLE_ARRAY(ArrayTypeName.of(TYPE_PARCELABLE), "ParcelableArray"),
-    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList::class.java), TYPE_PARCELABLE), "ParcelableArrayList"),
-    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(TYPE_SPARSE_ARRAY, TYPE_PARCELABLE), "SparseParcelableArray"),
+    PARCELABLE(TypeName.get(Parcelable::class.java), "Parcelable"),
+    PARCELABLE_ARRAY(ArrayTypeName.of(TypeName.get(Parcelable::class.java)), "ParcelableArray"),
+    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList::class.java), TypeName.get(Parcelable::class.java)), "ParcelableArrayList"),
+    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(ClassName.get(SparseArray::class.java), TypeName.get(Parcelable::class.java)), "SparseParcelableArray"),
     STRING(TypeName.get(String::class.java), "String"),
     STRING_ARRAY(TypeName.get(Array<String>::class.java), "StringArray"),
     STRING_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, String::class.java), "StringArrayList"),
