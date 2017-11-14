@@ -38,7 +38,7 @@ class BundlerProcessor : AbstractProcessor() {
 
     override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         // build utility class if parceler is available and if it has not yet already been created
-        if (elementUtils.getTypeElement(Spec.CLASS_PARCELS.toString()) != null && elementUtils.getTypeElement(Spec.CLASS_BUNDLER_UTILS.toString()) == null) {
+        if (elementUtils.getTypeElement(TYPE_PARCELS.toString()) != null && elementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
             val file = UtilsSpec().toJavaFile()
             try {
                 file.writeTo(filer)
@@ -53,7 +53,7 @@ class BundlerProcessor : AbstractProcessor() {
             for (fieldElement in roundEnv.getElementsAnnotatedWith(annotation)) {
                 val typeElement = MoreElements.asType(fieldElement.enclosingElement)
                 map.put(typeElement, fieldElement)
-                generatedClassNames.add(Spec.guessGeneratedName(typeElement, if (annotation == Extra::class.java) "_ExtraBinding" else "_StateBinding"))
+                generatedClassNames.add(typeElement.getMeasuredName(if (annotation == Extra::class.java) Extra.SUFFIX else State.SUFFIX))
             }
             // write classes and keep results
             for (key in map.keySet()) {

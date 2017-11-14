@@ -1,43 +1,44 @@
 package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreTypes
+import com.hendraanggrian.bundler.State
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import java.util.*
 import javax.lang.model.element.Element
-import javax.lang.model.element.Modifier
+import javax.lang.model.element.Modifier.PUBLIC
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.Types
 
-internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, "_StateBinding") {
+internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, State.SUFFIX) {
 
     private val constructorBinding = MethodSpec.constructorBuilder()
-            .addModifiers(Modifier.PUBLIC)
-            .addParameter(ClassName.get(typeElement), Spec.Companion.TARGET)
-            .addParameter(Spec.Companion.CLASS_BUNDLE, Spec.Companion.SOURCE)
+            .addModifiers(PUBLIC)
+            .addParameter(ClassName.get(typeElement), TARGET)
+            .addParameter(TYPE_BUNDLE, SOURCE)
     private val constructorSaving = MethodSpec.constructorBuilder()
-            .addModifiers(Modifier.PUBLIC)
-            .addParameter(Spec.Companion.CLASS_BUNDLE, Spec.Companion.SOURCE)
-            .addParameter(ClassName.get(typeElement), Spec.Companion.TARGET)
+            .addModifiers(PUBLIC)
+            .addParameter(TYPE_BUNDLE, SOURCE)
+            .addParameter(ClassName.get(typeElement), TARGET)
 
     override fun superclass(extraClassNames: Collection<String>): StateBindingSpec {
         var extraHasSuperclass = false
         if (targetSuperclass.kind != TypeKind.NONE && targetSuperclass.kind != TypeKind.VOID) {
             val superclass = MoreTypes.asTypeElement(targetSuperclass)
-            val extraClassName = Spec.Companion.guessGeneratedName(superclass, suffix)
+            val extraClassName = superclass.getMeasuredName(suffix)
             if (extraClassNames.contains(extraClassName)) {
                 typeSpec.superclass(ClassName.get(packageName, extraClassName))
                 extraHasSuperclass = true
             }
         }
         if (!extraHasSuperclass) {
-            typeSpec.superclass(Spec.Companion.CLASS_BUNDLE_BINDING)
-            constructorBinding.addStatement("super(\$L)", Spec.Companion.SOURCE)
-            constructorSaving.addStatement("super(\$L)", Spec.Companion.SOURCE)
+            typeSpec.superclass(TYPE_BUNDLE_BINDING)
+            constructorBinding.addStatement("super(\$L)", SOURCE)
+            constructorSaving.addStatement("super(\$L)", SOURCE)
         } else {
-            constructorBinding.addStatement("super(\$L, \$L)", Spec.Companion.TARGET, Spec.Companion.SOURCE)
-            constructorSaving.addStatement("super(\$L, \$L)", Spec.Companion.SOURCE, Spec.Companion.TARGET)
+            constructorBinding.addStatement("super(\$L, \$L)", TARGET, SOURCE)
+            constructorSaving.addStatement("super(\$L, \$L)", SOURCE, TARGET)
         }
         return this
     }

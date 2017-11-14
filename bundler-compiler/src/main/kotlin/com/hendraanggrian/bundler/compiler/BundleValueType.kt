@@ -7,51 +7,47 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import java.io.Serializable
-import java.lang.reflect.Type
 import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.util.Types
 
 /** Represents Bundle-compatible values. */
-internal enum class BundleValueType(private val methodName: String, val typeName: TypeName) {
+internal enum class BundleValueType(val typeName: TypeName, private val methodName: String) {
     // Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
-    BOOLEAN("Boolean", Boolean::class.javaPrimitiveType!!),
-    BOOLEAN_ARRAY("BooleanArray", BooleanArray::class.java),
-    BYTE("Byte", Byte::class.javaPrimitiveType!!),
-    BYTE_ARRAY("ByteArray", ByteArray::class.java),
-    CHAR("Char", Char::class.javaPrimitiveType!!),
-    CHAR_ARRAY("CharArray", CharArray::class.java),
-    DOUBLE("Double", Double::class.javaPrimitiveType!!),
-    DOUBLE_ARRAY("DoubleArray", DoubleArray::class.java),
-    FLOAT("Float", Float::class.javaPrimitiveType!!),
-    FLOAT_ARRAY("FloatArray", FloatArray::class.java),
-    INT("Int", Int::class.javaPrimitiveType!!),
-    INT_ARRAY("IntArray", IntArray::class.java),
-    INT_ARRAYLIST("IntegerArrayList", ArrayList::class.java, Int::class.java),
-    LONG("Long", Long::class.javaPrimitiveType!!),
-    LONG_ARRAY("LongArray", LongArray::class.java),
-    SHORT("Short", Short::class.javaPrimitiveType!!),
-    SHORT_ARRAY("ShortArray", ShortArray::class.java),
+    BOOLEAN(TypeName.BOOLEAN, "Boolean"),
+    BOOLEAN_ARRAY(TypeName.get(BooleanArray::class.java), "BooleanArray"),
+    BYTE(TypeName.BYTE, "Byte"),
+    BYTE_ARRAY(TypeName.get(BooleanArray::class.java), "ByteArray"),
+    CHAR(TypeName.CHAR, "Char"),
+    CHAR_ARRAY(TypeName.get(CharArray::class.java), "CharArray"),
+    DOUBLE(TypeName.DOUBLE, "Double"),
+    DOUBLE_ARRAY(TypeName.get(DoubleArray::class.java), "DoubleArray"),
+    FLOAT(TypeName.FLOAT, "Float"),
+    FLOAT_ARRAY(TypeName.get(FloatArray::class.java), "FloatArray"),
+    INT(TypeName.INT, "Int"),
+    INT_ARRAY(TypeName.get(IntArray::class.java), "IntArray"),
+    INT_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, Int::class.java), "IntegerArrayList"),
+    LONG(TypeName.LONG, "Long"),
+    LONG_ARRAY(TypeName.get(LongArray::class.java), "LongArray"),
+    SHORT(TypeName.SHORT, "Short"),
+    SHORT_ARRAY(TypeName.get(ShortArray::class.java), "ShortArray"),
     // Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
-    CHARSEQUENCE("CharSequence", CharSequence::class.java),
-    CHARSEQUENCE_ARRAY("CharSequenceArray", Array<CharSequence>::class.java),
-    CHARSEQUENCE_ARRAYLIST("CharSequenceArrayList", ArrayList::class.java, CharSequence::class.java),
-    PARCELABLE("Parcelable", Spec.CLASS_PARCELABLE),
-    PARCELABLE_ARRAY("ParcelableArray", ArrayTypeName.of(Spec.CLASS_PARCELABLE)),
-    PARCELABLE_ARRAYLIST("ParcelableArrayList", ClassName.get(ArrayList::class.java), Spec.CLASS_PARCELABLE),
-    PARCELABLE_SPARSEARRAY("SparseParcelableArray", Spec.CLASS_SPARSE_ARRAY, Spec.CLASS_PARCELABLE),
-    STRING("String", String::class.java),
-    STRING_ARRAY("StringArray", Array<String>::class.java),
-    STRING_ARRAYLIST("StringArrayList", ArrayList::class.java, String::class.java),
+    CHARSEQUENCE(TypeName.get(CharSequence::class.java), "CharSequence"),
+    CHARSEQUENCE_ARRAY(TypeName.get(Array<CharSequence>::class.java), "CharSequenceArray"),
+    CHARSEQUENCE_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, CharSequence::class.java), "CharSequenceArrayList"),
+    PARCELABLE(TYPE_PARCELABLE, "Parcelable"),
+    PARCELABLE_ARRAY(ArrayTypeName.of(TYPE_PARCELABLE), "ParcelableArray"),
+    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList::class.java), TYPE_PARCELABLE), "ParcelableArrayList"),
+    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(TYPE_SPARSE_ARRAY, TYPE_PARCELABLE), "SparseParcelableArray"),
+    STRING(TypeName.get(String::class.java), "String"),
+    STRING_ARRAY(TypeName.get(Array<String>::class.java), "StringArray"),
+    STRING_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, String::class.java), "StringArrayList"),
     // Others: Parceler and Serializable.
-    PARCELER("Parcelable", TypeName.VOID),
-    SERIALIZABLE("Serializable", Serializable::class.java);
-
-    private constructor(methodName: String, cls: ClassName, vararg typeNames: TypeName) : this(methodName, ParameterizedTypeName.get(cls, *typeNames))
-    private constructor(methodName: String, cls: Class<*>, vararg types: Type) : this(methodName, ParameterizedTypeName.get(cls, *types))
-    private constructor(methodName: String, type: Type) : this(methodName, TypeName.get(type))
+    PARCELER(TypeName.VOID, "Parcelable"),
+    SERIALIZABLE(TypeName.get(Serializable::class.java), "Serializable");
 
     val getMethodName: String get() = "get$methodName"
+
     val putMethodName: String get() = "put$methodName"
 
     companion object {
@@ -80,7 +76,7 @@ internal enum class BundleValueType(private val methodName: String, val typeName
             // this element is not primitive and not subclass of Parcelable or Serializable
             // check if this class is parceled by parceler
             MoreTypes.asTypeElement(fieldElement.asType()).annotationMirrors
-                    .filter { TypeName.get(it.annotationType) == Spec.CLASS_PARCEL }
+                    .filter { TypeName.get(it.annotationType) == TYPE_PARCEL }
                     .forEach { return PARCELER }
             // not supported, throw exception
             throw RuntimeException(String.format(

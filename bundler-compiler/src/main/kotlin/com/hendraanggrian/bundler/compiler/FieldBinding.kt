@@ -17,9 +17,9 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
 
     val codeBlock: CodeBlock
         get() = when {
-            type != BundleValueType.PARCELER -> CodeBlock.of("\$L.\$L = \$L(\$S, \$L.\$L);\n", Spec.TARGET, name, type.getMethodName, key, Spec.TARGET, name)
+            type != BundleValueType.PARCELER -> CodeBlock.of("\$L.\$L = \$L(\$S, \$L.\$L);\n", TARGET, name, type.getMethodName, key, TARGET, name)
             else -> CodeBlock.of("\$L.\$L = \$T.getParceler(\$L, \$S, \$L.\$L);\n",
-                    Spec.TARGET, name, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name)
+                    TARGET, name, TYPE_BUNDLER_UTILS, SOURCE, key, TARGET, name)
         }
 
     init {
@@ -45,16 +45,16 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
     val putCodeBlockWithList: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of("if(!\$L.isEmpty()) \$L.\$L(\$S, (\$L) nextArg());\n",
-                    Spec.ARGS, Spec.SOURCE, type.putMethodName, key, type.typeName.toString())
+                    ARGS, SOURCE, type.putMethodName, key, type.typeName.toString())
             else -> CodeBlock.of("if(!\$L.isEmpty()) \$T.putParceler(\$L, \$S, nextArg());\n",
-                    Spec.ARGS, Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key)
+                    ARGS, TYPE_BUNDLER_UTILS, SOURCE, key)
         }
 
     val putCodeBlock: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of("\$L.\$L(\$S, \$L.\$L);\n",
-                    Spec.SOURCE, type.putMethodName, key, Spec.TARGET, name)
+                    SOURCE, type.putMethodName, key, TARGET, name)
             else -> CodeBlock.of("\$T.putParceler(\$L, \$S, \$L.\$L);\n",
-                    Spec.CLASS_BUNDLER_UTILS, Spec.SOURCE, key, Spec.TARGET, name)
+                    TYPE_BUNDLER_UTILS, SOURCE, key, TARGET, name)
         }
 }
