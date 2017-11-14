@@ -8,7 +8,7 @@ import java.io.Serializable
 import java.util.*
 
 /** Superclass of all generated bundle bindings. */
-abstract class BundleBinding private constructor(protected val source: Bundle, private val args: MutableList<*>) {
+abstract class BundleBinding private constructor(@JvmField protected val source: Bundle, private val args: MutableList<*>) {
 
     protected constructor(source: Bundle) : this(source, Collections.EMPTY_LIST)
     protected constructor(args: MutableList<*>) : this(Bundle(), args)

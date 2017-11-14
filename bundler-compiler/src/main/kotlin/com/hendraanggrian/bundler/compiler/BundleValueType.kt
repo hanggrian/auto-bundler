@@ -16,7 +16,7 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
     BOOLEAN(TypeName.BOOLEAN, "Boolean"),
     BOOLEAN_ARRAY(TypeName.get(BooleanArray::class.java), "BooleanArray"),
     BYTE(TypeName.BYTE, "Byte"),
-    BYTE_ARRAY(TypeName.get(BooleanArray::class.java), "ByteArray"),
+    BYTE_ARRAY(TypeName.get(ByteArray::class.java), "ByteArray"),
     CHAR(TypeName.CHAR, "Char"),
     CHAR_ARRAY(TypeName.get(CharArray::class.java), "CharArray"),
     DOUBLE(TypeName.DOUBLE, "Double"),

@@ -55,7 +55,7 @@ dependencies {
     testImplementation project(':bundler-compiler')
 }
 
-static def getRuntimeJar() {
+def getRuntimeJar() {
     try {
         final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile()
         File runtimeJar = new File(javaBase, "lib/rt.jar")

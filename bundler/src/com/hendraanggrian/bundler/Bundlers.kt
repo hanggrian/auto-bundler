@@ -21,8 +21,7 @@ import java.util.*
 /** Bind extra fields in support Fragment with default behavior. */
 fun android.support.v4.app.Fragment.bindExtras() = arguments!! bindExtrasTo this
 
-/** Bind extra fields in Fragment with default behavior, not available pre-11. */
-@RequiresApi(11)
+/** Bind extra fields in Fragment with default behavior. */
 fun Fragment.bindExtras() = arguments bindExtrasTo this
 
 /** Bind extra fields in Activity with default behavior. */
@@ -33,13 +32,13 @@ infix fun Intent.bindExtrasTo(target: Any) = extras bindExtrasTo target
 
 /** Bind extra fields in target from source Bundle. */
 infix fun Bundle.bindExtrasTo(target: Any) {
-    val binding = javaClass.bindingOf(Extra.SUFFIX, arrayOf(javaClass, Bundle::class.java), arrayOf(target, this))
+    val binding = javaClass.bindingOf(Extra.SUFFIX, arrayOf(target.javaClass, Bundle::class.java), arrayOf(target, this))
     if (mDebug) binding.mSource.print()
 }
 
 /** Bind state fields in target from source Bundle. */
 infix fun Bundle.bindStatesTo(target: Any) {
-    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(javaClass, Bundle::class.java), arrayOf(target, this))
+    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(target.javaClass, Bundle::class.java), arrayOf(target, this))
     if (mDebug) binding.mSource.print()
 }
 
@@ -54,7 +53,7 @@ fun extrasOf(targetClass: Class<*>, args: List<*>): Bundle {
 }
 
 infix fun Bundle.saveStatesTo(target: Any): Bundle {
-    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(Bundle::class.java, javaClass), arrayOf(this, target))
+    val binding = javaClass.bindingOf(State.SUFFIX, arrayOf(Bundle::class.java, target.javaClass), arrayOf(this, target))
     putAll(binding.mSource)
     if (mDebug) binding.mSource.print()
     return this
@@ -65,25 +64,24 @@ private fun Class<out Any>.bindingOf(
         constructorParameterTypes: Array<Class<*>>,
         constructorParameters: Array<Any>
 ): BundleBinding {
-    if (mDebug) d(TAG, "Looking up constructor for " + name)
+    if (mDebug) d(TAG, "Looking up constructor for $name")
     val constructor = bindingConstructorOf(targetClassSuffix, constructorParameterTypes)
     if (constructor == null) {
-        if (mDebug) d(TAG, "Ignored because no constructor was found in " + simpleName)
+        if (mDebug) d(TAG, "Ignored because no constructor was found in $simpleName")
         return EMPTY
     }
     try {
         return constructor.newInstance(*constructorParameters)
     } catch (e: IllegalAccessException) {
-        throw RuntimeException("Unable to invoke " + constructor, e)
+        throw RuntimeException("Unable to invoke $constructor", e)
     } catch (e: InstantiationException) {
-        throw RuntimeException("Unable to invoke " + constructor, e)
+        throw RuntimeException("Unable to invoke $constructor", e)
     } catch (e: InvocationTargetException) {
         val cause = e.cause
         if (cause is RuntimeException) throw cause
         if (cause is Error) throw cause
         throw RuntimeException("Unable to create constructor instance.", cause)
     }
-
 }
 
 private fun Class<out Any>.bindingConstructorOf(
@@ -109,7 +107,7 @@ private fun Class<out Any>.bindingConstructorOf(
                 .getConstructor(*constructorParameterTypes) as Constructor<BundleBinding>
         if (mDebug) d(TAG, "HIT: Loaded binding class, caching in weak map.")
     } catch (e: ClassNotFoundException) {
-        if (mDebug) d(TAG, "Not found. Trying superclass " + superclass.name)
+        if (mDebug) d(TAG, "Not found. Trying superclass ${superclass.name}")
         val targetSuperclass = superclass
         //region abstract classes binding fix
         if (constructorParameterTypes[0] == this && constructorParameterTypes[0].superclass == targetSuperclass) {
@@ -118,9 +116,9 @@ private fun Class<out Any>.bindingConstructorOf(
         //endregion
         binding = targetSuperclass.bindingConstructorOf(targetClassSuffix, constructorParameterTypes)
     } catch (e: NoSuchMethodException) {
-        throw RuntimeException("Unable to find binding constructor for " + targetClassName, e)
+        throw RuntimeException("Unable to find binding constructor for $targetClassName", e)
     }
-    mBindings!!.put(bindingKey, binding)
+    mBindings!![bindingKey] = binding
     return binding
 }
 
