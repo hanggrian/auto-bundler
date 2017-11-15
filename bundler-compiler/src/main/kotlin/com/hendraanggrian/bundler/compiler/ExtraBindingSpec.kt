@@ -1,6 +1,5 @@
 package com.hendraanggrian.bundler.compiler
 
-import android.os.Bundle
 import android.support.annotation.Nullable
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
@@ -19,7 +18,7 @@ internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
     private val constructorBinding = MethodSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter(ClassName.get(typeElement), TARGET)
-            .addParameter(Bundle::class.java, SOURCE)
+            .addParameter(TYPE_BUNDLE, SOURCE)
     private val constructorWrapping = MethodSpec.constructorBuilder()
             .addModifiers(PUBLIC)
             .addParameter(List::class.java, ARGS)

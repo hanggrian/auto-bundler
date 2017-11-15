@@ -13,7 +13,6 @@ dependencies {
     implementation "com.google.auto:auto-common:$google_autocommon"
     implementation "com.google.guava:guava:$google_guava-jre"
     api "com.squareup:javapoet:$javapoet"
-    compileOnly "com.google.android:android:$android_runtime"
     compileOnly files(Jvm.current().getToolsJar())
 
     testImplementation "junit:junit:$junit"

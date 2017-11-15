@@ -1,6 +1,5 @@
 package com.hendraanggrian.bundler.compiler
 
-import android.os.Bundle
 import android.support.annotation.NonNull
 import android.support.annotation.Nullable
 import com.squareup.javapoet.*
@@ -16,7 +15,7 @@ internal class UtilsSpec : Spec {
     init {
         val generic = TypeVariableName.get(GENERIC)
         val parameterSpecs = Arrays.asList<ParameterSpec>(
-                ParameterSpec.builder(Bundle::class.java, SOURCE)
+                ParameterSpec.builder(TYPE_BUNDLE, SOURCE)
                         .addAnnotation(NonNull::class.java)
                         .build(),
                 ParameterSpec.builder(String::class.java, KEY)

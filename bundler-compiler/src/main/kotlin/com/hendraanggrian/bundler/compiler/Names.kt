@@ -19,6 +19,10 @@ internal val TYPE_BUNDLER_UTILS = get("com.hendraanggrian.bundler", "BundlerUtil
 internal val TYPE_PARCEL = get("org.parceler", "Parcel")!!
 internal val TYPE_PARCELS = get("org.parceler", "Parcels")!!
 
+internal val TYPE_BUNDLE = get("android.os", "Bundle")
+internal val TYPE_PARCELABLE = get("android.os", "Parcelable")
+internal val TYPE_SPARSE_ARRAY = get("android.util", "SparseArray")
+
 internal fun TypeElement.getMeasuredName(suffix: String): String {
     val enclosings = mutableListOf(simpleName.toString())
     var typeElement = this
