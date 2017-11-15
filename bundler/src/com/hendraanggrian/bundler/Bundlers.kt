@@ -35,9 +35,9 @@ fun Bundle.bindExtrasTo(target: Any) {
     if (mDebug) binding.mSource.print()
 }
 
-inline fun extrasOf(targetClass: Class<*>, arg: Any): Bundle = extrasOf(targetClass, mutableListOf(arg))
+inline fun extrasOf(targetClass: Class<*>, arg: Any?): Bundle = extrasOf(targetClass, mutableListOf(arg))
 
-inline fun extrasOf(targetClass: Class<*>, vararg args: Any): Bundle = extrasOf(targetClass, args.toMutableList())
+inline fun extrasOf(targetClass: Class<*>, vararg args: Any?): Bundle = extrasOf(targetClass, args.toMutableList())
 
 fun extrasOf(targetClass: Class<*>, args: MutableList<*>): Bundle {
     val binding = targetClass.bindingOf(Extra.SUFFIX, Pair(MutableList::class.java, args))

@@ -114,8 +114,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.hendraanggrian:bundler:0.6'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.6' // or kapt if this is a kotlin project
+    compile 'com.hendraanggrian:bundler:0.8'
+    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.8' // or kapt if this is a kotlin project
 }
 ```
 
