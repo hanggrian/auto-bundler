@@ -8,11 +8,13 @@ sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin"
-    implementation project(':bundler-annotations')
-    implementation "com.google.auto:auto-common:$google_autocommon"
-    implementation "com.google.guava:guava:$google_guava-jre"
-    api "com.squareup:javapoet:$javapoet"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin"
+    compile project(':bundler-annotations')
+    compile "com.google.auto:auto-common:$google_autocommon"
+    compile "com.google.guava:guava:$google_guava-jre"
+    compile "com.squareup:javapoet:$javapoet"
+
+    compileOnly "com.android.support:support-annotations:$support"
     compileOnly files(Jvm.current().getToolsJar())
 
     testImplementation "junit:junit:$junit"

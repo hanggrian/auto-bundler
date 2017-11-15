@@ -13,8 +13,8 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * {@literal @}Extra("EXTRA_COUNTRY") String country;
  * </code></pre>
  */
-@Target(FIELD)
 @Retention(CLASS)
+@Target(FIELD)
 public @interface Extra {
 
     String SUFFIX = "_ExtraBinding";

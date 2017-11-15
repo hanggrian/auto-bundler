@@ -35,9 +35,9 @@ android {
 }
 
 dependencies {
-    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
-    api project(':bundler-annotations')
-    api "com.android.support:support-fragment:$support"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin"
+    compile project(':bundler-annotations')
+    compile "com.android.support:support-fragment:$support"
 
     androidTestImplementation "com.google.truth:truth:$google_truth"
     androidTestImplementation("com.android.support.test:runner:$runner") {
