@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/buildSrc/buildSrc.iml" filepath="$PROJECT_DIR$/buildSrc/buildSrc.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler.iml" filepath="$PROJECT_DIR$/bundler.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" filepath="$PROJECT_DIR$/bundler-annotations/bundler-annotations.iml" />
       <module fileurl="file://$PROJECT_DIR$/bundler/bundler-bundler.iml" filepath="$PROJECT_DIR$/bundler/bundler-bundler.iml" />
