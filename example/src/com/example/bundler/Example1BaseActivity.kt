@@ -5,11 +5,11 @@ import android.os.Parcelable
 import android.support.annotation.Nullable
 import android.util.Log
 import android.util.SparseArray
+import com.hendraanggrian.bundler.Bundler
+import com.hendraanggrian.bundler.Bundler.bindExtras
 import com.hendraanggrian.bundler.Extra
-import com.hendraanggrian.bundler.bindExtras
-import kota.debug
 import java.io.Serializable
-import java.util.*
+import java.util.ArrayList
 
 abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.activity_example1) : BaseActivity() {
 
@@ -52,8 +52,8 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bindExtras()
-        debug("ASD", BOOLEAN.toString())
+        Bundler.bindExtras(this)
+        Log.d("ASD", BOOLEAN.toString())
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

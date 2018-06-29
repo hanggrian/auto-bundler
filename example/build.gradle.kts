@@ -1,19 +1,19 @@
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("kotlin-android-extensions")
+    kotlin("android.extensions")
     kotlin("kapt")
 }
 
 android {
-    compileSdkVersion(targetSdk)
-    buildToolsVersion(buildTools)
+    compileSdkVersion(SDK_TARGET)
+    buildToolsVersion(BUILD_TOOLS)
     defaultConfig {
         minSdkVersion(15)
-        targetSdkVersion(targetSdk)
-        applicationId = "com.example.bundler"
+        targetSdkVersion(SDK_TARGET)
+        applicationId = "com.example.$RELEASE_ARTIFACT"
         versionCode = 1
-        versionName = "1.0"
+        versionName = RELEASE_VERSION
     }
     sourceSets {
         getByName("main") {
@@ -36,6 +36,9 @@ android {
     packagingOptions {
         exclude("META-INF/services/javax.annotation.processing.Processor")
     }
+    lintOptions {
+        isAbortOnError = false
+    }
 }
 
 repositories {
@@ -43,20 +46,20 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib", kotlinVersion))
+    implementation(kotlin("stdlib", VERSION_KOTLIN))
 
-    implementation(support("appcompat-v7", supportVersion))
-    implementation(support("cardview-v7", supportVersion))
-    implementation(support("design", supportVersion))
+    implementation(support("appcompat-v7", VERSION_SUPPORT))
+    implementation(support("cardview-v7", VERSION_SUPPORT))
+    implementation(support("design", VERSION_SUPPORT))
 
-    val kotaVersion = "0.21"
+    implementation(anko("commons"))
+    implementation(anko("design"))
+
     val reveallayoutVersion = "0.4.0"
-    implementation(hendraanggrian("reveallayout", reveallayoutVersion))
-    implementation(hendraanggrian("kota-appcompat-v7", kotaVersion))
-    implementation(hendraanggrian("kota-design", kotaVersion))
+    implementation("com.hendraanggrian:reveallayout:$reveallayoutVersion")
 
-    implementation(project(":bundler"))
-    kapt(project(":bundler-compiler"))
+    implementation(project(":$RELEASE_ARTIFACT"))
+    kapt(project(":$RELEASE_ARTIFACT-compiler"))
 
     val butterknifeVersion = "8.8.1"
     implementation("com.jakewharton:butterknife:$butterknifeVersion")
@@ -66,5 +69,3 @@ dependencies {
     implementation("org.parceler:parceler-api:$parcelerVersion")
     kapt("org.parceler:parceler:$parcelerVersion")
 }
-
-fun DependencyHandler.hendraanggrian(module: String, version: String) = "com.hendraanggrian:$module:$version"

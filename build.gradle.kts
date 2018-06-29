@@ -4,9 +4,11 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:3.0.1")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.novoda:bintray-release:0.7.0")
+        classpath(android())
+        classpath(kotlin("gradle-plugin", VERSION_KOTLIN))
+        classpath(dokka())
+        classpath(gitPublish())
+        classpath(bintrayRelease())
     }
 }
 
@@ -15,14 +17,20 @@ allprojects {
         google()
         jcenter()
     }
+    tasks.withType<Javadoc> {
+        isEnabled = false
+    }
 }
 
-task<Delete>("clean") {
-    delete(rootProject.buildDir)
+tasks {
+    "clean"(Delete::class) {
+        delete(buildDir)
+    }
+    "wrapper"(Wrapper::class) {
+        gradleVersion = VERSION_GRADLE
+    }
 }
 
-/**
-./gradlew :bundler-annotations:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
-./gradlew :bundler-compiler:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
-./gradlew :bundler:bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
+/** bintray upload snippet
+./gradlew bintrayUpload -PbintrayUser=hendraanggrian -PdryRun=false -PbintrayKey=
  */

@@ -4,7 +4,7 @@ import com.google.auto.common.MoreTypes
 import com.hendraanggrian.bundler.State
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
-import java.util.*
+import java.util.Arrays
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier.PUBLIC
 import javax.lang.model.element.TypeElement
@@ -14,13 +14,13 @@ import javax.lang.model.util.Types
 internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, State.SUFFIX) {
 
     private val constructorBinding = MethodSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .addParameter(ClassName.get(typeElement), TARGET)
-            .addParameter(TYPE_BUNDLE, SOURCE)
+        .addModifiers(PUBLIC)
+        .addParameter(ClassName.get(typeElement), TARGET)
+        .addParameter(TYPE_BUNDLE, SOURCE)
     private val constructorSaving = MethodSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .addParameter(TYPE_BUNDLE, SOURCE)
-            .addParameter(ClassName.get(typeElement), TARGET)
+        .addModifiers(PUBLIC)
+        .addParameter(TYPE_BUNDLE, SOURCE)
+        .addParameter(ClassName.get(typeElement), TARGET)
 
     override fun superclass(extraClassNames: Collection<String>): StateBindingSpec {
         var extraHasSuperclass = false

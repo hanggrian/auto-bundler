@@ -2,7 +2,6 @@ package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreElements
 import com.squareup.javapoet.ClassName.get
-import java.util.*
 import javax.lang.model.element.TypeElement
 
 internal const val TARGET = "target"
@@ -30,7 +29,7 @@ internal fun TypeElement.getMeasuredName(suffix: String): String {
         typeElement = MoreElements.asType(typeElement.enclosingElement)
         enclosings.add(typeElement.simpleName.toString())
     }
-    Collections.reverse(enclosings)
+    enclosings.reverse()
     var typeName = enclosings[0]
     for (i in 1 until enclosings.size) typeName += "$${enclosings[i]}"
     return "$typeName$suffix"

@@ -10,10 +10,13 @@ import javax.lang.model.util.Types
 internal abstract class BindingSpec(typeElement: TypeElement, val suffix: String) : Spec {
 
     override val packageName = MoreElements.getPackage(typeElement).qualifiedName.toString()
+
     val targetSuperclass = typeElement.superclass!!
+
     override val typeSpec = TypeSpec.classBuilder(typeElement.getMeasuredName(suffix))
-            .addModifiers(Modifier.PUBLIC)!!
+        .addModifiers(Modifier.PUBLIC)!!
 
     internal abstract fun superclass(extraClassNames: Collection<String>): BindingSpec
+
     internal abstract fun statement(fieldElements: Iterable<Element>, typeUtils: Types): BindingSpec
 }

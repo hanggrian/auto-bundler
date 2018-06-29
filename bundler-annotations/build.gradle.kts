@@ -1,18 +1,22 @@
 plugins {
     `java-library`
-    id("com.novoda.bintray-release")
+    `bintray-release`
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
+
+    sourceSets["main"].java.srcDir("src")
 }
 
 publish {
-    userOrg = bintrayUser
-    groupId = bintrayGroup
-    artifactId = "$bintrayArtifact-annotations"
-    publishVersion = bintrayPublish
-    desc = bintrayDesc
-    website = bintrayWeb
+    repoName = RELEASE_ARTIFACT
+
+    userOrg = RELEASE_USER
+    groupId = RELEASE_GROUP
+    artifactId = "$RELEASE_ARTIFACT-annotations"
+    publishVersion = RELEASE_VERSION
+    desc = RELEASE_DESC
+    website = RELEASE_WEBSITE
 }

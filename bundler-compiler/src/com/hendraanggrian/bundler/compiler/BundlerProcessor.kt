@@ -27,7 +27,9 @@ class BundlerProcessor : AbstractProcessor() {
     private lateinit var mFiler: Filer
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
-    override fun getSupportedAnnotationTypes(): Set<String> = SUPPORTED_ANNOTATIONS.map { it.canonicalName }.toSet()
+
+    override fun getSupportedAnnotationTypes(): Set<String> = SUPPORTED_ANNOTATIONS
+        .map { it.canonicalName }.toSet()
 
     @Synchronized override fun init(processingEnv: ProcessingEnvironment) {
         super.init(processingEnv)
@@ -38,7 +40,8 @@ class BundlerProcessor : AbstractProcessor() {
 
     override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         // build utility class if parceler is available and if it has not yet already been created
-        if (mElementUtils.getTypeElement(TYPE_PARCELS.toString()) != null && mElementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
+        if (mElementUtils.getTypeElement(TYPE_PARCELS.toString()) != null &&
+            mElementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
             val file = UtilsSpec().toJavaFile()
             try {
                 file.writeTo(mFiler)
@@ -52,24 +55,27 @@ class BundlerProcessor : AbstractProcessor() {
             for (fieldElement in roundEnv.getElementsAnnotatedWith(annotation)) {
                 val typeElement = MoreElements.asType(fieldElement.enclosingElement)
                 map.put(typeElement, fieldElement)
-                generatedClassNames.add(typeElement.getMeasuredName(if (annotation == Extra::class.java) Extra.SUFFIX else State.SUFFIX))
+                generatedClassNames.add(typeElement.getMeasuredName(when (annotation) {
+                    Extra::class.java -> Extra.SUFFIX
+                    else -> State.SUFFIX
+                }))
             }
             // write classes and keep results
             map.keySet()
-                    .map {
-                        (if (annotation == Extra::class.java) ExtraBindingSpec(it)
-                        else StateBindingSpec(it))
-                                .superclass(generatedClassNames)
-                                .statement(map.get(it), mTypeUtils)
-                                .toJavaFile()
+                .map {
+                    (if (annotation == Extra::class.java) ExtraBindingSpec(it)
+                    else StateBindingSpec(it))
+                        .superclass(generatedClassNames)
+                        .statement(map.get(it), mTypeUtils)
+                        .toJavaFile()
+                }
+                .forEach {
+                    try {
+                        it.writeTo(mFiler)
+                    } catch (e: IOException) {
+                        throw RuntimeException(e)
                     }
-                    .forEach {
-                        try {
-                            it.writeTo(mFiler)
-                        } catch (e: IOException) {
-                            throw RuntimeException(e)
-                        }
-                    }
+                }
         }
         return false
     }

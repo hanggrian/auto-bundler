@@ -1,5 +1,9 @@
 Bundler
 =======
+[![Download](https://api.bintray.com/packages/hendraanggrian/bundler/bundler/images/download.svg) ](https://bintray.com/hendraanggrian/bundler/bundler/_latestVersion)
+[![Build Status](https://travis-ci.org/hendraanggrian/bundler.svg)](https://travis-ci.org/hendraanggrian/bundler)
+[![GitHub license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
 Bundler aims to minify the process with annotation processing.
@@ -16,12 +20,26 @@ public class ExampleActivity extends Activity {
         Bundler.bindStates(this, savedInstanceState);
         // TODO: Use fields...
     }
-    
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         Bundler.saveStates(this, outState);
     }
+}
+```
+
+Download
+--------
+```gradle
+repositories {
+    google()
+    jcenter()
+}
+
+dependencies {
+    compile "com.hendraanggrian.bundler:bundler:$version"
+    annotationProcessor "com.hendraanggrian.bundler:bundler-compiler:$version" // or kapt if this is a kotlin project
 }
 ```
 
@@ -69,7 +87,7 @@ Supported extra types
  * `Parcelable`, `Parcelable[]`, `ArrayList<Parcelable>`,
    and `SparseArray<Parcelable>`
  * `Serializable`
- 
+
 Parceler
 --------
 [Parceler][parceler] is supported with this library, it is a library that easily makes any object implements Parcelable with generated code, making it able to be inserted to Bundle as Parcelable.
@@ -103,20 +121,6 @@ Extra bindings are required by default, an exception will be thrown if key is no
 If this is not a desired behavior, annotate the field with `@Nullable` from [Android's support design library][support-annotations].
 ```java
 @Nullable @BindExtra String username;
-```
-
-Download
---------
-```gradle
-repositories {
-    google()
-    jcenter()
-}
-
-dependencies {
-    compile 'com.hendraanggrian:bundler:0.8'
-    annotationProcessor 'com.hendraanggrian:bundler-compiler:0.8' // or kapt if this is a kotlin project
-}
 ```
 
 License

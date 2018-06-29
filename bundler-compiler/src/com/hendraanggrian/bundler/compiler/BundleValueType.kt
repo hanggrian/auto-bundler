@@ -6,12 +6,13 @@ import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.ParameterizedTypeName
 import com.squareup.javapoet.TypeName
 import java.io.Serializable
-import java.util.*
+import java.util.ArrayList
 import javax.lang.model.element.Element
 import javax.lang.model.util.Types
 
 /** Represents Bundle-compatible values. */
 internal enum class BundleValueType(val typeName: TypeName, private val methodName: String) {
+
     // Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
     BOOLEAN(TypeName.BOOLEAN, "Boolean"),
     BOOLEAN_ARRAY(TypeName.get(BooleanArray::class.java), "BooleanArray"),
@@ -25,22 +26,29 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
     FLOAT_ARRAY(TypeName.get(FloatArray::class.java), "FloatArray"),
     INT(TypeName.INT, "Int"),
     INT_ARRAY(TypeName.get(IntArray::class.java), "IntArray"),
-    INT_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, Integer::class.java), "IntegerArrayList"),
+    INT_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, Integer::class.java),
+        "IntegerArrayList"),
     LONG(TypeName.LONG, "Long"),
     LONG_ARRAY(TypeName.get(LongArray::class.java), "LongArray"),
     SHORT(TypeName.SHORT, "Short"),
     SHORT_ARRAY(TypeName.get(ShortArray::class.java), "ShortArray"),
+
     // Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
     CHARSEQUENCE(TypeName.get(CharSequence::class.java), "CharSequence"),
     CHARSEQUENCE_ARRAY(TypeName.get(Array<CharSequence>::class.java), "CharSequenceArray"),
-    CHARSEQUENCE_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, CharSequence::class.java), "CharSequenceArrayList"),
+    CHARSEQUENCE_ARRAYLIST(ParameterizedTypeName.get(
+        ArrayList::class.java, CharSequence::class.java), "CharSequenceArrayList"),
     PARCELABLE(TYPE_PARCELABLE, "Parcelable"),
     PARCELABLE_ARRAY(ArrayTypeName.of(TYPE_PARCELABLE), "ParcelableArray"),
-    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList::class.java), TYPE_PARCELABLE), "ParcelableArrayList"),
-    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(TYPE_SPARSE_ARRAY, TYPE_PARCELABLE), "SparseParcelableArray"),
+    PARCELABLE_ARRAYLIST(ParameterizedTypeName.get(ClassName.get(ArrayList::class.java),
+        TYPE_PARCELABLE), "ParcelableArrayList"),
+    PARCELABLE_SPARSEARRAY(ParameterizedTypeName.get(TYPE_SPARSE_ARRAY, TYPE_PARCELABLE),
+        "SparseParcelableArray"),
     STRING(TypeName.get(String::class.java), "String"),
     STRING_ARRAY(TypeName.get(Array<String>::class.java), "StringArray"),
-    STRING_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, String::class.java), "StringArrayList"),
+    STRING_ARRAYLIST(ParameterizedTypeName.get(ArrayList::class.java, String::class.java),
+        "StringArrayList"),
+
     // Others: Parceler and Serializable.
     PARCELER(TypeName.VOID, "Parcelable"),
     SERIALIZABLE(TypeName.get(Serializable::class.java), "Serializable");
@@ -62,9 +70,11 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
                     val currentType = TypeName.get(supertypes[0])
                     for (type in values()) {
                         if (currentType is ArrayTypeName && type.typeName is ArrayTypeName) {
-                            if (currentType.componentType.safeUnboxed == type.typeName.componentType.safeUnboxed)
+                            if (currentType.componentType.safeUnboxed ==
+                                type.typeName.componentType.safeUnboxed)
                                 return type
-                        } else if ((currentType.isPrimitive || currentType.isBoxedPrimitive) && (type.typeName.isPrimitive || type.typeName.isBoxedPrimitive)) {
+                        } else if ((currentType.isPrimitive || currentType.isBoxedPrimitive) &&
+                            (type.typeName.isPrimitive || type.typeName.isBoxedPrimitive)) {
                             if (currentType.safeUnboxed == type.typeName.safeUnboxed)
                                 return type
                         } else if (type.typeName == currentType) {
@@ -80,12 +90,13 @@ internal enum class BundleValueType(val typeName: TypeName, private val methodNa
             // this element is not primitive and not subclass of Parcelable or Serializable
             // check if this class is parceled by parceler
             MoreTypes.asTypeElement(fieldElement.asType()).annotationMirrors
-                    .filter { TypeName.get(it.annotationType) == TYPE_PARCEL }
-                    .forEach { return PARCELER }
+                .filter { TypeName.get(it.annotationType) == TYPE_PARCEL }
+                .forEach { return PARCELER }
             // not supported, throw exception
             throw RuntimeException(String.format(
-                    "Unsupported type: %s in %s. Is this a parceler type? Annotate the class with @Parcel.",
-                    fieldElement.simpleName, fieldElement.enclosingElement.simpleName))
+                "Unsupported type: %s in %s. Is this a parceler type?" +
+                    "Annotate the class with @Parcel.",
+                fieldElement.simpleName, fieldElement.enclosingElement.simpleName))
         }
     }
 }

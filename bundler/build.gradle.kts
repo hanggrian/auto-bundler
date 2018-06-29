@@ -1,20 +1,24 @@
-import org.gradle.internal.jvm.Jvm
+import org.gradle.kotlin.dsl.kotlin
 import java.io.File
 import java.io.IOException
+import org.gradle.language.base.plugins.LifecycleBasePlugin.*
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    id("com.android.library")
+    `android-library`
     kotlin("android")
-    id("com.novoda.bintray-release")
+    dokka
+    `bintray-release`
+    `git-publish`
 }
 
 android {
-    compileSdkVersion(targetSdk)
-    buildToolsVersion(buildTools)
+    compileSdkVersion(SDK_TARGET)
+    buildToolsVersion(BUILD_TOOLS)
     defaultConfig {
-        minSdkVersion(minSdk)
-        targetSdkVersion(targetSdk)
-        versionName = bintrayPublish
+        minSdkVersion(SDK_MIN)
+        targetSdkVersion(SDK_TARGET)
+        versionName = RELEASE_VERSION
         testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("proguard-rules.pro")
         javaCompileOptions {
@@ -27,35 +31,26 @@ android {
         getByName("main") {
             manifest.srcFile("AndroidManifest.xml")
             java.srcDirs("src")
+            res.srcDir("res")
+            resources.srcDir("src")
         }
-        getByName("androidTest") {
-            setRoot("tests")
-            manifest.srcFile("tests/AndroidManifest.xml")
-            java.srcDir("tests/src")
-            res.srcDir("tests/res")
-            resources.srcDir("tests/src")
-        }
+    }
+    libraryVariants.all {
+        generateBuildConfig?.enabled = false
     }
 }
 
+val ktlint by configurations.creating
+
 dependencies {
-    compile(kotlin("stdlib", kotlinVersion))
-    compile(project(":bundler-annotations"))
-    compile(support("support-fragment", supportVersion))
+    api(kotlin("stdlib", VERSION_KOTLIN))
+    api(project(":bundler-annotations"))
+    implementation(support("support-fragment", VERSION_SUPPORT))
 
-    androidTestImplementation(google("truth", truthVersion))
-    androidTestImplementation(support("runner", runnerVersion, "test"))
-    androidTestImplementation(support("espresso-core", espressoVersion, "test", "espresso"))
-
-    testImplementation(junit(junitVersion))
-    testImplementation(google("truth", truthVersion))
-    testImplementation(google("compile-testing", compileVersion, "testing", "compile"))
-    testImplementation(files(runtimeJar))
-    testImplementation(files(org.gradle.internal.jvm.Jvm.current().toolsJar))
-    testImplementation(project(":bundler-compiler"))
+    ktlint(ktlint())
 }
 
-val runtimeJar: File?
+inline val runtimeJar: File?
     get() {
         try {
             val javaHome = File(System.getProperty("java.home")).canonicalFile
@@ -67,11 +62,52 @@ val runtimeJar: File?
         }
     }
 
+tasks {
+    "ktlint"(JavaExec::class) {
+        get("check").dependsOn(this)
+        group = VERIFICATION_GROUP
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Check Kotlin code style."
+        classpath = ktlint
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "src/**/*.kt")
+    }
+    "ktlintFormat"(JavaExec::class) {
+        group = "formatting"
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Fix Kotlin code style deviations."
+        classpath = ktlint
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "-F", "src/**/*.kt")
+    }
+
+    withType<DokkaTask> {
+        outputDirectory = "$buildDir/docs"
+        doFirst { file(outputDirectory).deleteRecursively() }
+    }
+
+    get("gitPublishCopy").dependsOn(":$RELEASE_ARTIFACT:dokka")
+}
+
+gitPublish {
+    repoUri = RELEASE_WEBSITE
+    branch = "gh-pages"
+    contents.from(
+        "src",
+        "../$RELEASE_ARTIFACT/build/docs")
+}
+
+tasks["gitPublishCopy"].dependsOn(":$RELEASE_ARTIFACT:dokka")
+
 publish {
-    userOrg = bintrayUser
-    groupId = bintrayGroup
-    artifactId = bintrayArtifact
-    publishVersion = bintrayPublish
-    desc = bintrayDesc
-    website = bintrayWeb
+    repoName = RELEASE_ARTIFACT
+
+    userOrg = RELEASE_USER
+    groupId = RELEASE_GROUP
+    artifactId = RELEASE_ARTIFACT
+    publishVersion = RELEASE_VERSION
+    desc = RELEASE_DESC
+    website = RELEASE_WEBSITE
 }

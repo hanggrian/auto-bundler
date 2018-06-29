@@ -6,7 +6,6 @@ import com.google.auto.common.MoreTypes
 import com.hendraanggrian.bundler.Extra
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
-import java.util.*
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier.PUBLIC
 import javax.lang.model.element.TypeElement
@@ -16,12 +15,12 @@ import javax.lang.model.util.Types
 internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, Extra.SUFFIX) {
 
     private val constructorBinding = MethodSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .addParameter(ClassName.get(typeElement), TARGET)
-            .addParameter(TYPE_BUNDLE, SOURCE)
+        .addModifiers(PUBLIC)
+        .addParameter(ClassName.get(typeElement), TARGET)
+        .addParameter(TYPE_BUNDLE, SOURCE)
     private val constructorWrapping = MethodSpec.constructorBuilder()
-            .addModifiers(PUBLIC)
-            .addParameter(List::class.java, ARGS)
+        .addModifiers(PUBLIC)
+        .addParameter(List::class.java, ARGS)
 
     override fun superclass(extraClassNames: Collection<String>): ExtraBindingSpec {
         var extraHasSuperclass = false
@@ -55,5 +54,6 @@ internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
         return this
     }
 
-    override val methodSpecs: Iterable<MethodSpec.Builder> get() = Arrays.asList(constructorBinding, constructorWrapping)
+    override val methodSpecs: Iterable<MethodSpec.Builder>
+        get() = listOf(constructorBinding, constructorWrapping)
 }

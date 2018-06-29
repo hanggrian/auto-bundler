@@ -14,7 +14,8 @@ internal interface Spec {
         val typeSpecBuilder = typeSpec
         for (builder in methodSpecs) typeSpecBuilder.addMethod(builder.build())
         return JavaFile.builder(packageName, typeSpecBuilder.build())
-                .addFileComment("Bundler generated class, do not modify! https://github.com/HendraAnggrian/bundler")
-                .build()
+            .addFileComment("Bundler generated class, do not modify! " +
+                "https://github.com/HendraAnggrian/bundler")
+            .build()
     }
 }
