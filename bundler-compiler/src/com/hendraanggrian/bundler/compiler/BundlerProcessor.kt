@@ -22,9 +22,9 @@ class BundlerProcessor : AbstractProcessor() {
         private val SUPPORTED_ANNOTATIONS = setOf(Extra::class.java, State::class.java)
     }
 
-    private lateinit var mTypeUtils: Types
-    private lateinit var mElementUtils: Elements
-    private lateinit var mFiler: Filer
+    private lateinit var typeUtils: Types
+    private lateinit var elementUtils: Elements
+    private lateinit var filer: Filer
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
 
@@ -33,18 +33,18 @@ class BundlerProcessor : AbstractProcessor() {
 
     @Synchronized override fun init(processingEnv: ProcessingEnvironment) {
         super.init(processingEnv)
-        mTypeUtils = processingEnv.typeUtils
-        mElementUtils = processingEnv.elementUtils
-        mFiler = processingEnv.filer
+        typeUtils = processingEnv.typeUtils
+        elementUtils = processingEnv.elementUtils
+        filer = processingEnv.filer
     }
 
     override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         // build utility class if parceler is available and if it has not yet already been created
-        if (mElementUtils.getTypeElement(TYPE_PARCELS.toString()) != null &&
-            mElementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
+        if (elementUtils.getTypeElement(TYPE_PARCELS.toString()) != null &&
+            elementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
             val file = UtilsSpec().toJavaFile()
             try {
-                file.writeTo(mFiler)
+                file.writeTo(filer)
             } catch (ignored: IOException) {
             }
         }
@@ -66,12 +66,12 @@ class BundlerProcessor : AbstractProcessor() {
                     (if (annotation == Extra::class.java) ExtraBindingSpec(it)
                     else StateBindingSpec(it))
                         .superclass(generatedClassNames)
-                        .statement(map.get(it), mTypeUtils)
+                        .statement(map.get(it), typeUtils)
                         .toJavaFile()
                 }
                 .forEach {
                     try {
-                        it.writeTo(mFiler)
+                        it.writeTo(filer)
                     } catch (e: IOException) {
                         throw RuntimeException(e)
                     }

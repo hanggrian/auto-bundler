@@ -14,6 +14,7 @@ abstract class BundleBinding private constructor(
 ) {
 
     protected constructor(source: Bundle) : this(source, EMPTY_LIST)
+
     protected constructor(args: MutableList<*>) : this(Bundle(), args)
 
     internal val bundle: Bundle get() = source
