@@ -6,12 +6,15 @@ plugins {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
-
+    
     sourceSets["main"].java.srcDir("src")
 }
 
 publish {
-    repoName = RELEASE_ARTIFACT
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    dryRun = false
+    repoName = RELEASE_REPO
 
     userOrg = RELEASE_USER
     groupId = RELEASE_GROUP

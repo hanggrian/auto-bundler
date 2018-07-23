@@ -2,8 +2,8 @@ package com.hendraanggrian.bundler.internal
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.annotation.RequiresApi
 import android.util.SparseArray
+import androidx.annotation.RequiresApi
 import java.io.Serializable
 import java.util.Collections.EMPTY_LIST
 
@@ -147,7 +147,6 @@ abstract class BundleBinding private constructor(
     // endregion
 
     // region Non-primitive types: supports single object, array, and ArrayList (only Parcelable supports SparseArray).
-    @RequiresApi(12)
     protected fun getCharSequence(
         key: String,
         defaultValue: CharSequence?

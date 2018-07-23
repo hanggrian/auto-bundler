@@ -1,6 +1,6 @@
 package com.hendraanggrian.bundler.compiler
 
-import android.support.annotation.Nullable
+import androidx.annotation.Nullable
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
 import com.hendraanggrian.bundler.Extra

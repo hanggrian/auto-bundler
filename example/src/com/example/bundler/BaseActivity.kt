@@ -2,8 +2,7 @@ package com.example.bundler
 
 import android.os.Bundle
 import android.support.annotation.LayoutRes
-import android.support.v7.app.AppCompatActivity
-
+import androidx.appcompat.app.AppCompatActivity
 import butterknife.ButterKnife
 import butterknife.Unbinder
 

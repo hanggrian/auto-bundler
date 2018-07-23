@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.application")
+    android("application")
     kotlin("android")
     kotlin("android.extensions")
     kotlin("kapt")
@@ -48,9 +48,9 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib", VERSION_KOTLIN))
 
-    implementation(support("appcompat-v7", VERSION_SUPPORT))
-    implementation(support("cardview-v7", VERSION_SUPPORT))
-    implementation(support("design", VERSION_SUPPORT))
+    implementation(androidx("appcompat"))
+    implementation(androidx("cardview"))
+    implementation(material())
 
     implementation(anko("commons"))
     implementation(anko("design"))

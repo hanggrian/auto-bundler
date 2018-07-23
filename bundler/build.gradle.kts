@@ -5,7 +5,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin.*
 import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
-    `android-library`
+    android("library")
     kotlin("android")
     dokka
     `bintray-release`
@@ -19,7 +19,7 @@ android {
         minSdkVersion(SDK_MIN)
         targetSdkVersion(SDK_TARGET)
         versionName = RELEASE_VERSION
-        testInstrumentationRunner = "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("proguard-rules.pro")
         javaCompileOptions {
             annotationProcessorOptions {
@@ -35,6 +35,9 @@ android {
             resources.srcDir("src")
         }
     }
+    lintOptions {
+        isCheckTestSources = true
+    }
     libraryVariants.all {
         generateBuildConfig?.enabled = false
     }
@@ -44,8 +47,8 @@ val ktlint by configurations.creating
 
 dependencies {
     api(kotlin("stdlib", VERSION_KOTLIN))
-    api(project(":bundler-annotations"))
-    implementation(support("support-fragment", VERSION_SUPPORT))
+    api(project(":$RELEASE_ARTIFACT-annotations"))
+    implementation(androidx("fragment"))
 
     ktlint(ktlint())
 }
@@ -102,7 +105,10 @@ gitPublish {
 tasks["gitPublishCopy"].dependsOn(":$RELEASE_ARTIFACT:dokka")
 
 publish {
-    repoName = RELEASE_ARTIFACT
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    dryRun = false
+    repoName = RELEASE_REPO
 
     userOrg = RELEASE_USER
     groupId = RELEASE_GROUP

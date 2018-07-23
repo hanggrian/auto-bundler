@@ -4,13 +4,21 @@ import org.gradle.plugin.use.PluginDependenciesSpec
 const val GROUP_SUPPORT = "com.android.support"
 
 fun DependencyHandler.android() = "com.android.tools.build:gradle:$VERSION_ANDROID_PLUGIN"
-inline val PluginDependenciesSpec.`android-library` get() = id("com.android.library")
-inline val PluginDependenciesSpec.`android-application` get() = id("com.android.application")
+fun PluginDependenciesSpec.android(submodule: String) = id("com.android.$submodule")
 
-fun DependencyHandler.support(module: String, version: String, vararg suffixes: String) =
-    "${StringBuilder(GROUP_SUPPORT).apply {
-        suffixes.forEach { append(".$it") }
-    }}:$module:$version"
+fun DependencyHandler.androidx(
+    repository: String,
+    module: String = repository,
+    version: String = VERSION_ANDROIDX
+): String = "androidx.$repository:$module:$version"
+
+fun DependencyHandler.hendraanggrian(
+    repository: String,
+    module: String = repository,
+    version: String
+): String = "com.hendraanggrian.$repository:$module:$version"
+
+fun DependencyHandler.material() = "com.google.android.material:material:$VERSION_ANDROIDX"
 
 fun DependencyHandler.square(module: String, version: String) = "com.squareup:$module:$version"
 

@@ -8,11 +8,11 @@ import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.view.animation.FastOutSlowInInterpolator
-import android.support.v7.widget.CardView
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import butterknife.BindView
 import com.hendraanggrian.bundler.Bundler
 import com.hendraanggrian.bundler.State
@@ -32,7 +32,7 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(savedInstanceState != null) Bundler.restoreStates(this, savedInstanceState)
+        if (savedInstanceState != null) Bundler.restoreStates(this, savedInstanceState)
         if (cardViewShown) {
             button.visibility = View.INVISIBLE
             cardView.visibility = View.VISIBLE
@@ -71,9 +71,9 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
                 set.start()
             }
             cardView -> startActivity(Intent(this, NextActivity::class.java)
-                    .putExtras(Bundler.extrasOf(NextActivity::class.java,
-                        createRect(revealFrameLayout, cardView)))
-                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION))
+                .putExtras(Bundler.extrasOf(NextActivity::class.java,
+                    createRect(revealFrameLayout, cardView)))
+                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION))
         }
     }
 

@@ -9,10 +9,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_7
 
     sourceSets {
-        getByName("main", closureOf<SourceSet> {
+        getByName("main") {
             java.srcDir("src")
             resources.srcDir("res")
-        })
+        }
         get("test").java.srcDir("tests/src")
     }
 }
@@ -26,7 +26,7 @@ dependencies {
     compile(google("guava", VERSION_GUAVA))
     compile(square("javapoet", VERSION_JAVAPOET))
 
-    compileOnly(support("support-annotations", VERSION_SUPPORT))
+    compileOnly(androidx("annotation"))
     compileOnly(files(org.gradle.internal.jvm.Jvm.current().toolsJar))
 
     testImplementation(junit())
@@ -36,7 +36,10 @@ dependencies {
 }
 
 publish {
-    repoName = RELEASE_ARTIFACT
+    bintrayUser = BINTRAY_USER
+    bintrayKey = BINTRAY_KEY
+    dryRun = false
+    repoName = RELEASE_REPO
 
     userOrg = RELEASE_USER
     groupId = RELEASE_GROUP

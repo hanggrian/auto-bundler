@@ -4,14 +4,13 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import com.hendraanggrian.bundler.Bundler
 import com.hendraanggrian.bundler.Extra
 import com.hendraanggrian.widget.RevealFrameLayout
-
 
 /**
  * @author Hendra Anggrian (hendraanggrian@gmail.com)

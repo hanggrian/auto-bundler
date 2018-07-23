@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.hendraanggrian.bundler
 
 import android.app.Activity
@@ -25,7 +27,7 @@ object Bundler {
     }
 
     /** Bind extra fields in support Fragment with default behavior. */
-    inline fun bindExtras(target: android.support.v4.app.Fragment) =
+    inline fun bindExtras(target: androidx.fragment.app.Fragment) =
         bindExtras(target, target.arguments!!)
 
     /** Bind extra fields in Fragment with default behavior. */
