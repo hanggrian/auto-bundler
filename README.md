@@ -1,9 +1,9 @@
 Bundler
 =======
 [![bintray](https://img.shields.io/badge/bintray-bundler-brightgreen.svg)](https://bintray.com/hendraanggrian/bundler)
-[![download](https://api.bintray.com/packages/hendraanggrian/bundler/bundler/images/download.svg) ](https://bintray.com/hendraanggrian/bundler/bundler/_latestVersion)
+[![download](https://api.bintray.com/packages/hendraanggrian/bundler/bundler/images/download.svg)](https://bintray.com/hendraanggrian/bundler/bundler/_latestVersion)
 [![build](https://travis-ci.com/hendraanggrian/bundler.svg)](https://travis-ci.com/hendraanggrian/bundler)
-[![license](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg?style=flat)](http://www.apache.org/licenses/LICENSE-2.0)
+[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
