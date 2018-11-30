@@ -12,7 +12,8 @@
             <option value="$PROJECT_DIR$/bundler" />
             <option value="$PROJECT_DIR$/bundler-annotations" />
             <option value="$PROJECT_DIR$/bundler-compiler" />
-            <option value="$PROJECT_DIR$/example" />
+            <option value="$PROJECT_DIR$/bundler-ktx" />
+            <option value="$PROJECT_DIR$/website" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

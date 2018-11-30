@@ -3,11 +3,11 @@ plugins {
     `bintray-release`
 }
 
+sourceSets["main"].java.srcDir("src")
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
-    
-    sourceSets["main"].java.srcDir("src")
 }
 
 publish {

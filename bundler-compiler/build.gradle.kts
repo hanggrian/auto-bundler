@@ -4,20 +4,20 @@ plugins {
     `bintray-release`
 }
 
+sourceSets {
+    getByName("main") {
+        java.srcDir("src")
+        resources.srcDir("res")
+    }
+    get("test").java.srcDir("tests/src")
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_7
     targetCompatibility = JavaVersion.VERSION_1_7
-
-    sourceSets {
-        getByName("main") {
-            java.srcDir("src")
-            resources.srcDir("res")
-        }
-        get("test").java.srcDir("tests/src")
-    }
 }
 
-val ktlint by configurations.creating
+val configuration = configurations.register("ktlint")
 
 dependencies {
     compile(kotlin("stdlib", VERSION_KOTLIN))
@@ -32,7 +32,33 @@ dependencies {
     testImplementation(junit())
     testImplementation(google("truth", VERSION_TRUTH))
 
-    ktlint(ktlint())
+    configuration {
+        invoke(ktlint())
+    }
+}
+
+tasks {
+    val ktlint = register<JavaExec>("ktlint") {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Check Kotlin code style."
+        classpath(configuration.get())
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "src/**/*.kt")
+    }
+    "check" {
+        dependsOn(ktlint.get())
+    }
+    register<JavaExec>("ktlintFormat") {
+        group = "formatting"
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Fix Kotlin code style deviations."
+        classpath(configuration.get())
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "-F", "src/**/*.kt")
+    }
 }
 
 publish {

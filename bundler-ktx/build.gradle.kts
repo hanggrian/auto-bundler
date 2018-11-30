@@ -1,7 +1,6 @@
 plugins {
     android("library")
     kotlin("android")
-    dokka
     `bintray-release`
 }
 
@@ -13,7 +12,6 @@ android {
         targetSdkVersion(SDK_TARGET)
         versionName = RELEASE_VERSION
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("proguard-rules.pro")
         javaCompileOptions {
             annotationProcessorOptions {
                 includeCompileClasspath = true
@@ -36,30 +34,39 @@ android {
     }
 }
 
-dependencies {
-    api(project(":$RELEASE_ARTIFACT-annotations"))
-    api(androidx("fragment"))
+val configuration = configurations.register("ktlint")
 
-    testImplementation(junit())
-    androidTestImplementation(junit())
-    androidTestImplementation(kotlin("stdlib", VERSION_KOTLIN))
+dependencies {
+    api(kotlin("stdlib", VERSION_KOTLIN))
+    api(project(":$RELEASE_ARTIFACT"))
+
+    configuration {
+        invoke(ktlint())
+    }
 }
 
-inline val runtimeJar: File?
-    get() {
-        try {
-            val javaHome = File(System.getProperty("java.home")).canonicalFile
-            File(javaHome, "lib/rt.jar").let { if (it.exists()) return it }
-            File(javaHome, "jre/lib/rt.jar").let { if (it.exists()) return it }
-            return null
-        } catch (e: java.io.IOException) {
-            throw RuntimeException(e)
-        }
+tasks {
+    val ktlint = register<JavaExec>("ktlint") {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Check Kotlin code style."
+        classpath(configuration.get())
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "src/**/*.kt")
     }
-
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask> {
-    outputDirectory = "$buildDir/docs"
-    doFirst { file(outputDirectory).deleteRecursively() }
+    "check" {
+        dependsOn(ktlint.get())
+    }
+    register<JavaExec>("ktlintFormat") {
+        group = "formatting"
+        inputs.dir("src")
+        outputs.dir("src")
+        description = "Fix Kotlin code style deviations."
+        classpath(configuration.get())
+        main = "com.github.shyiko.ktlint.Main"
+        args("--android", "-F", "src/**/*.kt")
+    }
 }
 
 publish {
@@ -70,7 +77,7 @@ publish {
 
     userOrg = RELEASE_USER
     groupId = RELEASE_GROUP
-    artifactId = RELEASE_ARTIFACT
+    artifactId = "$RELEASE_ARTIFACT-ktx"
     publishVersion = RELEASE_VERSION
     desc = RELEASE_DESC
     website = RELEASE_WEBSITE
