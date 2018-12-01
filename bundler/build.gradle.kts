@@ -1,7 +1,7 @@
 plugins {
     android("library")
     kotlin("android")
-    dokka
+    bintray
     `bintray-release`
 }
 
@@ -56,11 +56,6 @@ inline val runtimeJar: File?
             throw RuntimeException(e)
         }
     }
-
-tasks.withType<org.jetbrains.dokka.gradle.DokkaTask> {
-    outputDirectory = "$buildDir/docs"
-    doFirst { file(outputDirectory).deleteRecursively() }
-}
 
 publish {
     bintrayUser = BINTRAY_USER

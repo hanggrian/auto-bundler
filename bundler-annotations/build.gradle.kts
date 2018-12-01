@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    bintray
     `bintray-release`
 }
 

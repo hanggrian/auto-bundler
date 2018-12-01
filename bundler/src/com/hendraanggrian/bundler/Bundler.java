@@ -28,11 +28,14 @@ public final class Bundler {
     private static Map<String, Constructor<? extends BundleBinding>> BINDINGS;
     private static boolean DEBUG = false;
 
+    /**
+     * No instance.
+     */
     private Bundler() {
     }
 
     /**
-     * When set to true, will print Bundler operation in [DEBUG] level.
+     * When set to true, will print Bundler operation in debug level.
      */
     public static void setDebug(boolean debug) {
         DEBUG = debug;
@@ -43,11 +46,11 @@ public final class Bundler {
      * not available pre-11.
      */
     public static void bindExtras(@NonNull Fragment target) {
-        final Bundle bundle = target.getArguments();
-        if (bundle == null) {
+        final Bundle args = target.getArguments();
+        if (args == null) {
             throw new IllegalStateException();
         }
-        bindExtras(target, bundle);
+        bindExtras(target, args);
     }
 
     /**
@@ -55,11 +58,11 @@ public final class Bundler {
      * not available pre-11.
      */
     public static void bindExtras(@NonNull androidx.fragment.app.Fragment target) {
-        final Bundle bundle = target.getArguments();
-        if (bundle == null) {
+        final Bundle args = target.getArguments();
+        if (args == null) {
             throw new IllegalStateException();
         }
-        bindExtras(target, bundle);
+        bindExtras(target, args);
     }
 
     /**
@@ -73,11 +76,11 @@ public final class Bundler {
      * Bind extra fields in target from source Bundle attached to Intent.
      */
     public static <T> void bindExtras(@NonNull T target, @NonNull Intent source) {
-        final Bundle bundle = source.getExtras();
-        if (bundle == null) {
+        final Bundle extras = source.getExtras();
+        if (extras == null) {
             throw new IllegalStateException();
         }
-        bindExtras(target, bundle);
+        bindExtras(target, extras);
     }
 
     /**
@@ -113,10 +116,11 @@ public final class Bundler {
             new Class<?>[]{List.class},
             new Object[]{args}
         );
+        final Bundle extras = binding.getSource();
         if (DEBUG) {
-            print(binding.getSource());
+            print(extras);
         }
-        return binding.getSource();
+        return extras;
     }
 
     /**
@@ -142,13 +146,13 @@ public final class Bundler {
             new Class<?>[]{Bundle.class, target.getClass()},
             new Object[]{source, target}
         );
-        source.putAll(binding.getSource());
+        final Bundle states = binding.getSource();
+        source.putAll(states);
         if (DEBUG) {
-            print(binding.getSource());
+            print(states);
         }
         return source;
     }
-
 
     @NonNull
     private static BundleBinding createBinding(
@@ -164,7 +168,10 @@ public final class Bundler {
             findBinding(targetClass, targetClassSuffix, constructorParameterTypes);
         if (constructor == null) {
             if (DEBUG) {
-                Log.d(TAG, "Ignored because no constructor was found in " + targetClass.getSimpleName());
+                Log.d(
+                    TAG,
+                    "Ignored because no constructor was found in " + targetClass.getSimpleName()
+                );
             }
             return BundleBinding.EMPTY;
         }
@@ -232,7 +239,9 @@ public final class Bundler {
             //endregion
             binding = findBinding(targetSuperclass, targetClassSuffix, constructorParameterTypes);
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Unable to find binding constructor for " + targetClassName, e);
+            throw new RuntimeException(
+                "Unable to find binding constructor for " + targetClassName, e
+            );
         }
         BINDINGS.put(bindingKey, binding);
         return binding;

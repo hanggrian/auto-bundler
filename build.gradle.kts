@@ -9,6 +9,7 @@ buildscript {
         classpath(dokka())
         classpath(gitPublish())
         classpath(bintrayRelease())
+        classpath(bintray())
     }
 }
 
@@ -16,9 +17,6 @@ allprojects {
     repositories {
         google()
         jcenter()
-    }
-    tasks.withType<Javadoc> {
-        isEnabled = false
     }
 }
 

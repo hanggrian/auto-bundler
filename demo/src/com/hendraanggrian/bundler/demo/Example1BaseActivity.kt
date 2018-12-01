@@ -1,17 +1,17 @@
-package com.example.bundler
+package com.hendraanggrian.bundler.demo
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.annotation.Nullable
 import android.util.Log
 import android.util.SparseArray
-import com.hendraanggrian.bundler.Bundler
-import com.hendraanggrian.bundler.Bundler.bindExtras
+import androidx.annotation.Nullable
 import com.hendraanggrian.bundler.Extra
+import com.hendraanggrian.bundler.bindExtras
 import java.io.Serializable
 import java.util.ArrayList
 
-abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.activity_example1) : BaseActivity() {
+abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.activity_example1) :
+    BaseActivity() {
 
     @Nullable @Extra("BOOLEAN") @JvmField var BOOLEAN: Boolean = false
     @Nullable @Extra("BOOLEAN_BOXED") @JvmField var BOOLEAN_BOXED: Boolean? = null
@@ -23,8 +23,10 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
     @Nullable @Extra("CHAR_BOXED") @JvmField var CHAR_BOXED: Char? = null
     @Nullable @Extra("CHAR_ARRAY") @JvmField var CHAR_ARRAY: CharArray? = null
     @Nullable @Extra("CHARSEQUENCE") @JvmField var CHARSEQUENCE: CharSequence? = null
-    @Nullable @Extra("CHARSEQUENCE_ARRAY") @JvmField var CHARSEQUENCE_ARRAY: Array<CharSequence>? = null
-    @Nullable @Extra("CHARSEQUENCE_ARRAYLIST") @JvmField var CHARSEQUENCE_ARRAYLIST: ArrayList<CharSequence>? = null
+    @Nullable @Extra("CHARSEQUENCE_ARRAY") @JvmField var CHARSEQUENCE_ARRAY: Array<CharSequence>? =
+        null
+    @Nullable @Extra("CHARSEQUENCE_ARRAYLIST") @JvmField var CHARSEQUENCE_ARRAYLIST: ArrayList<CharSequence>? =
+        null
     @Nullable @Extra("DOUBLE") @JvmField var DOUBLE: Double = 0.toDouble()
     @Nullable @Extra("DOUBLE_BOXED") @JvmField var DOUBLE_BOXED: Double? = null
     @Nullable @Extra("DOUBLE_ARRAY") @JvmField var DOUBLE_ARRAY: DoubleArray? = null
@@ -40,8 +42,10 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
     @Nullable @Extra("INT_ARRAYLIST") @JvmField var INT_ARRAYLIST: ArrayList<Int>? = null
     @Nullable @Extra("PARCELABLE") @JvmField var PARCELABLE: Parcelable? = null
     @Nullable @Extra("PARCELABLE_ARRAY") @JvmField var PARCELABLE_ARRAY: Array<Parcelable>? = null
-    @Nullable @Extra("PARCELABLE_ARRAYLIST") @JvmField var PARCELABLE_ARRAYLIST: ArrayList<Parcelable>? = null
-    @Nullable @Extra("PARCELABLE_SPARSEARRAY") @JvmField var PARCELABLE_SPARSEARRAY: SparseArray<Parcelable>? = null
+    @Nullable @Extra("PARCELABLE_ARRAYLIST") @JvmField var PARCELABLE_ARRAYLIST: ArrayList<Parcelable>? =
+        null
+    @Nullable @Extra("PARCELABLE_SPARSEARRAY") @JvmField var PARCELABLE_SPARSEARRAY: SparseArray<Parcelable>? =
+        null
     @Nullable @Extra("SERIALIZABLE") @JvmField var SERIALIZABLE: Serializable? = null
     @Nullable @Extra("SHORT") @JvmField var SHORT: Short = 0
     @Nullable @Extra("SHORT_BOXED") @JvmField var SHORT_BOXED: Short? = null
@@ -52,7 +56,7 @@ abstract class Example1BaseActivity(override val contentLayout: Int = R.layout.a
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Bundler.bindExtras(this)
+        bindExtras()
         Log.d("ASD", BOOLEAN.toString())
     }
 

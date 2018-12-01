@@ -20,17 +20,17 @@ public abstract class BundleBinding {
     protected Bundle source;
     private List<?> args;
 
-    private BundleBinding(Bundle source, List<?> args) {
-        this.source = source;
-        this.args = args;
-    }
-
-    BundleBinding(Bundle source) {
+    protected BundleBinding(Bundle source) {
         this(source, Collections.emptyList());
     }
 
-    BundleBinding(List<?> args) {
+    protected BundleBinding(List<?> args) {
         this(new Bundle(), args);
+    }
+
+    private BundleBinding(Bundle source, List<?> args) {
+        this.source = source;
+        this.args = args;
     }
 
     public Bundle getSource() {

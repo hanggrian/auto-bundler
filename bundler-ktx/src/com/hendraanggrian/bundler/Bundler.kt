@@ -1,4 +1,4 @@
-@file:Suppress("NOTHING_TO_INLINE")
+@file:Suppress("NOTHING_TO_INLINE", "DEPRECATION")
 
 package com.hendraanggrian.bundler
 
@@ -7,7 +7,6 @@ import android.app.Fragment
 import android.content.Intent
 import android.os.Bundle
 
-@Suppress("DEPRECATION")
 inline fun Fragment.bindExtras() = Bundler.bindExtras(this)
 
 inline fun androidx.fragment.app.Fragment.bindExtras() = Bundler.bindExtras(this)

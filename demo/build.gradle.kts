@@ -11,7 +11,7 @@ android {
     defaultConfig {
         minSdkVersion(15)
         targetSdkVersion(SDK_TARGET)
-        applicationId = "com.example.$RELEASE_ARTIFACT"
+        applicationId = "$RELEASE_GROUP.demo"
         versionCode = 1
         versionName = RELEASE_VERSION
     }
@@ -42,30 +42,27 @@ android {
 }
 
 repositories {
-    maven(url = "https://jitpack.io")
+    maven("https://jitpack.io")
 }
 
 dependencies {
+    implementation(project(":$RELEASE_ARTIFACT-ktx"))
+    kapt(project(":$RELEASE_ARTIFACT-compiler"))
+
     implementation(kotlin("stdlib", VERSION_KOTLIN))
 
     implementation(androidx("appcompat"))
     implementation(androidx("cardview"))
     implementation(material())
 
-    implementation(anko("commons"))
-    implementation(anko("design"))
-
     val reveallayoutVersion = "0.4.0"
     implementation("com.hendraanggrian:reveallayout:$reveallayoutVersion")
 
-    implementation(project(":$RELEASE_ARTIFACT"))
-    kapt(project(":$RELEASE_ARTIFACT-compiler"))
-
-    val butterknifeVersion = "8.8.1"
+    /*val butterknifeVersion = "9.0.0-rc2"
     implementation("com.jakewharton:butterknife:$butterknifeVersion")
-    kapt("com.jakewharton:butterknife-compiler:$butterknifeVersion")
+    kapt("com.jakewharton:butterknife-compiler:$butterknifeVersion")*/
 
-    val parcelerVersion = "1.1.6"
+    val parcelerVersion = "1.1.12"
     implementation("org.parceler:parceler-api:$parcelerVersion")
     kapt("org.parceler:parceler:$parcelerVersion")
 }

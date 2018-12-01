@@ -1,33 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    package="com.example.bundler"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.hendraanggrian.bundler.demo">
 
     <application
-        android:name="com.example.bundler.App"
-        android:allowBackup="true"
-        android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.App">
+        android:name=".App"
+        android:label="Bundler Demo"
+        android:theme="@style/Theme.App"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning,MissingApplicationIcon">
 
-        <activity
-            android:name="com.example.bundler.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.example.bundler.NextActivity"
-            android:theme="@style/Theme.Next"/>
 
         <activity
-            android:name="com.example.bundler.ExampleActivity"
-            android:exported="true"/>
+            android:name=".NextActivity"
+            android:theme="@style/Theme.Next" />
+
         <activity
-            android:name="com.example.bundler.Example1Activity"/>
-        <activity
-            android:name="com.example.bundler.Example2Activity"/>
+            android:name=".ExampleActivity"
+            android:exported="true" />
+
+        <activity android:name=".Example1Activity" />
+
+        <activity android:name=".Example2Activity" />
     </application>
 </manifest>

@@ -1,10 +1,9 @@
 package com.hendraanggrian.bundler;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
  * Bind state to field with this annotation.
@@ -13,8 +12,8 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  * {@literal @}State("EXTRA_COUNTRY") String country;
  * </code></pre>
  */
-@Retention(CLASS)
-@Target(FIELD)
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.FIELD)
 public @interface State {
 
     String SUFFIX = "_StateBinding";

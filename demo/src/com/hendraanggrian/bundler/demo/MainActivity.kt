@@ -1,4 +1,4 @@
-package com.example.bundler
+package com.hendraanggrian.bundler.demo
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -7,32 +7,25 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
-import android.support.v4.view.animation.FastOutSlowInInterpolator
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
-import butterknife.BindView
-import com.hendraanggrian.bundler.Bundler
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.hendraanggrian.bundler.State
-import com.hendraanggrian.widget.RevealFrameLayout
+import com.hendraanggrian.bundler.extrasOf
+import com.hendraanggrian.bundler.restoreStates
+import com.hendraanggrian.bundler.saveStates
+import kotlinx.android.synthetic.main.activity_main.*
 
-/**
- * @author Hendra Anggrian (hendraanggrian@gmail.com)
- */
-class MainActivity(override val contentLayout: Int = R.layout.activity_main) : BaseActivity(), View.OnClickListener {
+class MainActivity(override val contentLayout: Int = R.layout.activity_main) : BaseActivity(),
+    View.OnClickListener {
 
     @State @JvmField var cardViewShown: Boolean = false
 
-    @BindView(R.id.revealFrameLayout) lateinit var revealFrameLayout: RevealFrameLayout
-    @BindView(R.id.button) lateinit var button: Button
-    @BindView(R.id.cardView) lateinit var cardView: CardView
-    @BindView(R.id.toolbar) lateinit var toolbar: Toolbar
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) Bundler.restoreStates(this, savedInstanceState)
+        if (savedInstanceState != null) {
+            restoreStates(savedInstanceState)
+        }
         if (cardViewShown) {
             button.visibility = View.INVISIBLE
             cardView.visibility = View.VISIBLE
@@ -45,7 +38,8 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
     override fun onClick(v: View) {
         when (v) {
             button -> {
-                val set = createAnimatorSet(resources, revealFrameLayout.animateTo(button, cardView))
+                val set =
+                    createAnimatorSet(resources, revealFrameLayout.animateTo(button, cardView))
                 set.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
                         button.visibility = View.INVISIBLE
@@ -59,8 +53,10 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
                 set.start()
             }
             toolbar -> {
-                val set = createAnimatorSet(resources,
-                    revealFrameLayout.animateTo(button, cardView, true))
+                val set = createAnimatorSet(
+                    resources,
+                    revealFrameLayout.animateTo(button, cardView, true)
+                )
                 set.addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         button.visibility = View.VISIBLE
@@ -70,10 +66,11 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
                 })
                 set.start()
             }
-            cardView -> startActivity(Intent(this, NextActivity::class.java)
-                .putExtras(Bundler.extrasOf(NextActivity::class.java,
-                    createRect(revealFrameLayout, cardView)))
-                .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION))
+            cardView -> startActivity(
+                Intent(this, NextActivity::class.java)
+                    .putExtras(extrasOf<NextActivity>(createRect(revealFrameLayout, cardView)))
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+            )
         }
     }
 
@@ -85,7 +82,7 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
     override fun onSaveInstanceState(outState: Bundle) {
         // super.onSaveInstanceState(outState saveStatesTo this)
         super.onSaveInstanceState(outState)
-        Bundler.saveStates(this, outState)
+        saveStates(outState)
     }
 
     companion object {

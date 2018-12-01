@@ -1,6 +1,7 @@
 plugins {
     `java-library`
     kotlin("jvm")
+    bintray
     `bintray-release`
 }
 
