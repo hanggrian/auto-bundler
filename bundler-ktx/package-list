@@ -1,0 +1,6 @@
+$dokka.format:html
+$dokka.linkExtension:html
+$dokka.location:com.hendraanggrian.bundler$bindExtras(android.app.Activity)com.hendraanggrian.bundler/android.app.-activity/bind-extras.html
+$dokka.location:com.hendraanggrian.bundler$bindExtras(android.app.Fragment)com.hendraanggrian.bundler/android.app.-fragment/bind-extras.html
+$dokka.location:com.hendraanggrian.bundler$bindExtras(androidx.fragment.app.Fragment)com.hendraanggrian.bundler/androidx.fragment.app.-fragment/bind-extras.html
+com.hendraanggrian.bundler
