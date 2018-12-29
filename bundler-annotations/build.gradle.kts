@@ -4,6 +4,9 @@ plugins {
     `bintray-release`
 }
 
+group = RELEASE_GROUP
+version = RELEASE_VERSION
+
 sourceSets["main"].java.srcDir("src")
 
 java {

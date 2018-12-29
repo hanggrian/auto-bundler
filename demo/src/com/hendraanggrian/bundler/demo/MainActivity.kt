@@ -9,6 +9,7 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.hendraanggrian.bundler.State
 import com.hendraanggrian.bundler.extrasOf
@@ -86,6 +87,7 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
     }
 
     companion object {
+
         fun createAnimatorSet(resources: Resources, animators: Collection<Animator>): AnimatorSet {
             val set = AnimatorSet()
             set.playTogether(animators)
@@ -94,7 +96,7 @@ class MainActivity(override val contentLayout: Int = R.layout.activity_main) : B
             return set
         }
 
-        fun createRect(parent: ViewGroup, child: View): Rect {
+        fun createRect(parent: FrameLayout, child: View): Rect {
             val rect = Rect()
             child.getDrawingRect(rect)
             parent.offsetDescendantRectToMyCoords(child, rect)

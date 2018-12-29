@@ -36,36 +36,36 @@ android {
     }
 }
 
-val configuration = configurations.register("ktlint")
+val ktlint by configurations.registering
 
 dependencies {
     api(kotlin("stdlib", VERSION_KOTLIN))
     api(project(":$RELEASE_ARTIFACT"))
 
-    configuration {
+    ktlint {
         invoke(ktlint())
     }
 }
 
 tasks {
-    val ktlint = register<JavaExec>("ktlint") {
+    register<JavaExec>("ktlint") {
         group = LifecycleBasePlugin.VERIFICATION_GROUP
         inputs.dir("src")
         outputs.dir("src")
         description = "Check Kotlin code style."
-        classpath(configuration.get())
+        classpath(ktlint.get())
         main = "com.github.shyiko.ktlint.Main"
         args("--android", "src/**/*.kt")
     }
     "check" {
-        dependsOn(ktlint.get())
+        dependsOn("ktlint")
     }
     register<JavaExec>("ktlintFormat") {
         group = "formatting"
         inputs.dir("src")
         outputs.dir("src")
         description = "Fix Kotlin code style deviations."
-        classpath(configuration.get())
+        classpath(ktlint.get())
         main = "com.github.shyiko.ktlint.Main"
         args("--android", "-F", "src/**/*.kt")
     }

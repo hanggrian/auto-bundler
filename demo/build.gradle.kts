@@ -55,8 +55,7 @@ dependencies {
     implementation(androidx("cardview"))
     implementation(material())
 
-    val reveallayoutVersion = "0.4.0"
-    implementation("com.hendraanggrian:reveallayout:$reveallayoutVersion")
+    implementation("com.hendraanggrian:reveallayout:0.4.0")
 
     /*val butterknifeVersion = "9.0.0-rc2"
     implementation("com.jakewharton:butterknife:$butterknifeVersion")

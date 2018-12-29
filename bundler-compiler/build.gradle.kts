@@ -5,6 +5,9 @@ plugins {
     `bintray-release`
 }
 
+group = RELEASE_GROUP
+version = RELEASE_VERSION
+
 sourceSets {
     getByName("main") {
         java.srcDir("src")
@@ -18,7 +21,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_7
 }
 
-val configuration = configurations.register("ktlint")
+val ktlint by configurations.registering
 
 dependencies {
     compile(kotlin("stdlib", VERSION_KOTLIN))
@@ -33,32 +36,32 @@ dependencies {
     testImplementation(junit())
     testImplementation(google("truth", VERSION_TRUTH))
 
-    configuration {
+    ktlint {
         invoke(ktlint())
     }
 }
 
 tasks {
-    val ktlint = register<JavaExec>("ktlint") {
+    register<JavaExec>("ktlint") {
         group = LifecycleBasePlugin.VERIFICATION_GROUP
         inputs.dir("src")
         outputs.dir("src")
         description = "Check Kotlin code style."
-        classpath(configuration.get())
+        classpath = ktlint.get()
         main = "com.github.shyiko.ktlint.Main"
-        args("--android", "src/**/*.kt")
+        args("src/**/*.kt")
     }
     "check" {
-        dependsOn(ktlint.get())
+        dependsOn("ktlint")
     }
     register<JavaExec>("ktlintFormat") {
         group = "formatting"
         inputs.dir("src")
         outputs.dir("src")
         description = "Fix Kotlin code style deviations."
-        classpath(configuration.get())
+        classpath = ktlint.get()
         main = "com.github.shyiko.ktlint.Main"
-        args("--android", "-F", "src/**/*.kt")
+        args("-F", "src/**/*.kt")
     }
 }
 
