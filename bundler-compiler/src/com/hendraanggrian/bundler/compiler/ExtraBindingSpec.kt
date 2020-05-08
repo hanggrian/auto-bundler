@@ -3,7 +3,7 @@ package com.hendraanggrian.bundler.compiler
 import androidx.annotation.Nullable
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
-import com.hendraanggrian.bundler.Extra
+import com.hendraanggrian.bundler.BindExtra
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
 import javax.lang.model.element.Element
@@ -12,12 +12,12 @@ import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.Types
 
-internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, Extra.SUFFIX) {
+internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, BindExtra.SUFFIX) {
 
     private val constructorBinding = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(ClassName.get(typeElement), TARGET)
-        .addParameter(TYPE_BUNDLE, SOURCE)
+        .addParameter(BUNDLE, SOURCE)
     private val constructorWrapping = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(List::class.java, ARGS)
@@ -33,7 +33,7 @@ internal class ExtraBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
             }
         }
         if (!extraHasSuperclass) {
-            typeSpec.superclass(TYPE_BUNDLE_BINDING)
+            typeSpec.superclass(BUNDLE_BINDING)
             constructorBinding.addStatement("super(\$L)", SOURCE)
         } else {
             constructorBinding.addStatement("super(\$L, \$L)", TARGET, SOURCE)

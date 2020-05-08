@@ -9,13 +9,14 @@ import java.lang.annotation.Target;
  * Bind state to field with this annotation.
  * Field cannot be private as it would be inaccessible to binding class.
  * <pre><code>
- * {@literal @}State("EXTRA_COUNTRY") String country;
+ * {@literal @}BindState("EXTRA_COUNTRY") String country;
  * </code></pre>
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
-public @interface State {
+public @interface BindState {
 
+    /** Generated class name suffix which fields are annotated with this annotation. */
     String SUFFIX = "_StateBinding";
 
     /**

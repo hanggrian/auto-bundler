@@ -1,25 +1,24 @@
 package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreTypes
-import com.hendraanggrian.bundler.State
+import com.hendraanggrian.bundler.BindState
 import com.squareup.javapoet.ClassName
 import com.squareup.javapoet.MethodSpec
-import java.util.Arrays
 import javax.lang.model.element.Element
 import javax.lang.model.element.Modifier.PUBLIC
 import javax.lang.model.element.TypeElement
 import javax.lang.model.type.TypeKind
 import javax.lang.model.util.Types
 
-internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, State.SUFFIX) {
+internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElement, BindState.SUFFIX) {
 
     private val constructorBinding = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
         .addParameter(ClassName.get(typeElement), TARGET)
-        .addParameter(TYPE_BUNDLE, SOURCE)
+        .addParameter(BUNDLE, SOURCE)
     private val constructorSaving = MethodSpec.constructorBuilder()
         .addModifiers(PUBLIC)
-        .addParameter(TYPE_BUNDLE, SOURCE)
+        .addParameter(BUNDLE, SOURCE)
         .addParameter(ClassName.get(typeElement), TARGET)
 
     override fun superclass(extraClassNames: Collection<String>): StateBindingSpec {
@@ -33,7 +32,7 @@ internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
             }
         }
         if (!extraHasSuperclass) {
-            typeSpec.superclass(TYPE_BUNDLE_BINDING)
+            typeSpec.superclass(BUNDLE_BINDING)
             constructorBinding.addStatement("super(\$L)", SOURCE)
             constructorSaving.addStatement("super(\$L)", SOURCE)
         } else {
@@ -53,5 +52,5 @@ internal class StateBindingSpec(typeElement: TypeElement) : BindingSpec(typeElem
     }
 
     override val methodSpecs: Iterable<MethodSpec.Builder>
-        get() = Arrays.asList(constructorBinding, constructorSaving)
+        get() = listOf(constructorBinding, constructorSaving)
 }

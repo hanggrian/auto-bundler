@@ -1,7 +1,7 @@
 package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreElements
-import com.squareup.javapoet.ClassName.get
+import com.hendraanggrian.javapoet.classOf
 import javax.lang.model.element.TypeElement
 
 internal const val TARGET = "target"
@@ -12,16 +12,17 @@ internal const val VALUE = "value"
 internal const val DEFAULT_VALUE = "defaultValue"
 internal const val GENERIC = "T"
 
-internal val TYPE_BUNDLE_BINDING = get("com.hendraanggrian.bundler.internal", "BundleBinding")!!
-internal val TYPE_BUNDLER_UTILS = get("com.hendraanggrian.bundler", "BundlerUtils")!!
+internal val BUNDLE_BINDING = "com.hendraanggrian.bundler.internal".classOf("BundleBinding")
+internal val BUNDLER_UTILS = "com.hendraanggrian.bundler".classOf("BundlerUtils")
 
-internal val TYPE_PARCEL = get("org.parceler", "Parcel")!!
-internal val TYPE_PARCELS = get("org.parceler", "Parcels")!!
+internal val PARCEL = "org.parceler".classOf("Parcel")
+internal val PARCELS = "org.parceler".classOf("Parcels")
 
-internal val TYPE_BUNDLE = get("android.os", "Bundle")
-internal val TYPE_PARCELABLE = get("android.os", "Parcelable")
-internal val TYPE_SPARSE_ARRAY = get("android.util", "SparseArray")
+internal val BUNDLE = "android.os".classOf("Bundle")
+internal val PARCELABLE = "android.os".classOf("Parcelable")
+internal val SPARSE_ARRAY = "android.util".classOf("SparseArray")
 
+@Suppress("UnstableApiUsage")
 internal fun TypeElement.getMeasuredName(suffix: String): String {
     val enclosings = mutableListOf(simpleName.toString())
     var typeElement = this
@@ -31,6 +32,8 @@ internal fun TypeElement.getMeasuredName(suffix: String): String {
     }
     enclosings.reverse()
     var typeName = enclosings[0]
-    for (i in 1 until enclosings.size) typeName += "$${enclosings[i]}"
-    return "$typeName$suffix"
+    for (i in 1 until enclosings.size) {
+        typeName += "$${enclosings[i]}"
+    }
+    return typeName + suffix
 }

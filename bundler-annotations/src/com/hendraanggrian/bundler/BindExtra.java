@@ -9,13 +9,14 @@ import java.lang.annotation.Target;
  * Bind extra value to field with this annotation.
  * Field cannot be private as it would be inaccessible to binding class.
  * <pre><code>
- * {@literal @}Extra("EXTRA_COUNTRY") String country;
+ * {@literal @}BindExtra("EXTRA_COUNTRY") String country;
  * </code></pre>
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
-public @interface Extra {
+public @interface BindExtra {
 
+    /** Generated class name suffix which fields are annotated with this annotation. */
     String SUFFIX = "_ExtraBinding";
 
     /**
