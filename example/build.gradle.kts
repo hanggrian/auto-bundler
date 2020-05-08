@@ -7,20 +7,21 @@ plugins {
 
 android {
     compileSdkVersion(SDK_TARGET)
-    buildToolsVersion(BUILD_TOOLS)
     defaultConfig {
         minSdkVersion(15)
         targetSdkVersion(SDK_TARGET)
-        applicationId = "$RELEASE_GROUP.demo"
-        versionCode = 1
+        applicationId = "com.example.$RELEASE_ARTIFACT"
         versionName = RELEASE_VERSION
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
     sourceSets {
         getByName("main") {
             manifest.srcFile("AndroidManifest.xml")
-            java.srcDirs("src")
+            java.srcDir("src")
             res.srcDir("res")
-            resources.srcDir("src")
         }
     }
     buildTypes {
@@ -46,16 +47,17 @@ repositories {
 }
 
 dependencies {
+    api(kotlin("stdlib", VERSION_KOTLIN))
+
     implementation(project(":$RELEASE_ARTIFACT-ktx"))
     kapt(project(":$RELEASE_ARTIFACT-compiler"))
 
     implementation(kotlin("stdlib", VERSION_KOTLIN))
 
+    implementation(androidx("core", "core-ktx", VERSION_ANDROIDX))
     implementation(androidx("appcompat"))
-    implementation(androidx("cardview"))
+    implementation(androidx("preference", "preference-ktx", version = VERSION_ANDROIDX))
     implementation(material())
-
-    implementation("com.hendraanggrian:reveallayout:0.4.0")
 
     /*val butterknifeVersion = "9.0.0-rc2"
     implementation("com.jakewharton:butterknife:$butterknifeVersion")

@@ -1,7 +1,7 @@
 plugins {
     `java-library`
     kotlin("jvm")
-    bintray
+    dokka
     `bintray-release`
 }
 
@@ -21,22 +21,22 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_7
 }
 
-val ktlint by configurations.registering
+val configuration = configurations.register("ktlint")
 
 dependencies {
-    compile(kotlin("stdlib", VERSION_KOTLIN))
-    compile(project(":$RELEASE_ARTIFACT-annotations"))
-    compile(google("auto-common", VERSION_AUTOCOMMON))
-    compile(google("guava", VERSION_GUAVA))
-    compile(square("javapoet", VERSION_JAVAPOET))
+    implementation(kotlin("stdlib", VERSION_KOTLIN))
+    implementation(project(":$RELEASE_ARTIFACT-annotations"))
+    implementation(google("auto", "auto-common", VERSION_AUTOCOMMON))
+    implementation(google("guava", "guava", VERSION_GUAVA))
+    implementation(hendraanggrian("javapoet-ktx", VERSION_JAVAPOET_KTX))
 
     compileOnly(androidx("annotation"))
     compileOnly(files(org.gradle.internal.jvm.Jvm.current().toolsJar))
 
-    testImplementation(junit())
-    testImplementation(google("truth", VERSION_TRUTH))
+    testImplementation(kotlin("test-junit", VERSION_KOTLIN))
+    testImplementation(google("truth", "truth", VERSION_TRUTH))
 
-    ktlint {
+    configuration {
         invoke(ktlint())
     }
 }
@@ -47,8 +47,8 @@ tasks {
         inputs.dir("src")
         outputs.dir("src")
         description = "Check Kotlin code style."
-        classpath = ktlint.get()
-        main = "com.github.shyiko.ktlint.Main"
+        classpath = configuration.get()
+        main = "com.pinterest.ktlint.Main"
         args("src/**/*.kt")
     }
     "check" {
@@ -59,12 +59,18 @@ tasks {
         inputs.dir("src")
         outputs.dir("src")
         description = "Fix Kotlin code style deviations."
-        classpath = ktlint.get()
-        main = "com.github.shyiko.ktlint.Main"
+        classpath = configuration.get()
+        main = "com.pinterest.ktlint.Main"
         args("-F", "src/**/*.kt")
+    }
+
+    named<org.jetbrains.dokka.gradle.DokkaTask>("dokka") {
+        outputDirectory = "$buildDir/docs"
+        doFirst { file(outputDirectory).deleteRecursively() }
     }
 }
 
+publishKotlinFix()
 publish {
     bintrayUser = BINTRAY_USER
     bintrayKey = BINTRAY_KEY
@@ -76,5 +82,5 @@ publish {
     artifactId = "$RELEASE_ARTIFACT-compiler"
     publishVersion = RELEASE_VERSION
     desc = RELEASE_DESC
-    website = RELEASE_WEBSITE
+    website = RELEASE_WEB
 }

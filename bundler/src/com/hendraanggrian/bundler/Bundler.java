@@ -23,14 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public final class Bundler {
-
     private static final String TAG = "Bundler";
     private static Map<String, Constructor<? extends BundleBinding>> BINDINGS;
     private static boolean DEBUG = false;
 
-    /**
-     * No instance.
-     */
     private Bundler() {
     }
 
@@ -42,8 +38,7 @@ public final class Bundler {
     }
 
     /**
-     * Bind extra fields in Fragment with default behavior,
-     * not available pre-11.
+     * Bind extra fields in Fragment with default behavior.
      */
     public static void bindExtras(@NonNull Fragment target) {
         final Bundle args = target.getArguments();
@@ -54,8 +49,7 @@ public final class Bundler {
     }
 
     /**
-     * Bind extra fields in Fragment with default behavior,
-     * not available pre-11.
+     * Bind extra fields in Fragment with default behavior.
      */
     public static void bindExtras(@NonNull androidx.fragment.app.Fragment target) {
         final Bundle args = target.getArguments();

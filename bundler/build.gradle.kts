@@ -1,13 +1,11 @@
 plugins {
     android("library")
     kotlin("android")
-    bintray
     `bintray-release`
 }
 
 android {
     compileSdkVersion(SDK_TARGET)
-    buildToolsVersion(BUILD_TOOLS)
     defaultConfig {
         minSdkVersion(SDK_MIN)
         targetSdkVersion(SDK_TARGET)
@@ -23,16 +21,14 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("AndroidManifest.xml")
-            java.srcDirs("src")
+            java.srcDir("src")
             res.srcDir("res")
-            resources.srcDir("src")
         }
     }
-    lintOptions {
-        isCheckTestSources = true
-    }
     libraryVariants.all {
-        generateBuildConfig?.enabled = false
+        generateBuildConfigProvider?.configure {
+            enabled = false
+        }
     }
 }
 
@@ -40,22 +36,16 @@ dependencies {
     api(project(":$RELEASE_ARTIFACT-annotations"))
     api(androidx("fragment"))
 
-    testImplementation(junit())
-    androidTestImplementation(junit())
+    testImplementation(kotlin("test-junit", VERSION_KOTLIN))
     androidTestImplementation(kotlin("stdlib", VERSION_KOTLIN))
+    androidTestImplementation(kotlin("test", VERSION_KOTLIN))
+    androidTestImplementation(androidx("test", "core-ktx", VERSION_ANDROIDX_TEST))
+    androidTestImplementation(androidx("test", "runner", VERSION_ANDROIDX_TEST))
+    androidTestImplementation(androidx("test", "rules", VERSION_ANDROIDX_TEST))
+    androidTestImplementation(androidx("test.ext", "junit-ktx", VERSION_ANDROIDX_JUNIT))
+    androidTestImplementation(androidx("test.ext", "truth", VERSION_ANDROIDX_TRUTH))
+    androidTestImplementation(androidx("test.espresso", "espresso-core", VERSION_ESPRESSO))
 }
-
-inline val runtimeJar: File?
-    get() {
-        try {
-            val javaHome = File(System.getProperty("java.home")).canonicalFile
-            File(javaHome, "lib/rt.jar").let { if (it.exists()) return it }
-            File(javaHome, "jre/lib/rt.jar").let { if (it.exists()) return it }
-            return null
-        } catch (e: java.io.IOException) {
-            throw RuntimeException(e)
-        }
-    }
 
 publish {
     bintrayUser = BINTRAY_USER
@@ -68,5 +58,5 @@ publish {
     artifactId = RELEASE_ARTIFACT
     publishVersion = RELEASE_VERSION
     desc = RELEASE_DESC
-    website = RELEASE_WEBSITE
+    website = RELEASE_WEB
 }

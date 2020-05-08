@@ -1,6 +1,7 @@
-include(RELEASE_ARTIFACT)
-include("$RELEASE_ARTIFACT-annotations")
-include("$RELEASE_ARTIFACT-compiler")
-include("$RELEASE_ARTIFACT-ktx")
+include("bundler")
+include("bundler-annotations")
+include("bundler-compiler")
+include("bundler-ktx")
+
 include("website")
-include("demo")
+include("example")

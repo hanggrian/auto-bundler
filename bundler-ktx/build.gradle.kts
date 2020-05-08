@@ -2,13 +2,11 @@ plugins {
     android("library")
     kotlin("android")
     dokka
-    bintray
     `bintray-release`
 }
 
 android {
     compileSdkVersion(SDK_TARGET)
-    buildToolsVersion(BUILD_TOOLS)
     defaultConfig {
         minSdkVersion(SDK_MIN)
         targetSdkVersion(SDK_TARGET)
@@ -23,26 +21,24 @@ android {
     sourceSets {
         getByName("main") {
             manifest.srcFile("AndroidManifest.xml")
-            java.srcDirs("src")
+            java.srcDir("src")
             res.srcDir("res")
-            resources.srcDir("src")
         }
     }
-    lintOptions {
-        isCheckTestSources = true
-    }
     libraryVariants.all {
-        generateBuildConfig?.enabled = false
+        generateBuildConfigProvider?.configure {
+            enabled = false
+        }
     }
 }
 
-val ktlint by configurations.registering
+val configuration = configurations.register("ktlint")
 
 dependencies {
     api(kotlin("stdlib", VERSION_KOTLIN))
     api(project(":$RELEASE_ARTIFACT"))
 
-    ktlint {
+    configuration {
         invoke(ktlint())
     }
 }
@@ -53,9 +49,9 @@ tasks {
         inputs.dir("src")
         outputs.dir("src")
         description = "Check Kotlin code style."
-        classpath(ktlint.get())
-        main = "com.github.shyiko.ktlint.Main"
-        args("--android", "src/**/*.kt")
+        classpath = configuration.get()
+        main = "com.pinterest.ktlint.Main"
+        args("src/**/*.kt")
     }
     "check" {
         dependsOn("ktlint")
@@ -65,12 +61,12 @@ tasks {
         inputs.dir("src")
         outputs.dir("src")
         description = "Fix Kotlin code style deviations."
-        classpath(ktlint.get())
-        main = "com.github.shyiko.ktlint.Main"
-        args("--android", "-F", "src/**/*.kt")
+        classpath = configuration.get()
+        main = "com.pinterest.ktlint.Main"
+        args("-F", "src/**/*.kt")
     }
 
-    withType<org.jetbrains.dokka.gradle.DokkaTask> {
+    named<org.jetbrains.dokka.gradle.DokkaTask>("dokka") {
         outputDirectory = "$buildDir/docs"
         doFirst { file(outputDirectory).deleteRecursively() }
     }
@@ -87,5 +83,5 @@ publish {
     artifactId = "$RELEASE_ARTIFACT-ktx"
     publishVersion = RELEASE_VERSION
     desc = RELEASE_DESC
-    website = RELEASE_WEBSITE
+    website = RELEASE_WEB
 }

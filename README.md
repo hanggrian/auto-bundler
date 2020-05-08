@@ -1,7 +1,7 @@
-[![bintray](https://img.shields.io/badge/bintray-bundler-brightgreen.svg)](https://bintray.com/hendraanggrian/bundler)
-[![download](https://api.bintray.com/packages/hendraanggrian/bundler/bundler/images/download.svg)](https://bintray.com/hendraanggrian/bundler/bundler/_latestVersion)
+[![download](https://api.bintray.com/packages/hendraanggrian/bundler/bundler/images/download.svg) ](https://bintray.com/hendraanggrian/bundler/bundler/_latestVersion)
 [![build](https://travis-ci.com/hendraanggrian/bundler.svg)](https://travis-ci.com/hendraanggrian/bundler)
-[![license](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081.svg)](https://ktlint.github.io/)
+[![license](https://img.shields.io/github/license/hendraanggrian/bundler)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Bundler
 =======

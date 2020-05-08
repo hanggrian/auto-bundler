@@ -1,12 +1,12 @@
-package com.hendraanggrian.bundler.demo
+package com.example.bundler
 
 import android.app.Application
 import com.hendraanggrian.bundler.Bundler
 
-class App : Application() {
+class ExampleApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Bundler.setDebug(BuildConfig.DEBUG)
+        Bundler.setDebug(true)
     }
 }
