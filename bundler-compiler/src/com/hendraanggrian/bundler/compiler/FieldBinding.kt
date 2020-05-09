@@ -54,12 +54,12 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
     val putCodeBlockWithList: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of(
-                "if(!\$L.isEmpty()) \$L.\$L(\$S, (\$L) nextArg());\n",
-                ARGS, SOURCE, type.putMethodName, key, type.typeName.toString()
+                "if(!\$L.isEmpty()) getSource().\$L(\$S, (\$L) nextArg());\n",
+                ARGS, type.putMethodName, key, type.typeName.toString()
             )
             else -> CodeBlock.of(
-                "if(!\$L.isEmpty()) \$T.putParceler(\$L, \$S, nextArg());\n",
-                ARGS, BUNDLER_UTILS, SOURCE, key
+                "if(!\$L.isEmpty()) \$T.putParceler(getSource(), \$S, nextArg());\n",
+                ARGS, BUNDLER_UTILS, key
             )
         }
 
