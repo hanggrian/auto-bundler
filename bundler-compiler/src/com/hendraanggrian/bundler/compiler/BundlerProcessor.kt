@@ -5,7 +5,6 @@ import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Sets
 import com.hendraanggrian.bundler.BindExtra
 import com.hendraanggrian.bundler.BindState
-import java.io.IOException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
@@ -38,16 +37,13 @@ class BundlerProcessor : AbstractProcessor() {
         filer = processingEnv.filer
     }
 
+    @Suppress("UnstableApiUsage")
     override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         // build utility class if parceler is available and if it has not yet already been created
-        if (elementUtils.getTypeElement(PARCELS.toString()) != null &&
-            elementUtils.getTypeElement(BUNDLER_UTILS.toString()) == null
+        if (elementUtils.getTypeElement("$PARCELS") != null &&
+            elementUtils.getTypeElement("$BUNDLER_UTILS") == null
         ) {
-            val file = UtilsSpec().toJavaFile()
-            try {
-                file.writeTo(filer)
-            } catch (ignored: IOException) {
-            }
+            filer.writeBundlerUtils()
         }
         // preparing elements
         for (annotation in SUPPORTED_ANNOTATIONS) {
@@ -66,21 +62,12 @@ class BundlerProcessor : AbstractProcessor() {
                 )
             }
             // write classes and keep results
-            map.keySet()
-                .map {
-                    (if (annotation == BindExtra::class.java) ExtraBindingSpec(it)
-                    else StateBindingSpec(it))
-                        .superclass(generatedClassNames)
-                        .statement(map.get(it), typeUtils)
-                        .toJavaFile()
+            map.keySet().forEach {
+                when (annotation) {
+                    BindExtra::class.java -> filer.writeExtraBinding(it, generatedClassNames, map[it], typeUtils)
+                    BindState::class.java -> filer.writeStateBinding(it, generatedClassNames, map[it], typeUtils)
                 }
-                .forEach {
-                    try {
-                        it.writeTo(filer)
-                    } catch (e: IOException) {
-                        throw RuntimeException(e)
-                    }
-                }
+            }
         }
         return false
     }

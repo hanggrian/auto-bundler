@@ -1,8 +1,13 @@
+@file:Suppress("UnstableApiUsage")
+
 package com.hendraanggrian.bundler.compiler
 
 import com.google.auto.common.MoreElements
 import com.hendraanggrian.javapoet.classOf
 import javax.lang.model.element.TypeElement
+
+internal const val FILE_COMMENT = "Bundler generated class, do not modify! " +
+    "https://github.com/hendraanggrian/bundler"
 
 internal const val TARGET = "target"
 internal const val SOURCE = "source"
@@ -10,7 +15,8 @@ internal const val ARGS = "args"
 internal const val KEY = "key"
 internal const val VALUE = "value"
 internal const val DEFAULT_VALUE = "defaultValue"
-internal const val GENERIC = "T"
+
+internal const val PACKAGE_NAME = "com.hendraanggrian.bundler"
 
 internal val BUNDLE_BINDING = "com.hendraanggrian.bundler.internal".classOf("BundleBinding")
 internal val BUNDLER_UTILS = "com.hendraanggrian.bundler".classOf("BundlerUtils")
@@ -22,7 +28,9 @@ internal val BUNDLE = "android.os".classOf("Bundle")
 internal val PARCELABLE = "android.os".classOf("Parcelable")
 internal val SPARSE_ARRAY = "android.util".classOf("SparseArray")
 
-@Suppress("UnstableApiUsage")
+internal val TypeElement.measuredPackageName: String
+    get() = MoreElements.getPackage(this).qualifiedName.toString()
+
 internal fun TypeElement.getMeasuredName(suffix: String): String {
     val enclosings = mutableListOf(simpleName.toString())
     var typeElement = this

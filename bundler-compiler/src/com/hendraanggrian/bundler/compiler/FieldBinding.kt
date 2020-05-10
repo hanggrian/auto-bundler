@@ -18,11 +18,11 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
     val codeBlock: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of(
-                "\$L.\$L = \$L(\$S, \$L.\$L);\n",
+                "\$L.\$L = \$L(\$S, \$L.\$L)",
                 TARGET, name, type.getMethodName, key, TARGET, name
             )
             else -> CodeBlock.of(
-                "\$L.\$L = \$T.getParceler(\$L, \$S, \$L.\$L);\n",
+                "\$L.\$L = \$T.getParceler(\$L, \$S, \$L.\$L)",
                 TARGET, name, BUNDLER_UTILS, SOURCE, key, TARGET, name
             )
         }
@@ -49,16 +49,16 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
     }
 
     val checkRequiredCodeBlock: CodeBlock
-        get() = CodeBlock.of("checkRequired(\$S, \$S);\n", key, name)
+        get() = CodeBlock.of("checkRequired(\$S, \$S)", key, name)
 
     val putCodeBlockWithList: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of(
-                "if(!\$L.isEmpty()) getSource().\$L(\$S, (\$L) nextArg());\n",
+                "if (!\$L.isEmpty()) getSource().\$L(\$S, (\$L) nextArg())",
                 ARGS, type.putMethodName, key, type.typeName.toString()
             )
             else -> CodeBlock.of(
-                "if(!\$L.isEmpty()) \$T.putParceler(getSource(), \$S, nextArg());\n",
+                "if (!\$L.isEmpty()) \$T.putParceler(getSource(), \$S, nextArg())",
                 ARGS, BUNDLER_UTILS, key
             )
         }
@@ -66,11 +66,11 @@ internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
     val putCodeBlock: CodeBlock
         get() = when {
             type != BundleValueType.PARCELER -> CodeBlock.of(
-                "\$L.\$L(\$S, \$L.\$L);\n",
+                "\$L.\$L(\$S, \$L.\$L)",
                 SOURCE, type.putMethodName, key, TARGET, name
             )
             else -> CodeBlock.of(
-                "\$T.putParceler(\$L, \$S, \$L.\$L);\n",
+                "\$T.putParceler(\$L, \$S, \$L.\$L)",
                 BUNDLER_UTILS, SOURCE, key, TARGET, name
             )
         }
