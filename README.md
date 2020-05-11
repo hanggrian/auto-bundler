@@ -39,8 +39,10 @@ repositories {
 }
 
 dependencies {
-    compile "com.hendraanggrian.bundler:bundler:$version"
-    annotationProcessor "com.hendraanggrian.bundler:bundler-compiler:$version" // or kapt if this is a kotlin project
+    api "com.hendraanggrian.bundler:bundler:$version"
+
+    // optional annotation processor
+    annotationProcessor "com.hendraanggrian.bundler:bundler-compiler:$version" // or kapt
 }
 ```
 

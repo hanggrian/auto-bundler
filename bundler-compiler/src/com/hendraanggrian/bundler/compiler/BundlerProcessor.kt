@@ -3,9 +3,8 @@ package com.hendraanggrian.bundler.compiler
 import com.google.auto.common.MoreElements
 import com.google.common.collect.LinkedHashMultimap
 import com.google.common.collect.Sets
-import com.hendraanggrian.bundler.Extra
-import com.hendraanggrian.bundler.State
-import java.io.IOException
+import com.hendraanggrian.bundler.BindExtra
+import com.hendraanggrian.bundler.BindState
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Filer
 import javax.annotation.processing.ProcessingEnvironment
@@ -19,7 +18,7 @@ import javax.lang.model.util.Types
 class BundlerProcessor : AbstractProcessor() {
 
     companion object {
-        private val SUPPORTED_ANNOTATIONS = setOf(Extra::class.java, State::class.java)
+        private val SUPPORTED_ANNOTATIONS = setOf(BindExtra::class.java, BindState::class.java)
     }
 
     private lateinit var typeUtils: Types
@@ -28,25 +27,23 @@ class BundlerProcessor : AbstractProcessor() {
 
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latestSupported()
 
-    override fun getSupportedAnnotationTypes(): Set<String> = SUPPORTED_ANNOTATIONS
-        .map { it.canonicalName }.toSet()
+    override fun getSupportedAnnotationTypes(): Set<String> = SUPPORTED_ANNOTATIONS.map { it.canonicalName }.toSet()
 
-    @Synchronized override fun init(processingEnv: ProcessingEnvironment) {
+    @Synchronized
+    override fun init(processingEnv: ProcessingEnvironment) {
         super.init(processingEnv)
         typeUtils = processingEnv.typeUtils
         elementUtils = processingEnv.elementUtils
         filer = processingEnv.filer
     }
 
+    @Suppress("UnstableApiUsage")
     override fun process(set: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
         // build utility class if parceler is available and if it has not yet already been created
-        if (elementUtils.getTypeElement(TYPE_PARCELS.toString()) != null &&
-            elementUtils.getTypeElement(TYPE_BUNDLER_UTILS.toString()) == null) {
-            val file = UtilsSpec().toJavaFile()
-            try {
-                file.writeTo(filer)
-            } catch (ignored: IOException) {
-            }
+        if (elementUtils.getTypeElement("$PARCELS") != null &&
+            elementUtils.getTypeElement("$BUNDLER_UTILS") == null
+        ) {
+            filer.writeBundlerUtils()
         }
         // preparing elements
         for (annotation in SUPPORTED_ANNOTATIONS) {
@@ -55,27 +52,22 @@ class BundlerProcessor : AbstractProcessor() {
             for (fieldElement in roundEnv.getElementsAnnotatedWith(annotation)) {
                 val typeElement = MoreElements.asType(fieldElement.enclosingElement)
                 map.put(typeElement, fieldElement)
-                generatedClassNames.add(typeElement.getMeasuredName(when (annotation) {
-                    Extra::class.java -> Extra.SUFFIX
-                    else -> State.SUFFIX
-                }))
+                generatedClassNames.add(
+                    typeElement.getMeasuredName(
+                        when (annotation) {
+                            BindExtra::class.java -> BindExtra.SUFFIX
+                            else -> BindState.SUFFIX
+                        }
+                    )
+                )
             }
             // write classes and keep results
-            map.keySet()
-                .map {
-                    (if (annotation == Extra::class.java) ExtraBindingSpec(it)
-                    else StateBindingSpec(it))
-                        .superclass(generatedClassNames)
-                        .statement(map.get(it), typeUtils)
-                        .toJavaFile()
+            map.keySet().forEach {
+                when (annotation) {
+                    BindExtra::class.java -> filer.writeExtraBinding(it, generatedClassNames, map[it], typeUtils)
+                    BindState::class.java -> filer.writeStateBinding(it, generatedClassNames, map[it], typeUtils)
                 }
-                .forEach {
-                    try {
-                        it.writeTo(filer)
-                    } catch (e: IOException) {
-                        throw RuntimeException(e)
-                    }
-                }
+            }
         }
         return false
     }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <androidx.preference.Preference
-        android:key="option1"
+        android:key="example1"
         android:summary="Bind extras to next activity."
-        android:title="Option 1" />
+        android:title="Example 1" />
 
     <androidx.preference.Preference
-        android:key="option2"
+        android:key="example2"
         android:summary="Bind states for orientation change."
-        android:title="Option 2" />
+        android:title="Example 2" />
 </androidx.preference.PreferenceScreen>
