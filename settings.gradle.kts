@@ -1,6 +1,6 @@
-include("bundler")
-include("bundler-annotations")
-include("bundler-compiler")
+include("bundles-annotations")
+include("bundles")
+include("bundles-compiler")
 
 include("website")
-include("example")
+include("sample")
