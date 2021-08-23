@@ -40,8 +40,10 @@ internal fun Filer.writeExtraBinding(
         // binding
         constructor {
             addModifiers(PUBLIC)
-            parameters.add(BUNDLE, SOURCE)
-            parameters.add(ClassName.get(typeElement), TARGET)
+            parameters {
+                add(BUNDLE, SOURCE)
+                add(ClassName.get(typeElement), TARGET)
+            }
             when {
                 !hasSupercls -> appendLine("super(\$L)", SOURCE)
                 else -> appendLine("super(\$L, \$L)", TARGET, SOURCE)
@@ -57,7 +59,9 @@ internal fun Filer.writeExtraBinding(
         // wrapping
         constructor {
             addModifiers(PUBLIC)
-            parameters.add(List::class, ARGS)
+            parameters {
+                add(List::class, ARGS)
+            }
             appendLine("super(\$L)", ARGS)
             for (fieldElement in fieldElements) {
                 appendLine(FieldBinding(fieldElement, typeUtils).putCodeBlockWithList)
@@ -102,8 +106,8 @@ internal fun Filer.writeStateBinding(
         // saving
         constructor {
             addModifiers(PUBLIC)
-            parameters.add(BUNDLE, SOURCE)
             parameters.add(ClassName.get(typeElement), TARGET)
+            parameters.add(BUNDLE, SOURCE)
             when {
                 !hasSupercls -> appendLine("super(\$L)", SOURCE)
                 else -> append("super(\$L, \$L)", SOURCE, TARGET)

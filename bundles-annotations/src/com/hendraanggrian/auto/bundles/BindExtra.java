@@ -21,7 +21,7 @@ public @interface BindExtra {
 
     /**
      * Key in bundle key-value pair.
-     * Leave it empty to use field name as the key.
+     * @return bundle key, or field name if left empty.
      */
     String value() default "";
 }

@@ -10,8 +10,8 @@ import com.hendraanggrian.auto.bundles.bindExtras
 import kotlinx.android.synthetic.main.activity_example1.*
 
 class Example1Activity : AppCompatActivity() {
-    @BindExtra @JvmField var title: String = ""
-    @BindExtra @JvmField @Nullable var subtitle: String? = null
+    @JvmField @BindExtra var title = ""
+    @JvmField @BindExtra @Nullable var subtitle: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
