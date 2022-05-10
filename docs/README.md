@@ -98,12 +98,11 @@ override fun onSaveInstanceState(outState: Bundle) {
 Supported extra types
 ---------------------
 
- * primitive data types and array of them.
- * `CharSequence`, `CharSequence[]`, and `ArrayList<CharSequence>`
- * `String`, `String[]`, and `ArrayList<String>`
- * `Parcelable`, `Parcelable[]`, `ArrayList<Parcelable>`,
-   and `SparseArray<Parcelable>`
- * `Serializable`
+- primitive data types and array of them.
+- `CharSequence`, `CharSequence[]`, and `ArrayList<CharSequence>`
+- `String`, `String[]`, and `ArrayList<String>`
+- `Parcelable`, `Parcelable[]`, `ArrayList<Parcelable>` and `SparseArray<Parcelable>`
+- `Serializable`
 
 Parceler
 --------
