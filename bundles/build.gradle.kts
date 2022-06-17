@@ -37,9 +37,9 @@ android {
 ktlint()
 
 dependencies {
-    api(project(":$RELEASE_ARTIFACT-annotations"))
-    api(kotlin("stdlib", VERSION_KOTLIN))
-    api(androidx("fragment"))
+    implementation(project(":$RELEASE_ARTIFACT-annotations"))
+    implementation(kotlin("stdlib", VERSION_KOTLIN))
+    implementation(androidx("fragment"))
     androidTestImplementation(kotlin("test-junit", VERSION_KOTLIN))
     androidTestImplementation(kotlin("test", VERSION_KOTLIN))
     androidTestImplementation(androidx("test", "core-ktx", VERSION_ANDROIDX_TEST))

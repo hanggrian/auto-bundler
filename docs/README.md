@@ -1,9 +1,7 @@
-[![version](https://img.shields.io/maven-central/v/com.hendraanggrian.auto/bundles)](https://search.maven.org/artifact/com.hendraanggrian.auto/bundles)
-[![build](https://img.shields.io/travis/com/hendraanggrian/bundles)](https://www.travis-ci.com/github/hendraanggrian/bundles)
-[![ktlint](https://img.shields.io/badge/code%20style-%E2%9D%A4-FF4081)](https://ktlint.github.io)
+[![Travis CI](https://img.shields.io/travis/com/hendraanggrian/bundles)](https://www.travis-ci.com/github/hendraanggrian/bundles/)
+[![Maven Central](https://img.shields.io/maven-central/v/com.hendraanggrian.auto/bundles)](https://search.maven.org/artifact/com.hendraanggrian.auto/bundles/)
 
-Bundles
-=======
+# Bundles
 
 Passing key-value pairs with Bundle is the most common approach of exchanging data across Android components.
 Unfortunately, much of the process of sending and receiving those key-value pairs (known as extra) requires a lot of boilerplate code.
@@ -30,24 +28,23 @@ public class ExampleActivity extends Activity {
 }
 ```
 
-Download
---------
+## Download
 
 ```gradle
 repositories {
     mavenCentral()
 }
-
 dependencies {
     api "com.hendraanggrian.auto:bundles:$version"
     annotationProcessor "com.hendraanggrian.auto:bundles-compiler:$version" // or kapt
 }
 ```
 
-Extra binding
--------------
+## Usage
 
-### Binding
+### Extra binding
+
+#### Binding
 
 `@BindExtra` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
@@ -56,7 +53,7 @@ When key is not provided, field name will be used as the key.
 @BindExtra @JvmField var username: String
 ```
 
-### Wrapping
+#### Wrapping
 
 Create extras with varargs argument with `extrasOf()`.
 This is optional, any Bundle would work just fine.
@@ -67,10 +64,9 @@ intent.putExtras(Bundles.extrasOf(ExampleActivity.class, "Hendra Anggrian", 24))
 startActivity(intent);
 ```
 
-State binding
--------------
+### State binding
 
-### Restoring
+#### Restoring
 
 `@BindState` for binding extra value to field, field cannot be private.
 When key is not provided, field name will be used as the key.
@@ -84,7 +80,7 @@ override fun onRestoreInstanceState(savedInstanceState: Bundle) {
 }
 ```
 
-### Saving
+#### Saving
 
 Simply call `Bundle.saveStates()` to save states.
 
@@ -95,8 +91,7 @@ override fun onSaveInstanceState(outState: Bundle) {
 }
 ```
 
-Supported extra types
----------------------
+## Supported extra types
 
 - primitive data types and array of them.
 - `CharSequence`, `CharSequence[]`, and `ArrayList<CharSequence>`
@@ -104,8 +99,7 @@ Supported extra types
 - `Parcelable`, `Parcelable[]`, `ArrayList<Parcelable>` and `SparseArray<Parcelable>`
 - `Serializable`
 
-Parceler
---------
+## Parceler
 
 [Parceler][parceler] is supported with this library, it is a library that easily makes any object implements Parcelable with generated code, making it able to be inserted to Bundle as Parcelable.
 
@@ -134,8 +128,7 @@ class UserActivity : Activity {
 }
 ```
 
-Optional bindings
------------------
+## Optional bindings
 
 Extra bindings are required by default, an exception will be thrown if key is not found in Bundle.
 If this is not a desired behavior, annotate the field with `@Nullable` from [Android's support design library][support-annotations].
