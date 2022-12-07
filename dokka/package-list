@@ -1,0 +1,8 @@
+$dokka.format:html-v1
+$dokka.linkExtension:html
+
+module:bundler
+com.hendraanggrian.auto.bundler
+com.hendraanggrian.auto.bundler.internal
+module:bundler-compiler
+com.hendraanggrian.auto.bundler.compiler

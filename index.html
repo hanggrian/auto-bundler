@@ -1,38 +1,215 @@
 <!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Bundles</title>
+<html lang="en-us">
+    <head>
+        <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta charset="utf-8">
+        <title>auto-bundler</title>
+        <meta content="width=device-width" name="viewport">
+        <meta content="chrome=1" http-equiv="X-UA-Compatible">
+        <link href="styles/main.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,1,0" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+        <script src="scripts/theme.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-groovy.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-kotlin.min.js"></script>
+        <!--Primary meta tags-->
+        <meta content="auto-bundler" name="title">
+        <meta content="Android extra field binder with annotation processor" name="description">
+    </head>
+    <body>
+        <div class="wrapper">
+            <header>
+                <h1>auto-bundler</h1>
+                <p>Android extra field binder with annotation processor</p>
+                <p class="view">
+                    <a href="https://github.com/hendraanggrian/auto-bundler/">View the Project on GitHub <small>hendraanggrian/auto-bundler</small></a>
+                </p>
+                <ul>
+                    <li>
+                        <a href="dokka">View<strong>Documentation</strong></a>
+                    </li>
+                </ul>
+            </header>
+            <section>
+                <p>
+                    <a href="https://travis-ci.com/github/hendraanggrian/auto-bundler/"><img alt="Travis CI" src="https://img.shields.io/travis/com/hendraanggrian/auto-bundler"></a>
+<a href="https://codecov.io/gh/hendraanggrian/auto-bundler/"><img alt="Codecov" src="https://img.shields.io/codecov/c/github/hendraanggrian/auto-bundler"></a>
+<a href="https://search.maven.org/artifact/com.hendraanggrian.auto/bundler/"><img alt="Maven Central" src="https://img.shields.io/maven-central/v/com.hendraanggrian.auto/bundler"></a>
+<a href="https://s01.oss.sonatype.org/content/repositories/snapshots/com/hendraanggrian/auto/bundler/"><img alt="Nexus Snapshot" src="https://img.shields.io/nexus/s/com.hendraanggrian.auto/bundler?server=https%3A%2F%2Fs01.oss.sonatype.org"></a>
+<a href="https://developer.android.com/studio/releases/platforms/#4.0"><img alt="Android SDK" src="https://img.shields.io/badge/sdk-14%2B-informational"></a>
+                </p>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-</head>
-<body>
-<div class="wrapper">
-    <header>
-        <h1>Bundles</h1>
-        <p>Android extra field binder with annotation processor</p>
-        <p class="view"><a href="http://github.com/hendraanggrian/bundles">View the Project on GitHub <small>hendraanggrian/bundles</small></a></p>
-        <ul>
-            <li><a href="https://github.com/hendraanggrian/bundles/zipball/master">Download <strong>ZIP File</strong></a></li>
-            <li><a href="https://github.com/hendraanggrian/bundles/tarball/master">Download <strong>TAR Ball</strong></a></li>
-            <li><a href="http://github.com/hendraanggrian/bundles/releases">View <strong>Releases</strong></a></li>
-        </ul>
-    </header>
-    <section>
-        <h1>Documentation</h1>
-        <h2><a href="bundles/index.html">bundles</a></h2>
-    </section>
-    <footer>
-        <p>This project is maintained by <a href="http://github.com/hendraanggrian">Hendra Anggrian</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-    </footer>
-</div>
-<script src="javascripts/scale.fix.js"></script>
-</body>
+                <h1>Auto Bundler</h1>
+
+                <p>Passing key-value pairs with Bundle is the most common approach of exchanging
+data across Android components. Unfortunately, much of the process of sending
+and receiving those key-value pairs (known as extra) requires a lot of
+boilerplate code. Auto Bundler aims to minify the process with annotation
+processing.</p>
+
+                <pre><code class="language-java">public class ExampleActivity extends Activity {
+    @Extra String username;
+    @State int position;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundler.bindExtras(this);
+        Bundler.bindStates(this, savedInstanceState);
+        // TODO: Use fields...
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundler.saveStates(this, outState);
+    }
+}
+</code></pre>
+
+                <h2>Download</h2>
+
+                <pre><code class="language-gradle">repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation "com.hendraanggrian.auto:bundle:$version"
+    annotationProcessor "com.hendraanggrian.auto:bundle-compiler:$version" // or kapt for Kotlin
+}
+</code></pre>
+
+                <h2>Usage</h2>
+
+                <h3>Extra binding</h3>
+
+                <h4>Binding</h4>
+
+                <p>
+                    <code>@BindExtra</code> for binding extra value to field, field cannot be private. When key
+is not provided, field name will be used as the key.
+                </p>
+
+                <pre><code class="language-kotlin">@BindExtra @JvmField var username: String
+</code></pre>
+
+                <h4>Wrapping</h4>
+
+                <p>
+                    Create extras with varargs argument with <code>extrasOf()</code>. This is optional, any
+Bundle would work just fine.
+                </p>
+
+                <pre><code class="language-java">Intent intent = new Intent(context, ExampleActivity.class);
+intent.putExtras(Bundler.extrasOf(ExampleActivity.class, "Hendra Anggrian", 24));
+startActivity(intent);
+</code></pre>
+
+                <h3>State binding</h3>
+
+                <h4>Restoring</h4>
+
+                <p>
+                    <code>@BindState</code> for binding extra value to field, field cannot be private. When key
+is not provided, field name will be used as the key.
+                </p>
+
+                <pre><code class="language-kotlin">@BindExtra @JvmField var position: Int
+
+override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    super.onRestoreInstanceState(savedInstanceState)
+    restoreStates(savedInstanceState)
+}
+</code></pre>
+
+                <h4>Saving</h4>
+
+                <p>
+                    Simply call <code>Bundle.saveStates()</code> to save states.
+                </p>
+
+                <pre><code class="language-kotlin">override fun onSaveInstanceState(outState: Bundle) {
+   super.onSaveInstanceState(outState)
+   saveStates(outState)
+}
+</code></pre>
+
+                <h2>Supported extra types</h2>
+
+                <ul>
+
+                    <li>primitive data types and array of them.</li>
+
+                    <li>
+                        <code>CharSequence</code>, <code>CharSequence[]</code>, and <code>ArrayList&lt;CharSequence&gt;</code>
+                    </li>
+
+                    <li>
+                        <code>String</code>, <code>String[]</code>, and <code>ArrayList&lt;String&gt;</code>
+                    </li>
+
+                    <li>
+                        <code>Parcelable</code>, <code>Parcelable[]</code>, <code>ArrayList&lt;Parcelable&gt;</code> and <code>SparseArray&lt;Parcelable&gt;</code>
+                    </li>
+
+                    <li>
+                        <code>Serializable</code>
+                    </li>
+
+                </ul>
+
+                <h2>Parceler</h2>
+
+                <p>[Parceler][parceler] is supported with this library, it is a library that easily
+makes any object implements Parcelable with generated code, making it able to be
+inserted to Bundle as Parcelable.</p>
+
+                <p>
+                    <code>Bundler.wrap()</code> automatically converts the object to Parcelable.
+Without <code>Bundler.wrap()</code>, object must be wrapped using <code>Parcels.wrap()</code>. Head
+to [Parceler doc][parceler] for more information.
+                </p>
+
+                <pre><code class="language-java">User user = new User("Hendra Anggrian", 24);
+// with Bundler.wrap()
+intent.putExtras(Bundler.wrap(UserActivity.class, user));
+// without Bundler.wrap()
+intent.putExtra("user", Parcels.wrap(user));
+</code></pre>
+
+                <p>
+                    <code>Bundler.bind()</code> automatically converts the Parcelable back to original object.
+                </p>
+
+                <pre><code class="language-kotlin">class UserActivity : Activity {
+    @Extra("user") lateinit var user : User
+
+    override fun onCreate(savedInstanceState : Bundle) {
+        super.onCreate(savedInstanceState)
+        bindExtras()
+    }
+}
+</code></pre>
+
+                <h2>Optional bindings</h2>
+
+                <p>
+                    Extra bindings are required by default, an exception will be thrown if key is
+not found in Bundle. If this is not a desired behavior, annotate the field
+with <code>@Nullable</code> from [Android's support design library][support-annotations].
+                </p>
+
+                <pre><code class="language-java">@Nullable @BindExtra String username;
+</code></pre>
+
+            </section>
+            <footer>
+                <p>
+                    <button class="material-symbols-sharp" id="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode"></button>
+                </p>
+                <p>
+                    This project is maintained by <a href="https://github.com/hendraanggrian/">Hendra Anggrian</a>
+                </p>
+                <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist/">orderedlist</a></small>
+            </footer>
+        </div>
+        <script src="scripts/scale.fix.js"></script>
+    </body>
 </html>
