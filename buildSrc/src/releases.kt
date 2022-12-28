@@ -1,11 +1,37 @@
-const val SDK_MIN = 14
-const val SDK_TARGET = 30
+import org.gradle.api.Project
+import org.gradle.api.publish.maven.MavenPom
+
+const val DEVELOPER_ID = "hendraanggrian"
+const val DEVELOPER_NAME = "Hendra Anggrian"
+const val DEVELOPER_URL = "https://github.com/$DEVELOPER_ID/"
 
 const val RELEASE_GROUP = "com.hendraanggrian.auto"
-const val RELEASE_ARTIFACT = "bundles"
+const val RELEASE_ARTIFACT = "auto-bundler"
 const val RELEASE_VERSION = "0.1-SNAPSHOT"
 const val RELEASE_DESCRIPTION = "Android extra field binder with annotation processor"
-const val RELEASE_URL = "https://github.com/hendraanggrian/$RELEASE_ARTIFACT"
+const val RELEASE_URL = "https://github.com/$DEVELOPER_ID/$RELEASE_ARTIFACT/"
 
-fun getGithubRemoteUrl(artifact: String = RELEASE_ARTIFACT) =
-    `java.net`.URL("$RELEASE_URL/tree/main/$artifact/src")
+fun Project.configurePom(pom: MavenPom) {
+    pom.name.set(name)
+    pom.description.set(RELEASE_DESCRIPTION)
+    pom.url.set(RELEASE_URL)
+    pom.licenses {
+        license {
+            name.set("The Apache License, Version 2.0")
+            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+        }
+    }
+    pom.scm {
+        connection.set("scm:git:https://github.com/$DEVELOPER_ID/$RELEASE_ARTIFACT.git")
+        developerConnection.set("scm:git:ssh://git@github.com/$DEVELOPER_ID/$RELEASE_ARTIFACT.git")
+        url.set(RELEASE_URL)
+    }
+    pom.developers {
+        developer {
+            id.set(DEVELOPER_ID)
+            name.set(DEVELOPER_NAME)
+            url.set(DEVELOPER_URL)
+        }
+    }
+}

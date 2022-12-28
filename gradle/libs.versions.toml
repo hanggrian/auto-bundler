@@ -1,0 +1,44 @@
+[versions]
+jdk = "11"
+kotlin = "1.7.20"
+android-plugin = "7.3.1"
+android-jdk = "8"
+android-min = "14"
+android-target = "32"
+androidx = "1.5.0"
+androidx-test = "1.4.0"
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "android-plugin" }
+android-library = { id = "com.android.library", version.ref = "android-plugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "kotlin" }
+kotlinx-kover = "org.jetbrains.kotlinx.kover:0.6.1"
+maven-publish = "com.vanniktech.maven.publish.base:0.22.0"
+git-publish = "org.ajoberstar.git-publish:4.1.1"
+pages = "com.hendraanggrian.pages:0.1"
+
+[libraries]
+# lint
+ktlint = "com.pinterest:ktlint:0.47.1"
+rulebook-ktlint = "com.hendraanggrian.rulebook:rulebook-ktlint:0.2-SNAPSHOT"
+# main
+kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+material = { module = "com.google.android.material:material", version.ref = "androidx" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx" }
+androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "androidx" }
+androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx" }
+androidx-preference-ktx = "androidx.preference:preference-ktx:1.2.0"
+androidx-multidex = "androidx.multidex:multidex:2.0.1"
+auto-common = "com.google.auto:auto-common:1.2.1"
+guava-jre = "com.google.guava:guava:31.1-jre"
+javapoet-dsl = "com.hendraanggrian:javapoet-dsl:0.1"
+# test
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test" }
+androidx-test-junit = "androidx.test.ext:junit:1.1.3"
+robolectric = "org.robolectric:robolectric:4.9"
+truth = "com.google.truth:truth:1.1.3"
+
+[bundles]
+androidx-test = ["androidx-test-core", "androidx-test-runner", "androidx-test-junit", "robolectric", "truth"]

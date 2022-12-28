@@ -1,58 +1,32 @@
 plugins {
-    android("application")
-    kotlin("android")
-    kotlin("android.extensions")
-    kotlin("kapt")
+    alias(libs.plugins.android.application)
+    kotlin("android") version libs.versions.kotlin
+    kotlin("android.extensions") version libs.versions.kotlin
+    kotlin("kapt") version libs.versions.kotlin
 }
 
 android {
-    compileSdk = SDK_TARGET
     defaultConfig {
-        minSdk = 15
-        targetSdk = SDK_TARGET
-        applicationId = "com.example.$RELEASE_ARTIFACT"
-        versionName = RELEASE_VERSION
+        applicationId = "com.example"
         multiDexEnabled = true
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-    sourceSets {
-        named("main") {
-            manifest.srcFile("AndroidManifest.xml")
-            java.srcDir("src")
-            res.srcDir("res")
-            resources.srcDir("src")
-        }
-    }
-    buildTypes {
-        named("debug") {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-        named("release") {
-            isMinifyEnabled = false
-            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
-        }
-    }
-    packagingOptions {
-        exclude("META-INF/services/javax.annotation.processing.Processor")
-    }
-    lint {
-        isAbortOnError = false
-    }
+    lint.abortOnError = false
+}
+
+// hotfix: duplicate class androidx.lifecycle.viewmodel
+// https://stackoverflow.com/questions/69817925/problem-duplicate-class-androidx-lifecycle-viewmodel-found-in-modules
+configurations.all {
+    exclude("androidx.lifecycle", "lifecycle-viewmodel-ktx")
 }
 
 dependencies {
-    implementation(kotlin("stdlib", VERSION_KOTLIN))
-    implementation(project(":$RELEASE_ARTIFACT"))
-    kapt(project(":$RELEASE_ARTIFACT-compiler"))
-    implementation(material())
-    implementation(androidx("multidex", version = VERSION_MULTIDEX))
-    implementation(androidx("core", "core-ktx", VERSION_ANDROIDX))
-    implementation(androidx("appcompat"))
-    implementation(androidx("preference", "preference-ktx", version = "1.1.1"))
+    implementation(project(":bundler"))
+    kapt(project(":bundler-compiler"))
+    implementation(libs.material)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.androidx.multidex)
 
     /*val butterknifeVersion = "10.2.3"
     implementation("com.jakewharton:butterknife:$butterknifeVersion")
