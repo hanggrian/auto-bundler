@@ -7,7 +7,6 @@ import javax.lang.model.element.Element
 import javax.lang.model.util.Types
 
 internal class FieldBinding(fieldElement: Element, typeUtils: Types) {
-
     private val type = BundleValueType.valueOf(fieldElement, typeUtils)
     private val name = fieldElement.simpleName
     private val annotation: Annotation

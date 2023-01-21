@@ -3,8 +3,6 @@ package com.hendraanggrian.auto.bundler.compiler
 import androidx.annotation.Nullable
 import com.google.auto.common.MoreElements
 import com.google.auto.common.MoreTypes
-import com.hendraanggrian.auto.bundler.BindExtra
-import com.hendraanggrian.auto.bundler.BindState
 import com.hendraanggrian.javapoet.PUBLIC
 import com.hendraanggrian.javapoet.TypeSpecBuilder
 import com.hendraanggrian.javapoet.buildJavaFile
@@ -22,12 +20,12 @@ internal fun Filer.writeExtraBinding(
     extraClassNames: Collection<String>,
     fieldElements: Iterable<Element>,
     typeUtils: Types
-) = buildBindingJavaFile(typeElement, BindExtra.SUFFIX) {
+) = buildBindingJavaFile(typeElement, "_ExtrasBinding") {
     var hasSupercls = false
     val targetSupercls = typeElement.superclass
     if (targetSupercls.kind != TypeKind.NONE && targetSupercls.kind != TypeKind.VOID) {
         val supercls = MoreTypes.asTypeElement(targetSupercls)
-        val extraClassName = supercls.getMeasuredName(BindExtra.SUFFIX)
+        val extraClassName = supercls.getMeasuredName("_ExtrasBinding")
         if (extraClassName in extraClassNames) {
             superclass = ClassName.get(typeElement.measuredPackageName, extraClassName)
             hasSupercls = true
@@ -73,12 +71,12 @@ internal fun Filer.writeStateBinding(
     extraClassNames: Collection<String>,
     fieldElements: Iterable<Element>,
     typeUtils: Types
-) = buildBindingJavaFile(typeElement, BindState.SUFFIX) {
+) = buildBindingJavaFile(typeElement, "_StatesBinding") {
     var hasSupercls = false
     val targetSupercls = typeElement.superclass
     if (targetSupercls.kind != TypeKind.NONE && targetSupercls.kind != TypeKind.VOID) {
         val supercls = MoreTypes.asTypeElement(targetSupercls)
-        val extraClassName = supercls.getMeasuredName(BindState.SUFFIX)
+        val extraClassName = supercls.getMeasuredName("_StatesBinding")
         if (extraClassName in extraClassNames) {
             superclass = ClassName.get(typeElement.measuredPackageName, extraClassName)
             hasSupercls = true

@@ -65,7 +65,7 @@ object Bundler {
     fun bindExtras(source: Bundle, target: Any) {
         val binding = createBinding(
             target.javaClass,
-            BindExtra.SUFFIX,
+            "_ExtrasBinding",
             arrayOf(Bundle::class.java, target.javaClass),
             arrayOf(source, target)
         )
@@ -75,7 +75,7 @@ object Bundler {
     fun wrapExtras(targetCls: Class<*>, args: List<*>): Bundle {
         val binding = createBinding(
             targetCls,
-            BindExtra.SUFFIX,
+            "_ExtrasBinding",
             arrayOf(MutableList::class.java),
             arrayOf(args)
         )
@@ -87,7 +87,7 @@ object Bundler {
     fun restoreStates(source: Bundle, target: Any) {
         val binding = createBinding(
             target.javaClass,
-            BindState.SUFFIX,
+            "_StatesBinding",
             arrayOf(Bundle::class.java, target.javaClass),
             arrayOf(source, target)
         )
@@ -97,7 +97,7 @@ object Bundler {
     fun saveStates(source: Bundle, target: Any): Bundle {
         val binding = createBinding(
             target.javaClass,
-            BindState.SUFFIX,
+            "_StatesBinding",
             arrayOf(target.javaClass, Bundle::class.java),
             arrayOf(target, source)
         )

@@ -13,7 +13,7 @@ mavenPublishing.configure(KotlinJvm(JavadocJar.Dokka("dokkaJavadoc")))
 dependencies {
     ktlint(libs.ktlint, ::configureKtlint)
     ktlint(libs.rulebook.ktlint)
-    implementation(project(":bundler-annotations"))
+    api(project(":bundler-annotations"))
     implementation(libs.auto.common)
     implementation(libs.guava.jre)
     implementation(libs.javapoet.dsl)

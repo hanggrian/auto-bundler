@@ -11,6 +11,6 @@ dependencyResolutionManagement.repositories {
 
 rootProject.name = "auto-bundler"
 
-include("bundler-annotations", "bundler", "bundler-compiler" )
- include("sample")
+include("bundler-annotations", "bundler", "bundler-compiler")
+include("sample")
 include("website")

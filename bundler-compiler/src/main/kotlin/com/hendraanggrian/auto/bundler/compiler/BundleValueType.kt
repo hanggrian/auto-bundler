@@ -11,7 +11,6 @@ import javax.lang.model.util.Types
 
 /** Represents Bundle-compatible values. */
 internal enum class BundleValueType(val typeName: TypeName, private val methodName: String) {
-
     // Non-void primitive types: supports unboxed, boxed, and unboxed array (only int supports ArrayList).
     BOOLEAN(TypeName.BOOLEAN, "Boolean"),
     BOOLEAN_ARRAY(TypeName.get(BooleanArray::class.java), "BooleanArray"),

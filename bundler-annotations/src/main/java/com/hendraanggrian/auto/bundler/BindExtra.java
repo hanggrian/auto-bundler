@@ -15,10 +15,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
 public @interface BindExtra {
-
-    /** Generated class name suffix which fields are annotated with this annotation. */
-    String SUFFIX = "_ExtraBinding";
-
     /**
      * Key in bundle key-value pair.
      * @return bundle key, or field name if left empty.

@@ -15,10 +15,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.FIELD)
 public @interface BindState {
-
-    /** Generated class name suffix which fields are annotated with this annotation. */
-    String SUFFIX = "_StateBinding";
-
     /**
      * Key in bundle key-value pair.
      *

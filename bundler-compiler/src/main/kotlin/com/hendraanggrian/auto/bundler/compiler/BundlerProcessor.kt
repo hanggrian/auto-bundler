@@ -55,8 +55,8 @@ class BundlerProcessor : AbstractProcessor() {
                 generatedClassNames.add(
                     typeElement.getMeasuredName(
                         when (annotation) {
-                            BindExtra::class.java -> BindExtra.SUFFIX
-                            else -> BindState.SUFFIX
+                            BindExtra::class.java -> "_ExtrasBinding"
+                            else -> "_StatesBinding"
                         }
                     )
                 )
